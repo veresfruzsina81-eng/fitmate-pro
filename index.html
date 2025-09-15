@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>FitMate HU – indulás</title>
+  <meta name="description" content="Magyar fitneszapp: célválasztás, gyakorlatok, kalóriaszámláló, napi teljesítmény és AI chat.">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Splash -->
+  <section id="screen-splash" class="screen screen--cover" data-bg="assets/bg/splash.jpg" aria-label="Üdvözlő képernyő">
+    <div class="overlay">
+      <h1 class="brand">FitMate <span class="accent">HU</span></h1>
+      <p class="tag">Magyar fitnesz – egyszerűen, szépen, okosan.</p>
+      <button id="btnStart" class="btn btn-lg">Kezdjük</button>
+    </div>
+  </section>
+
+  <!-- Célválasztás -->
+  <section id="screen-goal" class="screen screen--cover hidden" data-bg="assets/bg/goal_fogyas.jpg" aria-label="Célválasztás">
+    <header class="topbar">
+      <button class="link" data-nav="back-splash">← Vissza</button>
+      <div class="spacer"></div>
+      <button class="link" data-nav="skip-goal">Kihagyom</button>
+    </header>
+
+    <div class="overlay narrow">
+      <h2>Válaszd ki a célod</h2>
+      <p class="muted">Ezt később bármikor módosíthatod.</p>
+
+      <div class="goal-grid">
+        <button class="goal-card" data-goal="fogyas" data-bg="assets/bg/goal_fogyas.jpg">
+          <div class="goal-title">Fogyás</div>
+          <div class="goal-sub">Zsírégetés, kíméletes tempó</div>
+        </button>
+
+        <button class="goal-card" data-goal="szalkasitas" data-bg="assets/bg/goal_szalkasitas.jpg">
+          <div class="goal-title">Szálkásítás</div>
+          <div class="goal-sub">Deficit + tónusos izom</div>
+        </button>
+
+        <button class="goal-card" data-goal="hizas" data-bg="assets/bg/goal_hizas.jpg">
+          <div class="goal-title">Hízás</div>
+          <div class="goal-sub">Izomtömeg növelés, szuficit</div>
+        </button>
+      </div>
+
+      <button id="btnToHome" class="btn btn-lg btn-full" disabled>Tovább a főmenübe</button>
+    </div>
+  </section>
+
+  <!-- Főmenü -->
+  <section id="screen-home" class="screen hidden" aria-label="Főmenü">
+    <header class="home-head">
+      <div>
+        <div class="hi">Üdv újra!</div>
+        <div class="subtitle">Aktuális cél: <strong id="goalLabel">–</strong></div>
+      </div>
+      <button id="btnChangeGoal" class="chip">Cél módosítása</button>
+    </header>
+
+    <main class="shell">
+      <nav class="menu-grid">
+        <a class="menu-card" href="#" data-open="workouts">
+          <div class="menu-title">Gyakorlatok</div>
+          <p class="muted">Képek, leírások, edzés indítása (időzítő később).</p>
+        </a>
+
+        <a class="menu-card" href="#" data-open="calories">
+          <div class="menu-title">Kalóriaszámláló</div>
+          <p class="muted">Makrók és napi bevitel (v1: egyszerű). </p>
+        </a>
+
+        <a class="menu-card" href="#" data-open="progress">
+          <div class="menu-title">Napi teljesítmény</div>
+          <p class="muted">Jóváhagyott napok, becsült kcal, streak.</p>
+        </a>
+
+        <a class="menu-card" href="#" data-open="chat">
+          <div class="menu-title">AI chat</div>
+          <p class="muted">Magyar tanácsok étrendhez és edzéshez.</p>
+        </a>
+      </nav>
+    </main>
+  </section>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

@@ -1,14 +1,17 @@
-export async function handler(event) {
+// CommonJS szintaxis Netlify Functions-hoz
+exports.handler = async (event, context) => {
   const cors = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type",
   };
+
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 200, headers: cors, body: "" };
   }
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, headers: cors, body: "Method Not Allowed" };
   }
+
   try {
     const { prompt, goal } = JSON.parse(event.body || "{}");
     if (!prompt) {
@@ -24,7 +27,7 @@ Ha edzéstervet kérnek: sorozatok/körök, ismétlés, pihenő, forma-tanácsok
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`  // <- pontos név!
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
@@ -48,4 +51,4 @@ Ha edzéstervet kérnek: sorozatok/körök, ismétlés, pihenő, forma-tanácsok
   } catch (e) {
     return { statusCode: 500, headers: cors, body: JSON.stringify({ reply: "Szerver hiba.", error: e.message }) };
   }
-}
+};

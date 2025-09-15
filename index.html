@@ -96,16 +96,17 @@ video{width:100%;display:block;object-fit:cover;max-height:58vh}
 <!-- FŐMENÜ -->
 <section id="v-home" class="view">
   <div class="container">
+    <button class="back" data-go="goal">← Vissza</button>
     <div class="row" style="justify-content:space-between">
       <div class="card pad" style="border-radius:999px"><b id="goalLabel">Cél: –</b></div>
       <div class="row">
         <button class="btn ghost" data-go="goal">Cél módosítása</button>
-        <button class="btn ghost" data-go="splash">Vissza</button>
+        <button class="btn ghost" data-go="splash">Kezdő</button>
       </div>
     </div>
     <div class="grid menu" style="margin-top:14px">
-      <div class="tile card pad" data-open="workout"><h3>Saját testsúllyal</h3><p class="muted">Válassz gyakorlatot, időzítővel.</p></div>
-      <div class="tile card pad" data-open="weights"><h3>Súlyzós edzés</h3><p class="muted">Hamarosan…</p></div>
+      <div class="tile card pad" data-open="workout"><h3>Saját testsúly</h3><p class="muted">Válassz gyakorlatot, időzítővel.</p></div>
+      <div class="tile card pad" data-open="weights"><h3>Súlyzós edzés</h3><p class="muted">Hamarosan… (5 videó / cél)</p></div>
       <div class="tile card pad" data-open="cal"><h3>Kalóriaszámláló</h3><p class="muted">Egyszerű napi bevitel.</p></div>
       <div class="tile card pad" data-open="perf"><h3>Napi teljesítmény</h3><p class="muted">Streak és kész napok.</p></div>
       <div class="tile card pad" data-open="chat"><h3>AI chat</h3><p class="muted">Magyar tanácsok.</p></div>
@@ -113,12 +114,21 @@ video{width:100%;display:block;object-fit:cover;max-height:58vh}
   </div>
 </section>
 
-<!-- EDZÉS LISTA -->
+<!-- SAJÁT TESTSÚLY EDZÉS LISTA -->
 <section id="v-workout" class="view">
   <div class="container">
     <button class="back" data-go="home">← Vissza</button>
     <h2>Napi edzés</h2><p class="muted">Válassz gyakorlatot (5 db / kategória).</p>
     <div id="exList" class="grid" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<!-- SÚLYZÓS (placeholder) -->
+<section id="v-weights" class="view">
+  <div class="container">
+    <button class="back" data-go="home">← Vissza</button>
+    <h2>Súlyzós edzés</h2>
+    <div class="card pad"><p>Hamarosan ide kerül 5-5 videó minden célhoz (fogyás / szálkásítás / hízás).</p></div>
   </div>
 </section>
 
@@ -189,6 +199,135 @@ video{width:100%;display:block;object-fit:cover;max-height:58vh}
   </div>
 </section>
 
-<script src="app.js"></script>
+<script>
+/* ======= minimál állapot + segédek ======= */
+const S={goal:null, gender:'no', done:+(localStorage.getItem('done')||0), streak:+(localStorage.getItem('streak')||0)};
+const qs=s=>document.querySelector(s), qsa=s=>[...document.querySelectorAll(s)];
+function show(id){ qsa('.view').forEach(v=>v.classList.remove('show')); qs('#v-'+id).classList.add('show'); setBG(id); }
+function setBG(view){
+  const foods=['food1.png','food2.png','food3.png'];
+  const pick=()=>foods[Math.floor(Math.random()*foods.length)]||'fogyas.png';
+  const m={splash:'kezdo.png', goal:'fogyas.png', home:(S.goal||'fogyas')+'.png', workout:(S.goal||'fogyas')+'.png', weights:(S.goal||'fogyas')+'.png', cal:pick(), perf:pick(), chat:'hizas.png'};
+  qs('#bg').style.backgroundImage=`linear-gradient(0deg, rgba(11,15,20,.68), rgba(11,15,20,.68)), url('${m[view]||'kezdo.png'}')`;
+}
+
+/* ======= váltások ======= */
+qs('#start').onclick=()=>show('goal');
+let tmpGoal='fogyas'; let tmpGender='no';
+qsa('.goal-list .item').forEach(it=>{
+  it.onclick=()=>{ qsa('.goal-list .item').forEach(x=>x.classList.remove('active')); it.classList.add('active'); tmpGoal=it.dataset.goal; qs('#bg').style.backgroundImage=`url('${tmpGoal}.png')`; };
+});
+qs('#gender').onchange=e=>tmpGender=e.target.value;
+qs('#toHome').onclick=()=>{
+  S.goal=tmpGoal; S.gender=tmpGender;
+  localStorage.setItem('goal',S.goal); localStorage.setItem('gender',S.gender);
+  qs('#goalLabel').textContent=`Cél: ${S.goal==='fogyas'?'Fogyás':S.goal==='szalkasitas'?'Szálkásítás':'Hízás'}`;
+  show('home');
+};
+qsa('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
+qsa('#v-home [data-open]').forEach(t=>t.onclick=()=>{
+  const to=t.dataset.open;
+  if(to==='workout') renderExList();
+  if(to==='chat') ensureChatWelcome(); // csak itt, egyszer/cél
+  show(to);
+});
+
+/* ======= adatok (mint nálad) ======= */
+const DATA={ /* marad a legutóbbi működő lista – nehogy felülírjuk; ide betehetnéd a sajátod */ };
+
+/* ======= lista render ======= */
+function renderExList(){
+  const wrap=qs('#exList'); wrap.innerHTML='';
+  const arr=(DATA[S.goal]||{})[S.gender]||[];
+  if(!arr.length){ wrap.innerHTML='<div class="card pad"><b>Még nincs feltöltve ehhez a célhoz.</b></div>'; return; }
+  arr.forEach((it,i)=>{
+    const row=document.createElement('div');
+    row.className='list-item';
+    row.innerHTML=`
+      <img class="thumb" src="${S.goal}.png" alt="">
+      <div style="flex:1"><div style="font-weight:800">#${i+1}. gyakorlat</div><div class="muted">${it.t}</div></div>
+      <button class="btn">Megnyit</button>`;
+    row.querySelector('.btn').onclick=()=>openEx(it);
+    wrap.appendChild(row);
+  });
+}
+
+/* ======= modál + időzítő (fix 15 mp pihi) ======= */
+const modal=qs('#modal'), mClose=qs('#mClose'), v=qs('#exVideo'), title=qs('#exTitle'), desc=qs('#exDesc');
+const iSets=qs('#iSets'), iReps=qs('#iReps'), iSec=qs('#iSec');
+const bStart=qs('#bStart'), bPause=qs('#bPause'), bNext=qs('#bNext');
+const clock=qs('#clock'), status=qs('#status');
+let tInt=null, paused=false, curSet=1, curRep=0, totalSets=3, reps=12, secPer=2;
+
+function mmss(s){const m=String(Math.floor(s/60)).padStart(2,'0'); const ss=String(s%60).padStart(2,'0'); return `${m}:${ss}`;}
+function beep(){try{const ctx=new (window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.value=900;g.gain.value=.06;o.start();setTimeout(()=>{o.stop();ctx.close()},160);}catch(e){}}
+function stopTimer(){ if(tInt){clearInterval(tInt); tInt=null;} }
+
+function openEx(it){
+  title.textContent=it.t; desc.textContent=it.d||''; v.src=it.f; v.play().catch(()=>{});
+  iSets.value=3; iReps.value=12; iSec.value=2; clock.textContent='00:00'; status.textContent='';
+  stopTimer(); modal.classList.add('show');
+}
+mClose.onclick=()=>{stopTimer(); modal.classList.remove('show'); v.pause();};
+
+bStart.onclick=()=>{
+  totalSets=Math.max(1,+iSets.value||1);
+  reps=Math.max(1,+iReps.value||1);
+  secPer=Math.max(1,+iSec.value||1);
+  curSet=1; curRep=0; paused=false; runRep();
+};
+bPause.onclick=()=>{ paused=!paused; bPause.textContent=paused?'Folytatás':'Szünet'; };
+bNext.onclick=()=>{ stopTimer(); curSet++; if(curSet<=totalSets){ restPhase(()=>runRep()); } else { finishExercise(); } };
+
+function runRep(){
+  let left=secPer; clock.textContent=mmss(left); status.textContent=`Kör ${curSet}/${totalSets} • Ismétlés ${curRep+1}/${reps}`;
+  stopTimer();
+  tInt=setInterval(()=>{
+    if(paused) return;
+    left--; clock.textContent=mmss(left);
+    if(left<=0){
+      beep(); curRep++;
+      if(curRep<reps){ left=secPer; status.textContent=`Kör ${curSet}/${totalSets} • Ismétlés ${curRep+1}/${reps}`; }
+      else { stopTimer(); curSet++; if(curSet<=totalSets){ restPhase(()=>{curRep=0; runRep();}); } else { finishExercise(); } }
+    }
+  },1000);
+}
+function restPhase(cb){
+  let r=15; status.textContent=`Pihenő ${r} mp`; clock.textContent=mmss(r);
+  const ri=setInterval(()=>{
+    if(paused) return;
+    r--; clock.textContent=mmss(r); if(r<=0){ clearInterval(ri); beep(); cb(); }
+  },1000);
+}
+function finishExercise(){
+  status.innerHTML='🎉 <b>Ügyes vagy! Büszke vagyok rád!</b> Lépj vissza a listához és válaszd a következőt.';
+  clock.textContent='00:00'; stopTimer();
+  S.done++; localStorage.setItem('done',S.done); qs('#done').textContent=S.done;
+  const today=new Date().toDateString(), last=localStorage.getItem('lastDone')||'';
+  if(last!==today){ S.streak++; localStorage.setItem('streak',S.streak); localStorage.setItem('lastDone',today); qs('#streak').textContent=S.streak; }
+}
+
+/* ======= kalória és teljesítmény – marad, mint nálad ======= */
+const meals=JSON.parse(localStorage.getItem('meals')||'[]');
+function saveMeals(){ localStorage.setItem('meals',JSON.stringify(meals)); }
+function renderMeals(){ const wrap=qs('#mealList'); wrap.innerHTML=''; let sum=0; meals.forEach((m,i)=>{ sum+=m.k; const r=document.createElement('div'); r.className='item-row'; r.innerHTML=`<span>${m.n}</span><span>${m.k} kcal</span>`; r.onclick=()=>{meals.splice(i,1);saveMeals();renderMeals();}; wrap.appendChild(r); }); qs('#sumKcal').innerHTML='<b>'+sum+'</b>'; }
+qs('#addMeal').onclick=()=>{ const n=qs('#mealName').value.trim(); const k=+qs('#mealKcal').value||0; if(!n||!k) return; meals.push({n,k}); saveMeals(); renderMeals(); qs('#mealName').value=''; qs('#mealKcal').value=''; };
+renderMeals();
+
+/* ======= chat: egyszeri üdvözlés célenként ======= */
+const chatBox = qs('#chatBox');
+function pushBubble(t,me=false){ const b=document.createElement('div'); b.className='bubble'+(me?' me':' bot'); b.textContent=t; chatBox.appendChild(b); chatBox.scrollTop=1e9; }
+function goalWelcome(goal){ if(goal==='szalkasitas') return 'Szia! Miben segíthetek a szálkásításban? Írj: „étrend”, „edzés”, vagy „mindkettő”.'; if(goal==='hizas') return 'Szia! Miben segíthetek a hízásban? Írj: „étrend”, „edzés”, vagy „mindkettő”.'; return 'Szia! Miben segíthetek a fogyásban? Írj: „étrend”, „edzés”, vagy „mindkettő”.'; }
+let welcomedKey = localStorage.getItem('welcomedGoal') || '';
+function ensureChatWelcome(){ const key = S.goal || 'fogyas'; if (welcomedKey !== key) { chatBox.innerHTML = ''; pushBubble(goalWelcome(key)); welcomedKey = key; localStorage.setItem('welcomedGoal', key); } }
+qs('#sendChat').onclick=async()=>{ const q=qs('#chatInput').value.trim(); if(!q) return; qs('#chatInput').value=''; pushBubble(q,true); let reply=''; try{ const r=await fetch('/.netlify/functions/ai-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:q,goal:S.goal,gender:S.gender})}); if(r.ok){ const j=await r.json(); reply=j.reply||''; } }catch(e){} if(!reply){ reply = 'Megvagyok! Írj, miben segítsek az edzés/étrend kapcsán. 😉'; } pushBubble(reply,false); };
+
+/* ======= indítás ======= */
+(function boot(){
+  S.goal = null; // mindig Splash -> Goal-lal
+  qs('#done').textContent=S.done; qs('#streak').textContent=S.streak;
+  show('splash');
+})();
+</script>
 </body>
 </html>

@@ -1,173 +1,322 @@
-const $  = s => document.querySelector(s);
-const $$ = s => document.querySelectorAll(s);
+// —— állapot
+const S = {
+  goal: localStorage.getItem('goal') || null,        // 'fogyas' | 'szalkasitas' | 'hizas'
+  gender: localStorage.getItem('gender') || null,    // 'male' | 'female'
+  streak: +(localStorage.getItem('streak') || 0),
+  done: +(localStorage.getItem('done') || 0),
+  foods: JSON.parse(localStorage.getItem('foods') || '[]'),
+  currentExercise: null,
+};
 
-/* háttér */
-function applyBg(section){
-  if(!section) return;
-  const p = section.getAttribute("data-bg");
-  if (p) section.style.backgroundImage =
-    `linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.38)), url('${p}')`; // világosabb
+// —— segéd: képernyő váltás + háttér beállítás
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.classList.add('active');
+
+  if(el.classList.contains('cover')){
+    const bg = el.getAttribute('data-bg');
+    if(bg) { el.style.backgroundImage = `url('${bg}')`; }
+  }
+
+  if(id==='screen-home'){
+    document.getElementById('activeGoal').textContent =
+      `Aktuális cél: ${labelGoal(S.goal)} (${S.gender==='male'?'Férfi':'Nő'})`;
+  }
+  if(id==='screen-workout'){ renderWorkoutList(); }
+  if(id==='screen-calories'){ renderFoods(); }
+  if(id==='screen-progress'){ renderProgress(); }
 }
-function show(selector){
-  $$(".screen").forEach(el=>el.classList.remove("active"));
-  const el = typeof selector==="string" ? $(selector) : selector;
-  el.classList.add("active"); applyBg(el);
+function labelGoal(g){
+  return g==='fogyas' ? 'Fogyás' : g==='szalkasitas' ? 'Szálkásítás' : 'Hízás';
 }
-["#splash","#goals","#home","#workout","#woDetail","#calories","#progress","#chat"].forEach(sel=>applyBg($(sel)));
-show("#splash");
 
-/* profil (cél) … (VÁLTOZATLAN) */
-const GSTR="fit_profile";
-const goalName = g=>({fogyas:"Fogyás",szalkasitas:"Szálkásítás",hizas:"Hízás"})[g]||"—";
-const loadProf = ()=>{ try{return JSON.parse(localStorage.getItem(GSTR)||"null");}catch{return null;} };
-const saveProf = p => localStorage.setItem(GSTR, JSON.stringify(p||{}));
-
-$("#goStart").addEventListener("click",()=>show("#goals"));
-let selectedGoal=null;
-$$(".goal").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    selectedGoal=btn.dataset.goal;
-    $$(".goal").forEach(b=>b.classList.remove("picked"));
-    btn.classList.add("picked");
-    $("#goals").setAttribute("data-bg", btn.dataset.bg); applyBg($("#goals"));
-    $("#toHome").disabled=false;
+// —— cél választás
+document.querySelectorAll('.pick-goal').forEach(b=>{
+  b.addEventListener('click', ()=> {
+    document.querySelectorAll('.pick-goal').forEach(x=>x.classList.remove('selected'));
+    b.classList.add('selected');
+    S.goal = b.dataset.goal;
   });
 });
-$("#skipGoal").addEventListener("click",()=>{ const p=loadProf()||{}; p.goal="fogyas"; saveProf(p); $("#goalLabel").textContent=goalName(p.goal); show("#home"); });
-$("#toHome").addEventListener("click",()=>{ if(!selectedGoal) return; const p=loadProf()||{}; p.goal=selectedGoal; saveProf(p); $("#goalLabel").textContent=goalName(p.goal); show("#home");});
-$("#changeGoal").addEventListener("click",()=>{ const g=(loadProf()?.goal)||"fogyas"; selectedGoal=g; $("#toHome").disabled=false; show("#goals"); });
+document.getElementById('toGender').addEventListener('click', ()=>{
+  if(!S.goal) { alert('Válassz célt!'); return; }
+  const gbg = S.goal==='fogyas' ? 'fogyas.png' : S.goal==='szalkasitas' ? 'szalkasitas.png' : 'hizas.png';
+  document.getElementById('screen-gender').setAttribute('data-bg', gbg);
+  show('screen-gender');
+});
+document.getElementById('skipGoal').addEventListener('click', ()=>{
+  if(!S.goal) S.goal = 'szalkasitas';
+  show('screen-gender');
+});
 
-$$("[data-nav='home']").forEach(b=>b.addEventListener("click",()=>show("#home")));
-$$("[data-nav='splash']").forEach(b=>b.addEventListener("click",()=>show("#splash")));
-$$("[data-nav='workout']").forEach(b=>b.addEventListener("click",()=>show("#workout")));
+// —— nem választás
+document.querySelectorAll('.pick-gender').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('.pick-gender').forEach(x=>x.classList.remove('selected'));
+    b.classList.add('selected');
+    S.gender = b.dataset.gender;
+  });
+});
+document.getElementById('btnChangeGoal').addEventListener('click', ()=> show('screen-goal'));
 
-const prof=loadProf(); if(prof?.goal) $("#goalLabel").textContent=goalName(prof.goal);
-
-/* menü nyitás */
-$$("[data-open]").forEach(a=>{
-  a.addEventListener("click",(e)=>{
-    e.preventDefault();
-    const id="#"+a.dataset.open;
-    if(id==="#workout") buildPlan();
-    if(id==="#calories") renderK();
-    if(id==="#progress") renderProgress();
-    if(id==="#chat") initChat();
+document.querySelectorAll('[data-open]').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    const id = b.getAttribute('data-open');
     show(id);
   });
 });
 
-/* EDZÉS */
-const PLAN = [
-  {key:"jumping_jacks",  name:"Jumping jacks",  img:"assets/exercises/jumping_jacks.png", desc:"Ugrálás terpesz–zár, karok lendítése."},
-  {key:"guggolas",       name:"Guggolás",       img:"assets/exercises/guggolas.png",       desc:"Csípő hátra, térd a lábfej irányába."},
-  {key:"fekvotamasz",    name:"Fekvőtámasz",    img:"assets/exercises/fekvotamasz.png",    desc:"Core feszes, könyök 45°."},
-  {key:"plank",          name:"Plank",          img:"assets/exercises/plank.png",          desc:"Egyenes törzs, farizom feszes."},
-  {key:"kitores",        name:"Kitörés váltva", img:"assets/exercises/kitores.png",        desc:"Hosszú lépés, hát egyenes."},
-];
+// —— mentés (főmenübe lépésnél)
+document.querySelectorAll('#screen-gender .btn.btn-primary, #screen-gender [data-open="screen-home"]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    if(!S.gender) { alert('Válaszd ki a nemet!'); return; }
+    localStorage.setItem('goal', S.goal);
+    localStorage.setItem('gender', S.gender);
+  });
+});
 
-function buildPlan(){
-  $("#woList").innerHTML = PLAN.map((x,i)=>`
-    <article class="wocard" data-i="${i}">
-      ${x.img ? `<img src="${x.img}" alt="${x.name}" loading="eager">` : `<div style="height:180px;background:#16233b"></div>`}
-      <div class="wobody">
-        <h4>${i+1}. ${x.name}</h4>
-        <p>${x.desc}</p>
-        <p class="muted">Koppints a részletekhez →</p>
+// —— edzés tervek (videók a repo gyökeréből)
+const PLAN_BY_GOAL = {
+  fogyas: {
+    male: [
+      {name:'Jumping Jacks', file:'fogyas1.mp4'},
+      {name:'High Knees', file:'fogyas2.mp4'},
+      {name:'Burpees', file:'fogyas3.mp4'},
+      {name:'Mountain Climbers', file:'fogyas4.mp4'},
+      {name:'Squat Jumps', file:'fogyas5.mp4'},
+    ],
+    female: [
+      {name:'Cross Jacks', file:'fogyas_w1.mp4'},
+      {name:'Butt Kicks', file:'fogyas_w2.mp4'},
+      {name:'Skater Jumps', file:'fogyas_w3.mp4'},
+      {name:'Jumping Squats', file:'fogyas_w4.mp4'},
+      {name:'Jump Rope (no rope)', file:'fogyas_w5.mp4'},
+    ],
+  },
+  szalkasitas: {
+    male: [
+      {name:'Push-Ups', file:'szalkasitas1.mp4'},
+      {name:'Plank', file:'szalkasitas2.mp4'},
+      {name:'Lunges', file:'szalkasitas3.mp4'},
+      {name:'Side Plank', file:'szalkasitas4.mp4'},
+      {name:'Squats', file:'szalkasitas5.mp4'},
+    ],
+    female: [
+      {name:'Glute Bridge', file:'szalkasitas_w1.mp4'},
+      {name:'Switch Jump Mountain Climber', file:'szalkasitas_w2.mp4'},
+      {name:'Cardio Jumping Jacks', file:'szalkasitas_w3.mp4'},
+      {name:'Plank Head', file:'szalkasitas_w4.mp4'},
+      {name:'Squats with Dumbbells', file:'szalkasitas_w5.mp4', note:'Súlyzó nélkül is végezhető.'},
+    ],
+  },
+  hizas: {
+    male: [
+      {name:'Push-Up', file:'hizas1.mp4'},
+      {name:'Pike Push-Up', file:'hizas2.mp4'},
+      {name:'Squat Jump', file:'hizas3.mp4'},
+      {name:'Dumbbell Plank Pullthrough', file:'hizas4.mp4', note:'Súlyzó nélkül is végezhető (imitált húzás).'},
+      {name:'Burpee', file:'hizas5.mp4'},
+    ],
+    female: [
+      {name:'Glute Bridge', file:'hizas_w1.mp4'},
+      {name:'Squat Pulse', file:'hizas_w2.mp4'},
+      {name:'Knee Push-Up', file:'hizas_w3.mp4'},
+      {name:'Side Leg Raise', file:'hizas_w4.mp4'},
+      {name:'Mountain Climber (slow)', file:'hizas_w5.mp4'},
+    ],
+  },
+};
+
+function getPlan(){
+  const g = S.goal || 'szalkasitas';
+  const sex = S.gender || 'female';
+  return PLAN_BY_GOAL[g][sex] || [];
+}
+
+// —— edzés lista
+function renderWorkoutList(){
+  const list = document.getElementById('workoutList');
+  list.innerHTML = '';
+  const plan = getPlan();
+  if(!plan.length){
+    list.innerHTML = `<div class="row"><div class="grow">Nincs edzés ehhez a beállításhoz.</div></div>`;
+    return;
+  }
+  plan.forEach((ex, idx)=>{
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML = `
+      <div class="grow">
+        <div><strong>${idx+1}. ${ex.name}</strong></div>
+        ${ex.note?`<div class="small">${ex.note}</div>`:''}
       </div>
-    </article>
-  `).join("");
-  $$("#woList .wocard").forEach(card=>{
-    card.addEventListener("click",()=> openDetail(Number(card.dataset.i)));
+      <button class="btn" data-open="screen-exercise" data-idx="${idx}">Megnyitás</button>
+    `;
+    row.querySelector('button').addEventListener('click', (e)=>{
+      const i = +e.currentTarget.dataset.idx;
+      openExercise(i);
+    });
+    list.appendChild(row);
   });
 }
 
-let D = {i:0, sets:3, reps:12, sec:2, curSet:1, curRep:0, running:false, t:null};
-function openDetail(idx){
-  const ex = PLAN[idx]; D = {i:idx, sets:3, reps:12, sec:2, curSet:1, curRep:0, running:false, t:null};
-  $("#wdTitle").textContent = ex.name;
-  $("#wdDesc").textContent  = ex.desc;
+function openExercise(i){
+  const plan = getPlan();
+  const ex = plan[i];
+  if(!ex) return;
+  S.currentExercise = ex;
 
-  // KÉP/PLACEHOLDER logika
-  const media = $("#wdMedia"), img=$("#wdImg"), ph=$("#wdPh");
-  media.classList.remove("placeholder");
-  img.src = ex.img || "";
-  img.alt = ex.name || "gyakorlat";
-  img.onerror = ()=>{ media.classList.add("placeholder"); };
-  img.onload  = ()=>{ media.classList.remove("placeholder"); };
+  document.getElementById('exTitle').textContent = ex.name;
+  const v = document.getElementById('exVideo');
+  v.src = ex.file; // repo gyökér!
+  v.load(); // biztos indítás
+  document.getElementById('exNote').textContent = ex.note || '';
 
-  $("#wdSets").value=3; $("#wdReps").value=12; $("#wdSec").value=2;
-  $("#wdState").textContent="Készen állsz?"; $("#wdClock").textContent="00:00";
-  $("#wdPause").disabled=true; $("#wdNextRep").disabled=true; $("#wdNextSet").disabled=true;
-  show("#woDetail");
+  document.getElementById('inpSets').value = 3;
+  document.getElementById('inpReps').value = 12;
+  document.getElementById('inpSecPerRep').value = 2;
+  document.getElementById('timer').textContent = '00:00';
+  document.getElementById('timerStatus').textContent = 'Indulhatunk!';
+  document.getElementById('timerLabel').textContent = 'Készen állsz?';
+
+  show('screen-exercise');
 }
 
-/* időzítő + pihenő + napló – (ugyanaz, mint korábban) */
-function beep(f=1100,ms=150){ try{ const ctx=new (window.AudioContext||window.webkitAudioContext)(); const o=ctx.createOscillator(), g=ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.value=f; g.gain.value=0.06; o.start(); setTimeout(()=>{o.stop(); ctx.close();}, ms);}catch{}}
-function clock(s){ $("#wdClock").textContent = `00:${String(s).padStart(2,"0")}`; }
+// —— egyszerű edzés időzítő
+let timerInt = null, t=0, phase='idle', curSet=1, totalSets=1, reps=12, secPerRep=2, rest=20;
+function fmt(s){const m=Math.floor(s/60),ss=String(s%60).padStart(2,'0');return `${String(m).padStart(2,'0')}:${ss}`}
 
-$("#wdStart").addEventListener("click", ()=>{
-  D.sets = Math.max(1, Math.min(10, Number($("#wdSets").value)||3));
-  D.reps = Math.max(1, Math.min(50, Number($("#wdReps").value)||12));
-  D.sec  = Math.max(1, Math.min(90, Number($("#wdSec").value)||2));
-  D.curSet=1; D.curRep=0; $("#wdState").textContent=`${D.curSet}. kör – ${D.reps} ism.`;
-  $("#wdPause").disabled=false; $("#wdNextRep").disabled=false; $("#wdNextSet").disabled=false;
-  nextRep();
-});
+function startTimer(){
+  totalSets = +document.getElementById('inpSets').value||1;
+  reps = +document.getElementById('inpReps').value||10;
+  secPerRep = +document.getElementById('inpSecPerRep').value||2;
+  rest = 20;
 
-function nextRep(){
-  D.running=true; let s=D.sec; clock(s);
-  clearInterval(D.t);
-  D.t=setInterval(()=>{
-    s--; clock(s); if(s<=0){
-      clearInterval(D.t); beep(); D.curRep++;
-      if(D.curRep>=D.reps){
-        D.curRep=0; D.curSet++;
-        if(D.curSet>D.sets){ finishExercise(); return; }
-        $("#wdState").textContent=`Pihenj (10 mp)…`; rest(10, ()=>{ $("#wdState").textContent=`${D.curSet}. kör – ${D.reps} ism.`; nextRep(); });
-      }else{
-        $("#wdState").textContent=`${D.curSet}. kör – ${D.curRep+1}/${D.reps} ism.`; nextRep();
+  phase='work'; t = reps*secPerRep;
+  curSet=1;
+  document.getElementById('timerStatus').textContent = `1. kör – ${reps} ismétlés`;
+  document.getElementById('timerLabel').textContent = 'Munka';
+  draw();
+
+  clearInterval(timerInt);
+  timerInt = setInterval(tick, 1000);
+}
+function tick(){
+  t--; draw();
+  if(t<=0){
+    if(phase==='work'){
+      if(curSet < totalSets){
+        phase='rest'; t=rest;
+        document.getElementById('timerLabel').textContent='Pihenő';
+        document.getElementById('timerStatus').textContent = `Pihenj ${rest} mp-et…`;
+      } else {
+        finished();
       }
+    } else if(phase==='rest'){
+      curSet++;
+      phase='work'; t=reps*secPerRep;
+      document.getElementById('timerLabel').textContent='Munka';
+      document.getElementById('timerStatus').textContent = `${curSet}. kör – ${reps} ismétlés`;
     }
-  },1000);
+  }
 }
-function rest(sec, cb){
-  let s=sec; clock(s); clearInterval(D.t);
-  D.t=setInterval(()=>{ s--; clock(s); if(s<=0){ clearInterval(D.t); cb(); } },1000);
+function draw(){ document.getElementById('timer').textContent = fmt(t); }
+function pauseTimer(){ if(timerInt){ clearInterval(timerInt); timerInt=null; document.getElementById('timerStatus').textContent='Szünet'; } }
+function nextTimer(){ pauseTimer(); finished(); }
+function finished(){
+  if(timerInt){ clearInterval(timerInt); timerInt=null; }
+  document.getElementById('timerLabel').textContent='Kész! 🎉';
+  document.getElementById('timer').textContent='00:00';
+  document.getElementById('timerStatus').textContent='Gratulálok! Léphetünk a következő gyakorlathoz vagy vissza a listához.';
+  S.done++; localStorage.setItem('done', S.done);
+  const today = new Date().toDateString();
+  const last = localStorage.getItem('lastDay');
+  if(last !== today){
+    S.streak++; localStorage.setItem('streak', S.streak); localStorage.setItem('lastDay', today);
+  }
 }
-$("#wdPause").addEventListener("click", ()=>{
-  if(!D.running){ nextRep(); $("#wdPause").textContent="Szünet"; D.running=true; return; }
-  clearInterval(D.t); D.running=false; $("#wdPause").textContent="Folytatás"; $("#wdState").textContent="Szünetel…";
+document.getElementById('btnStart').addEventListener('click', startTimer);
+document.getElementById('btnPause').addEventListener('click', pauseTimer);
+document.getElementById('btnNext').addEventListener('click', nextTimer);
+
+// —— kalória
+function renderFoods(){
+  const ul = document.getElementById('foodList');
+  ul.innerHTML='';
+  let sum=0;
+  S.foods.forEach((f,i)=>{
+    sum += f.kcal;
+    const li = document.createElement('li');
+    li.className='row';
+    li.innerHTML = `<div class="grow">${f.name}</div><div>${f.kcal} kcal</div><button class="btn" data-i="${i}">×</button>`;
+    li.querySelector('button').addEventListener('click', (e)=>{
+      const idx = +e.currentTarget.dataset.i;
+      S.foods.splice(idx,1);
+      localStorage.setItem('foods', JSON.stringify(S.foods));
+      renderFoods();
+    });
+    ul.appendChild(li);
+  });
+  document.getElementById('totalKcal').textContent = `${sum} kcal`;
+}
+document.getElementById('btnAddFood').addEventListener('click', ()=>{
+  const name = document.getElementById('foodName').value.trim();
+  const kcal = +(document.getElementById('foodKcal').value||0);
+  if(!name || !kcal) return;
+  S.foods.push({name, kcal});
+  localStorage.setItem('foods', JSON.stringify(S.foods));
+  document.getElementById('foodName').value='';
+  document.getElementById('foodKcal').value='';
+  renderFoods();
 });
-$("#wdNextRep").addEventListener("click", ()=>{ clearInterval(D.t); D.running=false; $("#wdState").textContent="Következő ismétlés…"; nextRep(); });
-$("#wdNextSet").addEventListener("click", ()=>{ clearInterval(D.t); D.running=false; D.curRep=D.reps; nextRep(); });
+document.getElementById('btnClearFood').addEventListener('click', ()=>{
+  if(confirm('Biztos törlöd a mai listát?')){
+    S.foods=[]; localStorage.setItem('foods','[]'); renderFoods();
+  }
+});
 
-function finishExercise(){
-  clearInterval(D.t); D.running=false; clock(0);
-  $("#wdState").textContent="Kész! 🎉";
-
-  const LOG="fit_log"; const today = new Date().toISOString().slice(0,10);
-  const all = JSON.parse(localStorage.getItem(LOG)||"{}");
-  all[today]=all[today]||{exercises:[], minutes:0, goal:(loadProf()?.goal||"fogyas")};
-  const ex = PLAN[D.i];
-  const seconds = (D.sets*D.reps*D.sec) + (D.sets-1)*10;
-  all[today].exercises.push({name:ex.name, sets:D.sets, reps:D.reps, seconds, doneAt:Date.now()});
-  all[today].minutes += Math.round(seconds/60);
-  localStorage.setItem(LOG, JSON.stringify(all));
-
-  const S="fit_stats"; const st=JSON.parse(localStorage.getItem(S)||"{}");
-  st.done=(st.done||0)+1;
-  const t0=new Date(new Date().toDateString()), y=new Date(t0); y.setDate(t0.getDate()-1);
-  const prev = st.last? new Date(st.last):null;
-  if(!prev) st.streak=1;
-  else if(prev.toDateString()===y.toDateString()) st.streak=(st.streak||0)+1;
-  else if(prev.toDateString()===t0.toDateString()) st.streak=(st.streak||0);
-  else st.streak=1;
-  st.last=t0.toISOString();
-  localStorage.setItem(S, JSON.stringify(st));
-
-  $("#modalTxt").textContent="Szép munka! Kész vagy ezzel a gyakorlattal. Lépj vissza és válaszd a következőt.";
-  $("#modal").classList.remove("hidden");
+// —— progress
+function renderProgress(){
+  document.getElementById('streakDays').textContent = `${S.streak} nap`;
+  document.getElementById('doneCount').textContent = S.done;
 }
-$("#modalOk").addEventListener("click", ()=>{ $("#modal").classList.add("hidden"); show("#workout"); });
 
-/* KALÓRIA + PROGRESSZ + CHAT ugyanaz, mint nálad — változatlanul hagyhatod */
+// —— chat
+function appendBubble(text, who='bot'){
+  const div = document.createElement('div');
+  div.className = `bubble ${who}`;
+  div.textContent = text;
+  document.getElementById('chatLog').appendChild(div);
+  document.getElementById('chatLog').scrollTop = 1e9;
+}
+appendBubble('Szia! Miben segíthetek a céloddal kapcsolatban? Van valami konkrét kérdésed?', 'bot');
+
+document.getElementById('chatSend').addEventListener('click', sendChat);
+document.getElementById('chatInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') sendChat(); });
+
+async function sendChat(){
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if(!msg) return;
+  appendBubble(msg, 'me'); input.value='';
+  try{
+    const res = await fetch('/.netlify/functions/ai-chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ prompt: msg, goal: S.goal || 'szalkasitas' })
+    });
+    const data = await res.json();
+    appendBubble(data.reply || 'Hopp, most nem sikerült választ kapni. Nézd meg a Netlify Functions logot.');
+  }catch(err){
+    appendBubble('Hiba történt a kérdés küldésekor. Ellenőrizd az internetet és az API kulcsot.');
+  }
+}
+
+// —— indulás
+show('screen-splash');
+if(S.goal && S.gender){
+  show('screen-home');
+  document.getElementById('activeGoal').textContent = `Aktuális cél: ${labelGoal(S.goal)} (${S.gender==='male'?'Férfi':'Nő'})`;
+}

@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>FitMate HU – indulás</title>
-  <meta name="description" content="Magyar fitneszapp: célválasztás, gyakorlatok, kalóriaszámláló, napi teljesítmény és AI chat.">
+  <title>FitMate HU</title>
+  <meta name="description" content="Magyar fitnesz app: célválasztás, edzésidőzítő, kalóriaszámláló, statisztika és magyar AI chat.">
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+
   <!-- Splash -->
-  <section id="screen-splash" class="screen screen--cover"
-           data-bg="assets/splash.jpg" aria-label="Üdvözlő képernyő">
+  <section id="screen-splash" class="screen screen--cover" data-bg="assets/kezdo.png" aria-label="Kezdő képernyő">
     <div class="overlay">
       <h1 class="brand">FitMate <span class="accent">HU</span></h1>
       <p class="tag">Magyar fitnesz – egyszerűen, szépen, okosan.</p>
@@ -19,8 +19,7 @@
   </section>
 
   <!-- Célválasztás -->
-  <section id="screen-goal" class="screen screen--cover hidden"
-           data-bg="assets/goal_fogyas.jpg" aria-label="Célválasztás">
+  <section id="screen-goal" class="screen screen--cover hidden" data-bg="assets/fogyas.png" aria-label="Célválasztás">
     <header class="topbar">
       <button class="link" data-nav="back-splash">← Vissza</button>
       <div class="spacer"></div>
@@ -32,17 +31,15 @@
       <p class="muted">Ezt később bármikor módosíthatod.</p>
 
       <div class="goal-grid">
-        <button class="goal-card" data-goal="fogyas" data-bg="assets/goal_fogyas.jpg">
+        <button class="goal-card" data-goal="fogyas" data-bg="assets/fogyas.png">
           <div class="goal-title">Fogyás</div>
           <div class="goal-sub">Zsírégetés, kíméletes tempó</div>
         </button>
-
-        <button class="goal-card" data-goal="szalkasitas" data-bg="assets/goal_szalkasitas.jpg">
+        <button class="goal-card" data-goal="szalkasitas" data-bg="assets/szalkasitas.png">
           <div class="goal-title">Szálkásítás</div>
           <div class="goal-sub">Deficit + tónusos izom</div>
         </button>
-
-        <button class="goal-card" data-goal="hizas" data-bg="assets/goal_hizas.jpg">
+        <button class="goal-card" data-goal="hizas" data-bg="assets/hizas.png">
           <div class="goal-title">Hízás</div>
           <div class="goal-sub">Izomtömeg növelés, szuficit</div>
         </button>
@@ -56,7 +53,7 @@
   <section id="screen-home" class="screen hidden" aria-label="Főmenü">
     <header class="home-head">
       <div>
-        <div class="hi">Üdv újra!</div>
+        <div class="hi">Üdv!</div>
         <div class="subtitle">Aktuális cél: <strong id="goalLabel">–</strong></div>
       </div>
       <button id="btnChangeGoal" class="chip">Cél módosítása</button>
@@ -65,25 +62,104 @@
     <main class="shell">
       <nav class="menu-grid">
         <a class="menu-card" href="#" data-open="workouts">
-          <div class="menu-title">Gyakorlatok</div>
-          <p class="muted">Képek, leírások, edzés indítása (időzítő jön a következő lépésben).</p>
+          <div class="menu-title">Edzés</div>
+          <p class="muted">Időzítő, pihenő, motiváció.</p>
         </a>
-
         <a class="menu-card" href="#" data-open="calories">
           <div class="menu-title">Kalóriaszámláló</div>
-          <p class="muted">Makrók és napi bevitel (v1: egyszerű).</p>
+          <p class="muted">Egyszerű napi bevitel (v1).</p>
         </a>
-
         <a class="menu-card" href="#" data-open="progress">
           <div class="menu-title">Napi teljesítmény</div>
-          <p class="muted">Jóváhagyott napok, becsült kcal, streak.</p>
+          <p class="muted">Streak és kész napok.</p>
         </a>
-
         <a class="menu-card" href="#" data-open="chat">
           <div class="menu-title">AI chat</div>
-          <p class="muted">Magyar tanácsok étrendhez és edzéshez.</p>
+          <p class="muted">Magyar edzés/étrend tanácsok.</p>
         </a>
       </nav>
+    </main>
+  </section>
+
+  <!-- Edzés képernyő -->
+  <section id="screen-workouts" class="screen hidden" aria-label="Edzés">
+    <header class="subbar">
+      <button class="link" data-back="home">← Vissza</button>
+      <h3>Napi edzésprogram</h3>
+      <div class="spacer"></div>
+    </header>
+
+    <main class="shell">
+      <div id="wo-plan" class="wo-plan"></div>
+
+      <div class="timer">
+        <div id="timerLabel" class="timer-label">Készen állsz?</div>
+        <div id="timerDisplay" class="timer-display">00:30</div>
+        <div class="timer-ctrls">
+          <button id="btnWoStart" class="btn">Start</button>
+          <button id="btnWoPause" class="btn btn-ghost" disabled>Szünet</button>
+          <button id="btnWoNext" class="btn btn-ghost" disabled>Következő</button>
+        </div>
+        <div id="timerNote" class="muted"></div>
+      </div>
+    </main>
+  </section>
+
+  <!-- Kalóriaszámláló -->
+  <section id="screen-calories" class="screen hidden" aria-label="Kalóriák">
+    <header class="subbar">
+      <button class="link" data-back="home">← Vissza</button>
+      <h3>Kalóriaszámláló (egyszerű v1)</h3>
+      <div class="spacer"></div>
+    </header>
+    <main class="shell">
+      <form id="kcalForm" class="kcal-form">
+        <input id="food" type="text" placeholder="Étkezés (pl. csirkemell, rizs)" required>
+        <input id="kcal" type="number" placeholder="kcal" required min="0">
+        <button class="btn" type="submit">Hozzáad</button>
+      </form>
+      <div id="kcalList" class="kcal-list"></div>
+      <div class="kpi">
+        <div>Napi összesen</div>
+        <strong id="kcalTotal">0 kcal</strong>
+      </div>
+    </main>
+  </section>
+
+  <!-- Napi teljesítmény -->
+  <section id="screen-progress" class="screen hidden" aria-label="Teljesítmény">
+    <header class="subbar">
+      <button class="link" data-back="home">← Vissza</button>
+      <h3>Teljesítmény</h3>
+      <div class="spacer"></div>
+    </header>
+    <main class="shell">
+      <div class="kpi">
+        <div>Folyamatos napok (streak)</div>
+        <strong id="streakVal">0 nap</strong>
+      </div>
+      <div class="kpi">
+        <div>Összes befejezett edzés</div>
+        <strong id="doneCount">0</strong>
+      </div>
+      <p class="muted">Az értékek az eszközödön tárolódnak (LocalStorage).</p>
+    </main>
+  </section>
+
+  <!-- AI chat -->
+  <section id="screen-chat" class="screen hidden" aria-label="AI chat">
+    <header class="subbar">
+      <button class="link" data-back="home">← Vissza</button>
+      <h3>AI chat (magyar)</h3>
+      <div class="spacer"></div>
+    </header>
+    <main class="shell">
+      <div id="chatLog" class="chat-log" aria-live="polite"></div>
+      <form id="chatForm" class="chat-form">
+        <input id="chatInput" type="text" placeholder="Írj ide (pl. adj 4 napos szálkásító edzéstervet)" required autocomplete="off">
+        <button class="btn" type="submit">Küldés</button>
+      </form>
+      <p class="muted">A válaszok a kiválasztott célodhoz igazodnak.</p>
     </main>
   </section>
 

@@ -1,96 +1,48 @@
-:root{
-  --bg:#0b1220; --muted:#a9b7d6; --text:#eaf1ff;
-  --accent:#ff4da6; --accent2:#6dd6ff; --card:#121a2a;
+/* Alap stílusok */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: #fff;
 }
-*{box-sizing:border-box} html,body{height:100%}
-body{margin:0; font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto; color:var(--text); background:var(--bg)}
 
-.hidden{display:none}
-.shell{width:min(1100px,94%); margin-inline:auto}
-
-.brand{font-size:clamp(28px,5vw,56px); margin:0}
-.tag{margin:.3rem 0 1.2rem; color:var(--muted)}
-.accent{color:var(--accent2)}
-.btn{background:var(--accent); color:#08131d; border:none; padding:10px 18px; border-radius:12px; font-weight:700; cursor:pointer}
-.btn-lg{padding:14px 22px; border-radius:16px; font-size:1.05rem}
-.btn-full{width:100%}
-.btn-ghost{background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.25)}
-
-.link{background:transparent; border:1px solid rgba(255,255,255,.25); color:var(--text); padding:6px 10px; border-radius:999px; cursor:pointer}
-.spacer{flex:1}
-
-.screen{position:relative; min-height:100dvh; display:flex; flex-direction:column}
-.screen--cover{
-  background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(255,255,255,.04), transparent 60%),
-    radial-gradient(1000px 500px at 110% 10%, rgba(255,255,255,.03), transparent 60%),
-    linear-gradient(180deg, #0b1220 0%, #16233b 100%);
-  background-size:cover; background-position:center;
+/* ---- Képernyő váltás: csak az .active látszik ---- */
+.screen {
+  display: none !important;
+  min-height: 100dvh;
+  position: relative;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
-.overlay{
-  z-index:1; margin:auto; padding:24px; width:min(960px,94%);
-  display:flex; flex-direction:column; align-items:center; text-align:center;
+.screen.active {
+  display: flex !important;
 }
-.overlay.narrow{width:min(720px,92%)}
 
-.topbar, .subbar{
-  position:sticky; top:0; display:flex; align-items:center; gap:8px;
-  padding:10px 12px; background:rgba(11,18,32,.8); backdrop-filter: blur(6px);
-  border-bottom:1px solid rgba(255,255,255,.08); z-index:2;
+/* Cover képernyők */
+.screen--cover {
+  background-size: cover;
+  background-position: center;
 }
-.topbar h3, .subbar h3{margin:0}
-
-.goal-grid{display:grid; gap:12px; grid-template-columns: repeat(3, 1fr); margin:14px 0}
-@media (max-width:900px){ .goal-grid{grid-template-columns: 1fr} }
-.goal-card{
-  text-align:left; padding:18px; border-radius:16px;
-  background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
-  border:1px solid rgba(255,255,255,.1); cursor:pointer;
-  transition: transform .15s ease, box-shadow .2s ease;
+.overlay {
+  background: rgba(0,0,0,0.6);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
 }
-.goal-card:hover{ transform: translateY(-2px); box-shadow:0 10px 30px rgba(0,0,0,.35) }
-.goal-title{font-weight:800; font-size:1.2rem}
-.goal-sub{color:var(--muted)}
 
-.home-head{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:16px; background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-  border-bottom:1px solid rgba(255,255,255,.08);
+/* Gombok */
+button {
+  background: #ff4081;
+  border: none;
+  padding: 14px 24px;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 8px 0;
 }
-.hi{opacity:.9}
-.subtitle{color:var(--muted)}
-.chip{background:transparent; border:1px solid rgba(255,255,255,.25); padding:6px 10px; border-radius:999px; color:var(--text); cursor:pointer}
-
-.menu-grid{display:grid; gap:14px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); padding:16px}
-.menu-card{display:block; text-decoration:none; color:var(--text); padding:16px; border-radius:16px;
-  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-  border:1px solid rgba(255,255,255,.1)}
-.menu-card:hover{outline:2px solid rgba(109,214,255,.25)}
-.menu-title{font-weight:800; margin-bottom:6px}
-.muted{color:var(--muted)}
-
-/* Edzés */
-.wo-plan{display:grid; gap:10px; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); padding:16px}
-.wo-item{background:#0f1728; border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:12px}
-.wo-item h4{margin:.2rem 0}
-.wo-meta{color:var(--muted); font-size:.9rem}
-.timer{margin:6px 16px 20px; text-align:center; background:#0f1728; border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:14px}
-.timer-display{font-weight:900; font-size:48px; letter-spacing:1px}
-.timer-label{font-weight:700; margin-bottom:6px}
-
-/* Kalória */
-.kcal-form{display:flex; gap:8px; padding:16px; flex-wrap:wrap}
-.kcal-form input{flex:1; min-width:180px; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,.2); background:#0f1728; color:var(--text)}
-.kcal-list{padding:0 16px 16px}
-.kcal-row{display:flex; justify-content:space-between; padding:10px; border-bottom:1px dotted rgba(255,255,255,.15)}
-.kpi{display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px 16px; background:#0f1728; border:1px solid rgba(255,255,255,.08); border-radius:12px; margin:0 16px 14px}
-
-/* Chat */
-.chat-log{height:50vh; overflow:auto; background:#0f1728; border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:10px; margin:16px 0}
-.msg{margin:6px 0; display:flex; gap:8px}
-.msg.me{justify-content:flex-end}
-.bubble{max-width:70%; padding:10px 12px; border-radius:12px}
-.me .bubble{background:var(--accent2); color:#00111a}
-.ai .bubble{background:#121b2d; border:1px solid rgba(255,255,255,.1)}
-.chat-form{display:flex; gap:8px; align-items:center}
-.chat-form input{flex:1; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,.2); background:#0f1728; color:var(--text)}
+button:hover {
+  background: #e73370;
+}

@@ -1,10 +1,9 @@
-// CommonJS szintaxis Netlify Functions-hoz
-exports.handler = async (event, context) => {
+// Netlify Functions (Node 18+) – natív fetch használat
+exports.handler = async (event) => {
   const cors = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type",
   };
-
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 200, headers: cors, body: "" };
   }
@@ -14,16 +13,18 @@ exports.handler = async (event, context) => {
 
   try {
     const { prompt, goal } = JSON.parse(event.body || "{}");
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error("Hiányzik az OPENAI_API_KEY környezeti változó.");
+    }
     if (!prompt) {
-      return { statusCode: 400, headers: cors, body: JSON.stringify({ reply: "Kérlek írj egy kérdést." }) };
+      return { statusCode: 200, headers: cors, body: JSON.stringify({ reply: "Írj valamit a mezőbe ✍️" }) };
     }
 
-    const sys = `Magyar személyi edző és dietetikus asszisztens vagy.
-Stílus: rövid, érthető, bátorító. Cél: ${goal||"fogyas"}.
-Ha edzéstervet kérnek: sorozatok/körök, ismétlés, pihenő, forma-tanácsok.
-Étel esetén: makrók, csereötletek, olcsó alternatívák.`;
+    const system = `Magyar személyi edző és dietetikus asszisztens vagy.
+Válaszolj röviden, érthetően, pontokba szedve.
+Felhasználó célja: ${goal || "ismeretlen"}.`;
 
-    const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+    const r = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -32,23 +33,24 @@ Ha edzéstervet kérnek: sorozatok/körök, ismétlés, pihenő, forma-tanácsok
       body: JSON.stringify({
         model: "gpt-4o-mini",
         messages: [
-          { role: "system", content: sys },
+          { role: "system", content: system },
           { role: "user", content: prompt }
         ],
-        temperature: 0.7,
+        temperature: 0.6,
         max_tokens: 500
       })
     });
 
-    if (!resp.ok) {
-      const txt = await resp.text();
-      return { statusCode: 500, headers: cors, body: JSON.stringify({ reply: "Chat hiba.", error: txt }) };
+    if (!r.ok) {
+      const e = await r.text();
+      return { statusCode: 200, headers: cors, body: JSON.stringify({ reply: "Chat hiba. Nézd meg a Netlify logot.", error: e }) };
     }
 
-    const data = await resp.json();
-    const reply = data.choices?.[0]?.message?.content?.trim() || "Nincs válasz.";
+    const j = await r.json();
+    const reply = j.choices?.[0]?.message?.content?.trim() || "—";
     return { statusCode: 200, headers: cors, body: JSON.stringify({ reply }) };
-  } catch (e) {
-    return { statusCode: 500, headers: cors, body: JSON.stringify({ reply: "Szerver hiba.", error: e.message }) };
+
+  } catch (err) {
+    return { statusCode: 200, headers: cors, body: JSON.stringify({ reply: `Hiba: ${err.message}` }) };
   }
 };

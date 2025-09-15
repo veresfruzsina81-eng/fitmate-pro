@@ -1,3 +1,98 @@
+/* ========= HOTFIX blokk: magyar címek + biztonságos lista ========= */
+
+const HU_META = {
+  // Hízás – Férfi
+  'hizas1.mp4':   { title: 'Fekvőtámasz', desc: 'Mell és tricepsz erősítése.' },
+  'hizas2.mp4':   { title: 'V alakú előrehajlás', desc: 'Core és mobilitás fejlesztése.' },
+  'hizas3.mp4':   { title: 'Guggolásból felugrás', desc: 'Robbanékonyság, alsótest.' },
+  'hizas4.mp4':   { title: 'Plank kézváltással', desc: 'Váll-stabilitás, core.' },
+  'hizas5.mp4':   { title: 'Fekvőtámaszból felugrás (burpee)', desc: 'Teljes test, pulzusemelő.' },
+
+  // Hízás – Nő
+  'hizas_w1.mp4': { title: 'Csípőemelés fekve', desc: 'Farizom és combhajlító.' },
+  'hizas_w2.mp4': { title: 'Guggolás terpeszben', desc: 'Comb és farizom, folyamatos.' },
+  'hizas_w3.mp4': { title: 'Térdelő fekvőtámasz', desc: 'Könnyített mell- és karerősítés.' },
+  'hizas_w4.mp4': { title: 'Oldalfekvés lábemeléssel', desc: 'Külső comb, farizom.' },
+  'hizas_w5.mp4': { title: 'Váltott láb plank helyzetben', desc: 'Core és csípőmobilitás.' },
+
+  // Szálkásítás – Férfi
+  'szalkasitas1.mp4': { title: 'Fekvőtámasz', desc: 'Mell és tricepsz.' },
+  'szalkasitas2.mp4': { title: 'Plank', desc: 'Core tartás.' },
+  'szalkasitas3.mp4': { title: 'Egylábas kitörés', desc: 'Comb és far.' },
+  'szalkasitas4.mp4': { title: 'Oldaltartás (könyökön plank)', desc: 'Ferde hasizom.' },
+  'szalkasitas5.mp4': { title: 'Guggolás felrúgással', desc: 'Teljes test, pulzus.' },
+
+  // Szálkásítás – Nő
+  'szalkasitas_w1.mp4': { title: 'Csípőemelés fekve', desc: 'Farizom és combhajlító.' },
+  'szalkasitas_w2.mp4': { title: 'Mountain climber', desc: 'Core és cardio egyszerre.' },
+  'szalkasitas_w3.mp4': { title: 'Terpeszugrás kéznyújtással', desc: 'Kardió, vállöv.' },
+  'szalkasitas_w4.mp4': { title: 'Fekvőtámasz tartás', desc: 'Statikus core és váll.' },
+  'szalkasitas_w5.mp4': { title: 'Terpesz guggolás súllyal', desc: 'Comb és far; súlyzó nélkül is végezhető.' },
+
+  // Fogyás – Férfi
+  'fogyas1.mp4': { title: 'Terpeszugrás kézemeléssel', desc: 'Alap kardió, bemelegítésnek is jó.' },
+  'fogyas2.mp4': { title: 'Magastérdemelés kézmagasságig', desc: 'Cardio, core.' },
+  'fogyas3.mp4': { title: 'Burpee', desc: 'Teljes test, pulzusemelő.' },
+  'fogyas4.mp4': { title: 'Mountain climber előre-hátra', desc: 'Core és cardio.' },
+  'fogyas5.mp4': { title: 'Guggolásból felugrás', desc: 'Alsótest, cardio.' },
+
+  // Fogyás – Nő
+  'fogyas_w1.mp4': { title: 'Guggolás terpeszben', desc: 'Comb és farizom.' },
+  'fogyas_w2.mp4': { title: 'Csípőemelés fekve', desc: 'Farizom, hamstring.' },
+  'fogyas_w3.mp4': { title: 'Oldalsó ugrás keresztezve', desc: 'Cardio, koordináció.' },
+  'fogyas_w4.mp4': { title: 'Guggolásból felugrás', desc: 'Alsótest, cardio.' },
+  'fogyas_w5.mp4': { title: 'Ugrókötél', desc: 'Állóképesség fejlesztése.' }
+};
+
+// Normálás
+function normGoal(t) {
+  const s = (t||'').toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu,'');
+  if (s.includes('szalk')) return 'szalkasitas';
+  if (s.includes('fogy')) return 'fogyas';
+  return 'hizas';
+}
+function normGender(t) {
+  const s = (t||'').toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu,'');
+  return s.includes('ferfi') ? 'ferfi' : 'no';
+}
+
+// Biztos listaépítés
+function getExercisesSafe() {
+  const goal = normGoal(localStorage.getItem('goalLabel') || 'Hízás');
+  const gender = normGender(localStorage.getItem('genderLabel') || 'Férfi');
+  const base = (EXERCISES[goal] && EXERCISES[goal][gender]) || [];
+  return base.map(x => ({ ...x, ...HU_META[x.file] }));
+}
+
+// Renderelő
+function renderExerciseList() {
+  const list = getExercisesSafe();
+  const el = document.getElementById('exerciseList');
+  el.innerHTML = '';
+  list.forEach((it, i) => {
+    const b = document.createElement('button');
+    b.className = 'exercise-card';
+    b.innerHTML = `
+      <div class="ex-index">#${i+1}</div>
+      <div class="ex-title">${it.title}</div>
+      <div class="ex-hint">${it.desc}</div>
+    `;
+    b.onclick = () => openExerciseModal(it);
+    el.appendChild(b);
+  });
+}
+
+function openExerciseModal(item) {
+  document.getElementById('exTitle').textContent = item.title;
+  document.getElementById('exDesc').textContent = item.desc || '';
+  const v = document.getElementById('exVideo');
+  v.loop = true; v.muted = true; v.playsInline = true;
+  v.src = item.file + '?v=' + Date.now();
+  v.play().catch(()=>{});
+  document.getElementById('exerciseModal').classList.add('open');
+}
+/* ========= HOTFIX vége ========= */
+
 // ---------- állapot ----------
 const state = {
   goal: localStorage.getItem('goal') || 'fogyas',

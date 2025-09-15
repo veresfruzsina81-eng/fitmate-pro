@@ -4,165 +4,142 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>FitMate HU</title>
-  <meta name="description" content="Magyar fitnesz app: célválasztás, edzésidőzítő, kalóriaszámláló, statisztika és magyar AI chat.">
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-  <!-- Splash -->
-  <section id="screen-splash" class="screen screen--cover" data-bg="assets/kezdo.png" aria-label="Kezdő képernyő">
+  <!-- SPLASH -->
+  <section id="screen-splash" class="screen screen--cover" style="background-image: linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.65)), url('assets/kezdo.png');">
     <div class="overlay">
-      <h1 class="brand">FitMate <span class="accent">HU</span></h1>
-      <p class="tag">Magyar fitnesz – egyszerűen, szépen, okosan.</p>
-      <button id="btnStart" class="btn btn-lg">Kezdjük</button>
+      <h1>FitMate <span style="color:#6dd6ff">HU</span></h1>
+      <p>Magyar fitnesz – egyszerűen, szépen, okosan.</p>
+      <button id="btn-start">Kezdjük</button>
     </div>
   </section>
 
-  <!-- Célválasztás -->
-  <section id="screen-goal" class="screen screen--cover hidden" data-bg="assets/fogyas.png" aria-label="Célválasztás">
-    <header class="topbar">
-      <button class="link" data-nav="back-splash">← Vissza</button>
-      <div class="spacer"></div>
-      <button class="link" data-nav="skip-goal">Kihagyom</button>
-    </header>
-
-    <div class="overlay narrow">
+  <!-- CÉLVÁLASZTÁS -->
+  <section id="screen-goal" class="screen screen--cover" style="background-image: linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.65)), url('assets/fogyas.png');">
+    <div class="overlay">
+      <button class="btn-back-menu" style="position:absolute;left:16px;top:16px;background:transparent;border:1px solid rgba(255,255,255,.3);border-radius:24px;padding:8px 14px">← Vissza</button>
       <h2>Válaszd ki a célod</h2>
-      <p class="muted">Ezt később bármikor módosíthatod.</p>
+      <p>Ezt később bármikor módosíthatod.</p>
 
-      <div class="goal-grid">
-        <button class="goal-card" data-goal="fogyas" data-bg="assets/fogyas.png">
-          <div class="goal-title">Fogyás</div>
-          <div class="goal-sub">Zsírégetés, kíméletes tempó</div>
+      <div style="display:grid;gap:12px;grid-template-columns:1fr;max-width:520px;width:100%">
+        <button id="goal-fogyas" style="text-align:left;padding:16px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15)"> 
+          <strong>Fogyás</strong><br><span style="opacity:.8">Zsírégetés, kíméletes tempó</span>
         </button>
-        <button class="goal-card" data-goal="szalkasitas" data-bg="assets/szalkasitas.png">
-          <div class="goal-title">Szálkásítás</div>
-          <div class="goal-sub">Deficit + tónusos izom</div>
+        <button id="goal-szalkasitas" style="text-align:left;padding:16px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15)">
+          <strong>Szálkásítás</strong><br><span style="opacity:.8">Deficit + tónusos izom</span>
         </button>
-        <button class="goal-card" data-goal="hizas" data-bg="assets/hizas.png">
-          <div class="goal-title">Hízás</div>
-          <div class="goal-sub">Izomtömeg növelés, szuficit</div>
+        <button id="goal-hizas" style="text-align:left;padding:16px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15)">
+          <strong>Hízás</strong><br><span style="opacity:.8">Izomtömeg növelés, szuficit</span>
         </button>
       </div>
 
-      <button id="btnToHome" class="btn btn-lg btn-full" disabled>Tovább a főmenübe</button>
+      <button id="btn-goal-next" style="margin-top:12px">Tovább a főmenübe</button>
     </div>
   </section>
 
-  <!-- Főmenü -->
-  <section id="screen-home" class="screen hidden" aria-label="Főmenü">
-    <header class="home-head">
-      <div>
-        <div class="hi">Üdv!</div>
-        <div class="subtitle">Aktuális cél: <strong id="goalLabel">–</strong></div>
-      </div>
-      <button id="btnChangeGoal" class="chip">Cél módosítása</button>
-    </header>
+  <!-- FŐMENÜ -->
+  <section id="screen-mainmenu" class="screen">
+    <div style="width:min(1100px,94%);margin-inline:auto">
+      <h2>Főmenü</h2>
+      <div style="margin:.4rem 0 1rem;color:#a9b7d6">Válassz funkciót:</div>
 
-    <main class="shell">
-      <nav class="menu-grid">
-        <a class="menu-card" href="#" data-open="workouts">
-          <div class="menu-title">Edzés</div>
-          <p class="muted">Időzítő, pihenő, motiváció.</p>
-        </a>
-        <a class="menu-card" href="#" data-open="calories">
-          <div class="menu-title">Kalóriaszámláló</div>
-          <p class="muted">Egyszerű napi bevitel (v1).</p>
-        </a>
-        <a class="menu-card" href="#" data-open="progress">
-          <div class="menu-title">Napi teljesítmény</div>
-          <p class="muted">Streak és kész napok.</p>
-        </a>
-        <a class="menu-card" href="#" data-open="chat">
-          <div class="menu-title">AI chat</div>
-          <p class="muted">Magyar edzés/étrend tanácsok.</p>
-        </a>
-      </nav>
-    </main>
+      <div style="display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))">
+        <button id="btn-edzes" class="menu-card">
+          <div style="font-weight:800;margin-bottom:6px">Edzés</div>
+          <div style="color:#a9b7d6">Időzítő, pihenő, motiváció.</div>
+        </button>
+
+        <button id="btn-kaloria" class="menu-card">
+          <div style="font-weight:800;margin-bottom:6px">Kalóriaszámláló</div>
+          <div style="color:#a9b7d6">Egyszerű napi bevitel (v1).</div>
+        </button>
+
+        <button id="btn-teljesitmeny" class="menu-card">
+          <div style="font-weight:800;margin-bottom:6px">Napi teljesítmény</div>
+          <div style="color:#a9b7d6">Streak és kész napok.</div>
+        </button>
+
+        <button id="btn-chat" class="menu-card">
+          <div style="font-weight:800;margin-bottom:6px">AI chat</div>
+          <div style="color:#a9b7d6">Magyar edzés/étrend tanácsok.</div>
+        </button>
+      </div>
+    </div>
   </section>
 
-  <!-- Edzés képernyő -->
-  <section id="screen-workouts" class="screen hidden" aria-label="Edzés">
-    <header class="subbar">
-      <button class="link" data-back="home">← Vissza</button>
-      <h3>Napi edzésprogram</h3>
-      <div class="spacer"></div>
-    </header>
+  <!-- EDZÉS -->
+  <section id="screen-edzes" class="screen">
+    <div style="width:min(900px,94%);margin-inline:auto">
+      <button class="btn-back-menu">← Vissza</button>
+      <h2>Napi edzésprogram</h2>
 
-    <main class="shell">
-      <div id="wo-plan" class="wo-plan"></div>
+      <div id="edzes-status" style="margin:.5rem 0;color:#a9b7d6">Készen állsz?</div>
+      <div id="edzes-timer" style="font-size:56px;font-weight:900;letter-spacing:2px">00:30</div>
 
-      <div class="timer">
-        <div id="timerLabel" class="timer-label">Készen állsz?</div>
-        <div id="timerDisplay" class="timer-display">00:30</div>
-        <div class="timer-ctrls">
-          <button id="btnWoStart" class="btn">Start</button>
-          <button id="btnWoPause" class="btn btn-ghost" disabled>Szünet</button>
-          <button id="btnWoNext" class="btn btn-ghost" disabled>Következő</button>
-        </div>
-        <div id="timerNote" class="muted"></div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:10px">
+        <button id="btn-edzes-start">Start</button>
+        <button id="btn-edzes-pause" style="background:transparent;border:1px solid rgba(255,255,255,.3)">Szünet</button>
+        <button id="btn-edzes-next" style="background:transparent;border:1px solid rgba(255,255,255,.3)">Következő</button>
       </div>
-    </main>
+    </div>
   </section>
 
-  <!-- Kalóriaszámláló -->
-  <section id="screen-calories" class="screen hidden" aria-label="Kalóriák">
-    <header class="subbar">
-      <button class="link" data-back="home">← Vissza</button>
-      <h3>Kalóriaszámláló (egyszerű v1)</h3>
-      <div class="spacer"></div>
-    </header>
-    <main class="shell">
-      <form id="kcalForm" class="kcal-form">
-        <input id="food" type="text" placeholder="Étkezés (pl. csirkemell, rizs)" required>
-        <input id="kcal" type="number" placeholder="kcal" required min="0">
-        <button class="btn" type="submit">Hozzáad</button>
-      </form>
-      <div id="kcalList" class="kcal-list"></div>
-      <div class="kpi">
+  <!-- KALÓRIASZÁMLÁLÓ -->
+  <section id="screen-kaloria" class="screen">
+    <div style="width:min(900px,94%);margin-inline:auto">
+      <button class="btn-back-menu">← Vissza</button>
+      <h2>Kalóriaszámláló (egyszerű v1)</h2>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+        <input id="kaloria-nev" type="text" placeholder="Étkezés (pl. csirkemell, rizs)" style="flex:1;min-width:200px;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:#0f1728;color:#fff">
+        <input id="kaloria-kcal" type="number" placeholder="kcal" style="width:120px;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:#0f1728;color:#fff">
+        <button id="btn-kaloria-add">Hozzáad</button>
+      </div>
+
+      <ul id="kaloria-list" style="list-style:none;padding:0;margin:14px 0 0"></ul>
+
+      <div style="margin-top:12px;background:#0f1728;border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center">
         <div>Napi összesen</div>
-        <strong id="kcalTotal">0 kcal</strong>
+        <strong id="kaloria-sum">0</strong>&nbsp;kcal
       </div>
-    </main>
+    </div>
   </section>
 
-  <!-- Napi teljesítmény -->
-  <section id="screen-progress" class="screen hidden" aria-label="Teljesítmény">
-    <header class="subbar">
-      <button class="link" data-back="home">← Vissza</button>
-      <h3>Teljesítmény</h3>
-      <div class="spacer"></div>
-    </header>
-    <main class="shell">
-      <div class="kpi">
+  <!-- TELJESÍTMÉNY -->
+  <section id="screen-teljesitmeny" class="screen">
+    <div style="width:min(900px,94%);margin-inline:auto">
+      <button class="btn-back-menu">← Vissza</button>
+      <h2>Teljesítmény</h2>
+      <div style="margin-top:10px;background:#0f1728;border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:12px;display:flex;justify-content:space-between">
         <div>Folyamatos napok (streak)</div>
-        <strong id="streakVal">0 nap</strong>
+        <strong id="streak-val">0 nap</strong>
       </div>
-      <div class="kpi">
+      <div style="margin-top:10px;background:#0f1728;border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:12px;display:flex;justify-content:space-between">
         <div>Összes befejezett edzés</div>
-        <strong id="doneCount">0</strong>
+        <strong id="done-count">0</strong>
       </div>
-      <p class="muted">Az értékek az eszközödön tárolódnak (LocalStorage).</p>
-    </main>
+      <p style="color:#a9b7d6;margin-top:12px">Az értékek az eszközödön tárolódnak (LocalStorage).</p>
+    </div>
   </section>
 
-  <!-- AI chat -->
-  <section id="screen-chat" class="screen hidden" aria-label="AI chat">
-    <header class="subbar">
-      <button class="link" data-back="home">← Vissza</button>
-      <h3>AI chat (magyar)</h3>
-      <div class="spacer"></div>
-    </header>
-    <main class="shell">
-      <div id="chatLog" class="chat-log" aria-live="polite"></div>
-      <form id="chatForm" class="chat-form">
-        <input id="chatInput" type="text" placeholder="Írj ide (pl. adj 4 napos szálkásító edzéstervet)" required autocomplete="off">
-        <button class="btn" type="submit">Küldés</button>
+  <!-- AI CHAT (UI váz) -->
+  <section id="screen-chat" class="screen">
+    <div style="width:min(900px,94%);margin-inline:auto">
+      <button class="btn-back-menu">← Vissza</button>
+      <h2>AI chat (magyar)</h2>
+      <div id="chat-log" style="height:50vh;overflow:auto;background:#0f1728;border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:12px;margin:12px 0"></div>
+      <form id="chat-form" style="display:flex;gap:8px">
+        <input id="chat-input" type="text" placeholder="Írj ide (pl. adj 4 napos edzéstervet)" required
+               style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:#0f1728;color:#fff">
+        <button type="submit">Küldés</button>
       </form>
-      <p class="muted">A válaszok a kiválasztott célodhoz igazodnak.</p>
-    </main>
+      <p style="color:#a9b7d6">A válaszok a kiválasztott célodhoz igazodnak.</p>
+    </div>
   </section>
 
-  <script src="app.js" defer></script>
+  <script src="app.js"></script>
 </body>
 </html>

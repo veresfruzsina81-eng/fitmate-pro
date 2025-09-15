@@ -11,26 +11,26 @@
   <!-- Splash / Kezdő -->
   <section id="screen-home" class="screen visible">
     <div class="bg" style="--bg:url('kezdo.png')"></div>
-    <div class="overlay">
+    <div class="scrim dark"></div>
+    <div class="overlay center-col">
       <h1>FitMate <span class="accent">HU</span></h1>
-      <p>Magyar fitnesz – egyszerűen, szépen, okosan.</p>
-      <div class="row gap">
-        <button class="primary" data-target="screen-goal">Kezdjük</button>
-        <button class="ghost" data-target="screen-menu">Ugrás a főmenübe</button>
-      </div>
+      <p class="lead">Magyar fitnesz – egyszerűen, szépen, okosan.</p>
+      <!-- EGY gomb: Splash -> Célválasztó -->
+      <button class="primary" data-target="screen-goal">Tovább</button>
     </div>
   </section>
 
   <!-- Célválasztó -->
   <section id="screen-goal" class="screen">
     <div class="bg" id="goalBg"></div>
+    <div class="scrim strong"></div>
     <div class="overlay">
       <h2>Válaszd ki a célod</h2>
       <p class="muted">Ezt később bármikor módosíthatod.</p>
 
       <div class="goal-list">
         <button class="goal" data-goal="fogyas">
-          <img src="fogyas.png" alt="Fogyás hátter" class="thumb"/>
+          <img src="fogyas.png" alt="Fogyás" class="thumb"/>
           <div>
             <div class="g-title">Fogyás</div>
             <div class="g-sub">Zsírégetés, kíméletes tempó</div>
@@ -38,7 +38,7 @@
         </button>
 
         <button class="goal" data-goal="szalkasitas">
-          <img src="szalkasitas.png" alt="Szálkásítás hátter" class="thumb"/>
+          <img src="szalkasitas.png" alt="Szálkásítás" class="thumb"/>
           <div>
             <div class="g-title">Szálkásítás</div>
             <div class="g-sub">Deficit + tónusos izom</div>
@@ -46,7 +46,7 @@
         </button>
 
         <button class="goal" data-goal="hizas">
-          <img src="hizas.png" alt="Hízás hátter" class="thumb"/>
+          <img src="hizas.png" alt="Hízás" class="thumb"/>
           <div>
             <div class="g-title">Hízás</div>
             <div class="g-sub">Izomtömeg növelés, szuficit</div>
@@ -68,41 +68,45 @@
 
   <!-- Főmenü -->
   <section id="screen-menu" class="screen">
-    <div class="bg dim"></div>
-    <header class="top">
-      <div>
-        <div class="muted small">Üdv!</div>
-        <div id="currentGoal" class="pill">Cél: –</div>
-      </div>
-      <div class="row gap">
-        <button class="ghost" data-target="screen-goal">Cél módosítása</button>
-        <button class="ghost" data-target="screen-home">Kezdő</button>
-      </div>
-    </header>
+    <div class="bg" id="menuBg"></div>
+    <div class="scrim dim"></div>
+    <div class="overlay">
+      <header class="top">
+        <div>
+          <div class="muted small">Üdv!</div>
+          <div id="currentGoal" class="pill">Cél: –</div>
+        </div>
+        <div class="row gap">
+          <button class="ghost" data-target="screen-goal">Cél módosítása</button>
+          <button class="ghost" data-target="screen-home">Kezdő</button>
+        </div>
+      </header>
 
-    <div class="grid">
-      <button class="tile" data-target="screen-workout">
-        <div class="tile-title">Edzés</div>
-        <div class="tile-sub">Válassz gyakorlatot, időzítővel.</div>
-      </button>
-      <button class="tile" data-target="screen-cal">
-        <div class="tile-title">Kalóriaszámláló</div>
-        <div class="tile-sub">Egyszerű napi bevitel.</div>
-      </button>
-      <button class="tile" data-target="screen-progress">
-        <div class="tile-title">Napi teljesítmény</div>
-        <div class="tile-sub">Streak és kész napok.</div>
-      </button>
-      <button class="tile" data-target="screen-chat">
-        <div class="tile-title">AI chat</div>
-        <div class="tile-sub">Magyar tanácsok.</div>
-      </button>
+      <div class="grid">
+        <button class="tile" data-target="screen-workout">
+          <div class="tile-title">Edzés</div>
+          <div class="tile-sub">Válassz gyakorlatot, időzítővel.</div>
+        </button>
+        <button class="tile" data-target="screen-cal">
+          <div class="tile-title">Kalóriaszámláló</div>
+          <div class="tile-sub">Egyszerű napi bevitel.</div>
+        </button>
+        <button class="tile" data-target="screen-progress">
+          <div class="tile-title">Napi teljesítmény</div>
+          <div class="tile-sub">Streak és kész napok.</div>
+        </button>
+        <button class="tile" data-target="screen-chat">
+          <div class="tile-title">AI chat</div>
+          <div class="tile-sub">Magyar tanácsok.</div>
+        </button>
+      </div>
     </div>
   </section>
 
   <!-- Edzés -->
   <section id="screen-workout" class="screen">
     <div class="bg" id="workoutBg"></div>
+    <div class="scrim strong"></div>
     <div class="overlay scroll">
       <h2>Napi edzés</h2>
       <p class="muted">Válassz gyakorlatot a célod alapján. (5 db / kategória)</p>
@@ -127,7 +131,7 @@
         <div class="timer card center">
           <div id="timerState" class="muted">Készen állsz?</div>
           <div id="timerClock" class="clock">00:00</div>
-          <div class="row gap">
+          <div class="row gap center">
             <button id="btnStart" class="primary">Start</button>
             <button id="btnPause" class="ghost">Szünet</button>
             <button id="btnFinish" class="ghost">Befejez</button>
@@ -141,7 +145,7 @@
 
   <!-- Kalóriaszámláló -->
   <section id="screen-cal" class="screen">
-    <div class="bg dim"></div>
+    <div class="bg" style="--bg:linear-gradient(180deg,#0b0d12,#141826)"></div>
     <div class="overlay scroll">
       <h2>Kalóriaszámláló</h2>
       <div class="row gap wrap">
@@ -156,7 +160,7 @@
 
   <!-- Teljesítmény -->
   <section id="screen-progress" class="screen">
-    <div class="bg dim"></div>
+    <div class="bg" style="--bg:linear-gradient(180deg,#0b0d12,#141826)"></div>
     <div class="overlay">
       <h2>Teljesítmény</h2>
       <div class="card row spread">
@@ -173,7 +177,7 @@
 
   <!-- AI chat -->
   <section id="screen-chat" class="screen">
-    <div class="bg dim"></div>
+    <div class="bg" style="--bg:linear-gradient(180deg,#0b0d12,#141826)"></div>
     <div class="overlay">
       <h2>AI chat (magyar)</h2>
       <div class="row gap wrap">

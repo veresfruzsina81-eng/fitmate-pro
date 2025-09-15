@@ -1,0 +1,50 @@
+{
+  "hizas": {
+    "ferfi": [
+      { "file": "hizas1.mp4", "title": "Csípőemelés", "desc": "Far és hamstring erősítés." },
+      { "file": "hizas2.mp4", "title": "Négyütemű fekvőtámasz", "desc": "Pulzusnövelő, teljes test." },
+      { "file": "hizas3.mp4", "title": "Guggolás", "desc": "Quadriceps + farizom." },
+      { "file": "hizas4.mp4", "title": "Plank", "desc": "Törzs stabilitás." },
+      { "file": "hizas5.mp4", "title": "Glute bridge (váltott láb)", "desc": "Farizom fókusz." }
+    ],
+    "no": [
+      { "file": "hizas_w1.mp4", "title": "Csípőemelés", "desc": "Farizom és hátsó comb." },
+      { "file": "hizas_w2.mp4", "title": "Négyütemű fekvőtámasz", "desc": "Pulzusnövelő, teljes test." },
+      { "file": "hizas_w3.mp4", "title": "Guggolás", "desc": "Saját testsúly, sarok a talajon." },
+      { "file": "hizas_w4.mp4", "title": "Plank", "desc": "Has + vállöv stabilitás." },
+      { "file": "hizas_w5.mp4", "title": "Glute bridge (váltott láb)", "desc": "Farizom fókusz." }
+    ]
+  },
+  "fogyas": {
+    "ferfi": [
+      { "file": "fogyas1.mp4", "title": "Switch jump mountain climber", "desc": "Intenzív core + kardió." },
+      { "file": "fogyas2.mp4", "title": "Mountain climber", "desc": "Core + kardió." },
+      { "file": "fogyas3.mp4", "title": "Jumping jacks", "desc": "Teljes test, bemelegítés/kardió." },
+      { "file": "fogyas4.mp4", "title": "Plank", "desc": "Törzs stabilizálás." },
+      { "file": "fogyas5.mp4", "title": "Burpee / teljes test", "desc": "Pulzus fel, zsírégetés." }
+    ],
+    "no": [
+      { "file": "fogyas_w1.mp4", "title": "Switch jump mountain climber", "desc": "Intenzív core + kardió." },
+      { "file": "fogyas_w2.mp4", "title": "Mountain climber", "desc": "Core + kardió." },
+      { "file": "fogyas_w3.mp4", "title": "Jumping jacks", "desc": "Teljes test, bemelegítés/kardió." },
+      { "file": "fogyas_w4.mp4", "title": "Plank", "desc": "Törzs stabilizálás." },
+      { "file": "fogyas_w5.mp4", "title": "Burpee / teljes test", "desc": "Pulzus fel, zsírégetés." }
+    ]
+  },
+  "szalkasitas": {
+    "ferfi": [
+      { "file": "szalkasitas1.mp4", "title": "Fekvőtámasz variáció", "desc": "Mell + tricepsz, kontroll." },
+      { "file": "szalkasitas2.mp4", "title": "Oldalsó plank", "desc": "Ferde hasizom." },
+      { "file": "szalkasitas3.mp4", "title": "Hegymászó", "desc": "Core + kardió komponens." },
+      { "file": "szalkasitas4.mp4", "title": "Hajlított csípőemelés", "desc": "Alsó has + far." },
+      { "file": "szalkasitas5.mp4", "title": "Superman", "desc": "Gerincfeszítők, hát." }
+    ],
+    "no": [
+      { "file": "szalkasitas_w1.mp4", "title": "Fekvőtámasz variáció", "desc": "Mell + tricepsz." },
+      { "file": "szalkasitas_w2.mp4", "title": "Oldalsó plank", "desc": "Ferde hasizom." },
+      { "file": "szalkasitas_w3.mp4", "title": "Hegymászó", "desc": "Core + kardió." },
+      { "file": "szalkasitas_w4.mp4", "title": "Hollow hold / csípőemelés", "desc": "Alsó has." },
+      { "file": "szalkasitas_w5.mp4", "title": "Superman", "desc": "Gerincfeszítők, hát." }
+    ]
+  }
+}

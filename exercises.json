@@ -1,52 +1,52 @@
-{ 
-  "szalkasitas": {
-    "ferfi": [
-      { "file": "szalkasitas1.mp4", "title": "Fekvőtámasz", "desc": "Mell, tricepsz, törzs feszítve." },
-      { "file": "szalkasitas2.mp4", "title": "Plank", "desc": "Könyök váll alatt, medence neutrális." },
-      { "file": "szalkasitas3.mp4", "title": "Egylábas kitörés", "desc": "Egyensúly, comb–far fókusz." },
-      { "file": "szalkasitas4.mp4", "title": "Oldalsó plank (könyöktámasz)", "desc": "Ferde hasizmok, csípő emelés tartásban." },
-      { "file": "szalkasitas5.mp4", "title": "Guggolásból felugrás (Squat Jump)", "desc": "Explozív alsótest, óvatos landolás." }
+const EXERCISES = {
+  hizas: {
+    ferfi: [
+      { file: 'hizas1.mp4',  title: 'Fekvőtámasz', desc: 'Mell és tricepsz erősítése.' },
+      { file: 'hizas2.mp4',  title: 'V alakú előrehajlás', desc: 'Core és mobilitás.' },
+      { file: 'hizas3.mp4',  title: 'Guggolásból felugrás', desc: 'Robbanékonyság, teljes test.' },
+      { file: 'hizas4.mp4',  title: 'Plank kézváltással', desc: 'Váll-stabilitás, core.' },
+      { file: 'hizas5.mp4',  title: 'Fekvőtámaszból felugrás', desc: 'Pulzusnövelő teljes test.' },
     ],
-    "no": [
-      { "file": "szalkasitas_w1.mp4", "title": "Csípőemelés (Glute bridge)", "desc": "Farizom aktiválás, derék kímélve." },
-      { "file": "szalkasitas_w2.mp4", "title": "Mountain climber (váltott láb előre)", "desc": "Core + kardió, egyenletes tempó." },
-      { "file": "szalkasitas_w3.mp4", "title": "Terpeszugrás kéznyújtással", "desc": "Kardió, koordináció." },
-      { "file": "szalkasitas_w4.mp4", "title": "Fekvőtámasz tartás (high plank hold)", "desc": "Vállöv és törzs stabilitás." },
-      { "file": "szalkasitas_w5.mp4", "title": "Szumó guggolás kézi súllyal", "desc": "Comb–far, széles terpesz." }
+    no: [
+      { file: 'hizas_w1.mp4', title: 'Fekve csípőemelés', desc: 'Far és hamstring.' },
+      { file: 'hizas_w2.mp4', title: 'Folyamatos guggolás terpeszben', desc: 'Comb és far.' },
+      { file: 'hizas_w3.mp4', title: 'Fekvőtámasz térdelve', desc: 'Mell, tricepsz; kezdőknek.' },
+      { file: 'hizas_w4.mp4', title: 'Oldalfekvés lábemeléssel', desc: 'Far, csípő.' },
+      { file: 'hizas_w5.mp4', title: 'Fekvőtámasz pozíció – váltott láb előre', desc: 'Core és állóképesség.' },
     ]
   },
 
-  "hizas": {
-    "ferfi": [
-      { "file": "hizas1.mp4", "title": "Fekvőtámasz", "desc": "Mell–tricepsz, teljes mozgástartomány." },
-      { "file": "hizas2.mp4", "title": "V-alakú felülés (V-sit / Pike)", "desc": "Hasprés V-pozícióba, kontrolláltan." },
-      { "file": "hizas3.mp4", "title": "Guggolásból felugrás (Squat Jump)", "desc": "Explozív alsótest, puha talajfogás." },
-      { "file": "hizas4.mp4", "title": "Plank kézváltással", "desc": "Váltott kéztámasz, core-stabilitás." },
-      { "file": "hizas5.mp4", "title": "Fekvőtámaszból felugrás (Burpee)", "desc": "Teljes test, intenzív." }
+  szalkasitas: {
+    ferfi: [
+      { file: 'szalkasitas1.mp4', title: 'Fekvőtámasz', desc: 'Mell és tricepsz.' },
+      { file: 'szalkasitas2.mp4', title: 'Plank', desc: 'Core tartás.' },
+      { file: 'szalkasitas3.mp4', title: 'Kitörés egy lábon', desc: 'Comb és far.' },
+      { file: 'szalkasitas4.mp4', title: 'Oldaltartás (plank) könyökön', desc: 'Ferde has.' },
+      { file: 'szalkasitas5.mp4', title: 'Guggolás felrúgással', desc: 'Teljes test, pulzus.' },
     ],
-    "no": [
-      { "file": "hizas_w1.mp4", "title": "Csípőemelés (Glute bridge)", "desc": "Farizom–hamstring aktiválás." },
-      { "file": "hizas_w2.mp4", "title": "Szumó guggolás folyamatosan", "desc": "Széles terpesz, stabil térd–lábfej." },
-      { "file": "hizas_w3.mp4", "title": "Térdelő fekvőtámasz (könnyített)", "desc": "Kezdő mell–tricepsz gyakorlat." },
-      { "file": "hizas_w4.mp4", "title": "Oldalfekvés lábemeléssel", "desc": "Oldalsó farizom, csípőstabilitás." },
-      { "file": "hizas_w5.mp4", "title": "Mountain climber (váltott láb előre)", "desc": "Core + kardió, ritmusosan." }
+    no: [
+      { file: 'szalkasitas_w1.mp4', title: 'Fekve csípőemelés', desc: 'Far és hamstring.' },
+      { file: 'szalkasitas_w2.mp4', title: 'Fekvőtámaszban váltott láb előre', desc: 'Core, váll.' },
+      { file: 'szalkasitas_w3.mp4', title: 'Terpesz ugrás kéznyújtással', desc: 'Cardio.' },
+      { file: 'szalkasitas_w4.mp4', title: 'Fekvőtámasz tartás', desc: 'Core, váll.' },
+      { file: 'szalkasitas_w5.mp4', title: 'Terpesz guggolás kézisúllyal', desc: 'Comb, far. Súlyzó nélkül is végezhető.' },
     ]
   },
 
-  "fogyas": {
-    "ferfi": [
-      { "file": "fogyas1.mp4", "title": "Jumping jacks (terpeszugrás kézemeléssel)", "desc": "Alap kardió, egész test." },
-      { "file": "fogyas2.mp4", "title": "Magastérdemelés kézmagasságig", "desc": "Tempós futó mozdulat, core feszítve." },
-      { "file": "fogyas3.mp4", "title": "Fekvőtámaszból felugrás (Burpee)", "desc": "Pulzusemelő, teljes test." },
-      { "file": "fogyas4.mp4", "title": "Mountain climber előre–hátra", "desc": "Váltott lábhúzás plankben." },
-      { "file": "fogyas5.mp4", "title": "Guggolásból felugrás (Squat Jump)", "desc": "Explozív alsótest, kontrollált landolás." }
+  fogyas: {
+    ferfi: [
+      { file: 'fogyas1.mp4', title: 'Terpeszugrás kézemeléssel', desc: 'Cardio, bemelegítésnek is jó.' },
+      { file: 'fogyas2.mp4', title: 'Térdemelés kézmagasságig', desc: 'Cardio, csípő mobilitás.' },
+      { file: 'fogyas3.mp4', title: 'Fekvőtámaszból felugrás', desc: 'Pulzusnövelő teljes test.' },
+      { file: 'fogyas4.mp4', title: 'Váltott láb előre-hátra plank helyzetben', desc: 'Core + cardio.' },
+      { file: 'fogyas5.mp4', title: 'Guggolásból felugrás', desc: 'Comb és far, cardio.' },
     ],
-    "no": [
-      { "file": "fogyas_w1.mp4", "title": "Szumó guggolás", "desc": "Széles terpesz, fenék–comb." },
-      { "file": "fogyas_w2.mp4", "title": "Csípőemelés (Glute bridge)", "desc": "Farizom aktiválás, derék kímélve." },
-      { "file": "fogyas_w3.mp4", "title": "Skater jumps (oldalsó ugrás keresztezve)", "desc": "Oldalsík, egyensúly–kardió." },
-      { "file": "fogyas_w4.mp4", "title": "Guggolásból felugrás (Squat Jump)", "desc": "Explozív alsótest." },
-      { "file": "fogyas_w5.mp4", "title": "Ugrókötél", "desc": "Ritmus, állóképesség." }
+    no: [
+      { file: 'fogyas_w1.mp4', title: 'Guggolás terpeszben', desc: 'Comb és far.' },
+      { file: 'fogyas_w2.mp4', title: 'Fekve csípőemelés', desc: 'Far és hamstring.' },
+      { file: 'fogyas_w3.mp4', title: 'Oldalsó ugrás keresztezve', desc: 'Cardio, koordináció.' },
+      { file: 'fogyas_w4.mp4', title: 'Guggolásból felugrás', desc: 'Comb és far, cardio.' },
+      { file: 'fogyas_w5.mp4', title: 'Ugrókötél', desc: 'Magas intenzitású cardio.' },
     ]
   }
-}
+};

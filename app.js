@@ -1,4 +1,4 @@
-/* ========= HOTFIX blokk: magyar címek + biztonságos lista ========= */
+/* ========= HOTFIX blokk: magyar címek + fájlhoz kötött meta ========= */
 
 const HU_META = {
   // Hízás – Férfi
@@ -24,7 +24,7 @@ const HU_META = {
 
   // Szálkásítás – Nő
   'szalkasitas_w1.mp4': { title: 'Csípőemelés fekve', desc: 'Farizom és combhajlító.' },
-  'szalkasitas_w2.mp4': { title: 'Mountain climber', desc: 'Core és cardio egyszerre.' },
+  'szalkasitas_w2.mp4': { title: 'Fekvőtámaszban váltott láb előre', desc: 'Core és kardió egyszerre.' },
   'szalkasitas_w3.mp4': { title: 'Terpeszugrás kéznyújtással', desc: 'Kardió, vállöv.' },
   'szalkasitas_w4.mp4': { title: 'Fekvőtámasz tartás', desc: 'Statikus core és váll.' },
   'szalkasitas_w5.mp4': { title: 'Terpesz guggolás súllyal', desc: 'Comb és far; súlyzó nélkül is végezhető.' },
@@ -33,86 +33,39 @@ const HU_META = {
   'fogyas1.mp4': { title: 'Terpeszugrás kézemeléssel', desc: 'Alap kardió, bemelegítésnek is jó.' },
   'fogyas2.mp4': { title: 'Magastérdemelés kézmagasságig', desc: 'Cardio, core.' },
   'fogyas3.mp4': { title: 'Burpee', desc: 'Teljes test, pulzusemelő.' },
-  'fogyas4.mp4': { title: 'Mountain climber előre-hátra', desc: 'Core és cardio.' },
-  'fogyas5.mp4': { title: 'Guggolásból felugrás', desc: 'Alsótest, cardio.' },
+  'fogyas4.mp4': { title: 'Mountain climber előre-hátra', desc: 'Core és kardió.' },
+  'fogyas5.mp4': { title: 'Guggolásból felugrás', desc: 'Alsótest, kardió.' },
 
   // Fogyás – Nő
   'fogyas_w1.mp4': { title: 'Guggolás terpeszben', desc: 'Comb és farizom.' },
   'fogyas_w2.mp4': { title: 'Csípőemelés fekve', desc: 'Farizom, hamstring.' },
-  'fogyas_w3.mp4': { title: 'Oldalsó ugrás keresztezve', desc: 'Cardio, koordináció.' },
-  'fogyas_w4.mp4': { title: 'Guggolásból felugrás', desc: 'Alsótest, cardio.' },
+  'fogyas_w3.mp4': { title: 'Oldalsó ugrás keresztezve', desc: 'Kardió, koordináció.' },
+  'fogyas_w4.mp4': { title: 'Guggolásból felugrás', desc: 'Alsótest, kardió.' },
   'fogyas_w5.mp4': { title: 'Ugrókötél', desc: 'Állóképesség fejlesztése.' }
 };
 
-// Normálás
-function normGoal(t) {
-  const s = (t||'').toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu,'');
-  if (s.includes('szalk')) return 'szalkasitas';
-  if (s.includes('fogy')) return 'fogyas';
-  return 'hizas';
-}
-function normGender(t) {
-  const s = (t||'').toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu,'');
-  return s.includes('ferfi') ? 'ferfi' : 'no';
-}
-
-// Biztos listaépítés
-function getExercisesSafe() {
-  const goal = normGoal(localStorage.getItem('goalLabel') || 'Hízás');
-  const gender = normGender(localStorage.getItem('genderLabel') || 'Férfi');
-  const base = (EXERCISES[goal] && EXERCISES[goal][gender]) || [];
-  return base.map(x => ({ ...x, ...HU_META[x.file] }));
-}
-
-// Renderelő
-function renderExerciseList() {
-  const list = getExercisesSafe();
-  const el = document.getElementById('exerciseList');
-  el.innerHTML = '';
-  list.forEach((it, i) => {
-    const b = document.createElement('button');
-    b.className = 'exercise-card';
-    b.innerHTML = `
-      <div class="ex-index">#${i+1}</div>
-      <div class="ex-title">${it.title}</div>
-      <div class="ex-hint">${it.desc}</div>
-    `;
-    b.onclick = () => openExerciseModal(it);
-    el.appendChild(b);
-  });
-}
-
-function openExerciseModal(item) {
-  document.getElementById('exTitle').textContent = item.title;
-  document.getElementById('exDesc').textContent = item.desc || '';
-  const v = document.getElementById('exVideo');
-  v.loop = true; v.muted = true; v.playsInline = true;
-  v.src = item.file + '?v=' + Date.now();
-  v.play().catch(()=>{});
-  document.getElementById('exerciseModal').classList.add('open');
-}
-/* ========= HOTFIX vége ========= */
-
 // ---------- állapot ----------
 const state = {
-  goal: localStorage.getItem('goal') || 'fogyas',
-  gender: localStorage.getItem('gender') || 'no',
+  goal:   localStorage.getItem('goal')   || 'fogyas', // 'fogyas' | 'szalkasitas' | 'hizas'
+  gender: localStorage.getItem('gender') || 'no',     // 'ferfi' | 'no'
   streak: +(localStorage.getItem('streak') || 0),
-  done: +(localStorage.getItem('done') || 0),
+  done:   +(localStorage.getItem('done')   || 0),
 };
 
-// ---------- háttér képek váltása ----------
+// ---------- háttér képek váltása (random kaja háttér a cal/perf nézetben) ----------
 const bgEl = document.getElementById('bg');
 function setBackgroundFor(section) {
-  // section: splash | goal | home | workout | cal | perf | chat
+  const foods = ['food1.png','food2.png','food3.png']; // tölts fel ilyen nevű képeket a gyökérbe
+  const pickFood = () => foods[Math.floor(Math.random()*foods.length)] || 'fogyas.png';
+
   const map = {
-    splash: 'kezdo.png',
-    goal: 'fogyas.png',
-    home: state.goal + '.png',
+    splash:  'kezdo.png',
+    goal:    'fogyas.png',
+    home:    state.goal + '.png',
     workout: state.goal + '.png',
-    cal: 'fogyas.png',
-    perf: 'szalkasitas.png',
-    chat: 'hizas.png',
+    cal:     pickFood(),
+    perf:    pickFood(),
+    chat:    'hizas.png',
   };
   const img = map[section] || 'kezdo.png';
   bgEl.style.backgroundImage =
@@ -125,18 +78,9 @@ function show(id){
   document.getElementById('view-'+id).classList.add('show');
   setBackgroundFor(id);
 }
-document.getElementById('btnStart').onclick = ()=>show('goal');
-document.getElementById('btnToHome').onclick = ()=>{
-  localStorage.setItem('goal', state.goal);
-  localStorage.setItem('gender', state.gender);
-  hydrateHome();
-  show('home');
-};
-document.getElementById('btnChangeGoal').onclick = ()=>show('goal');
-document.getElementById('btnToSplash').onclick = ()=>show('splash');
-document.querySelectorAll('.back').forEach(b=>{
-  b.onclick = ()=> show(b.dataset.back);
-});
+document.getElementById('btnStart').onclick    = ()=>show('goal');
+document.getElementById('btnToSplash').onclick  = ()=>show('splash');
+document.querySelectorAll('.back').forEach(b=>{ b.onclick = ()=> show(b.dataset.back); });
 
 // ---------- célválasztás ----------
 const goalCards = document.querySelectorAll('.goal-card');
@@ -152,6 +96,14 @@ const genderPick = document.getElementById('genderPick');
 genderPick.value = state.gender;
 genderPick.onchange = e => state.gender = e.target.value;
 
+document.getElementById('btnToHome').onclick = ()=>{
+  localStorage.setItem('goal', state.goal);
+  localStorage.setItem('gender', state.gender);
+  hydrateHome();
+  renderExerciseList();
+  show('home');
+};
+
 // ---------- Főmenü feltöltés ----------
 function hydrateHome(){
   document.getElementById('currentGoalLbl').textContent =
@@ -162,62 +114,70 @@ document.querySelectorAll('#view-home .card').forEach(btn=>{
   btn.onclick = ()=>show(btn.dataset.open);
 });
 
-// ---------- Gyakorlatok listája (név + videó fájl) ----------
-/** Helper: fájlnév prefix nem szerint */
-const sx = g => g==='no' ? '_w' : '';
+// ---------- Gyakorlatok (sorrend a megbeszéltek szerint) ----------
+const sx = g => g==='no' ? '_w' : ''; // női: _w
 const exercises = {
-  // A sorrend és címek a kérésed szerint
   hizas: [
-    {title:'Csípőemelés', file: g => `hizas${sx(g)}1.mp4`,
-     desc:'Far és hamstring erősítés.'},
-    {title:'Négyütemű fekvőtámasz', file: g => `hizas${sx(g)}2.mp4`,
-     desc:'Teljes test állóképesség (burpee).'},
-    {title:'Guggolás', file: g => `hizas${sx(g)}3.mp4`,
-     desc:'Alap alsótest gyakorlat, törzs feszítéssel.'},
-    {title:'Plank', file: g => `hizas${sx(g)}4.mp4`,
-     desc:'Törzs statikus erősítés.'},
-    {title:'Glute bridge', file: g => `hizas${sx(g)}5.mp4`,
-     desc:'Csípőnyújtás, farizom aktiválás.'},
+    { title: 'Csípőemelés',                   file: g => `hizas${sx(g)}1.mp4`, desc:'Far és hamstring erősítés.' },
+    { title: 'Négyütemű fekvőtámasz',         file: g => `hizas${sx(g)}2.mp4`, desc:'Teljes test állóképesség.' },
+    { title: 'Guggolás',                      file: g => `hizas${sx(g)}3.mp4`, desc:'Alsótest, törzs feszítése.' },
+    { title: 'Plank',                         file: g => `hizas${sx(g)}4.mp4`, desc:'Törzs statikus erősítés.' },
+    { title: 'Glute bridge',                  file: g => `hizas${sx(g)}5.mp4`, desc:'Csípőnyújtás, far aktiválás.' },
   ],
   fogyas: [
-    {title:'Jumping jacks', file:g=>`fogyas${sx(g)}1.mp4`, desc:'Kardió, teljes test bemelegítés.'},
-    {title:'Switch jump mountain climber', file:g=>`fogyas${sx(g)}2.mp4`, desc:'Intenzív kardió core-dominánsan.'},
-    {title:'Cardio jumping jacks', file:g=>`fogyas${sx(g)}3.mp4`, desc:'Pulzus fokozása.'},
-    {title:'Plank', file:g=>`fogyas${sx(g)}4.mp4`, desc:'Core stabilitás.'},
-    {title:'Glute bridge', file:g=>`fogyas${sx(g)}5.mp4`, desc:'Farizom aktiválás.'},
+    { title: 'Terpeszugrás kézemeléssel',     file: g => `fogyas${sx(g)}1.mp4`, desc:'Kardió, bemelegítés.' },
+    { title: 'Magastérdemelés kézmagasságig', file: g => `fogyas${sx(g)}2.mp4`, desc:'Cardio + core.' },
+    { title: 'Burpee',                        file: g => `fogyas${sx(g)}3.mp4`, desc:'Pulzusemelő, teljes test.' },
+    { title: 'Mountain climber előre-hátra',  file: g => `fogyas${sx(g)}4.mp4`, desc:'Core és kardió.' },
+    { title: 'Guggolásból felugrás',          file: g => `fogyas${sx(g)}5.mp4`, desc:'Alsótest, kardió.' },
   ],
   szalkasitas: [
-    {title:'Fekvőtámasz', file:g=>`szalkasitas${sx(g)}1.mp4`, desc:'Mell, tricepsz, core.'},
-    {title:'Váll oldalemelés', file:g=>`szalkasitas${sx(g)}2.mp4`, desc:'Vállközép aktiválás.'},
-    {title:'Kitörés', file:g=>`szalkasitas${sx(g)}3.mp4`, desc:'Láb, egyensúly.'},
-    {title:'Plank', file:g=>`szalkasitas${sx(g)}4.mp4`, desc:'Törzs statikus.'},
-    {title:'Híd', file:g=>`szalkasitas${sx(g)}5.mp4`, desc:'Alsótest tónus.'},
-  ]
+    { title: 'Fekvőtámasz',                           file: g => `szalkasitas${sx(g)}1.mp4`, desc:'Mell, tricepsz, core.' },
+    { title: 'Plank',                                  file: g => `szalkasitas${sx(g)}2.mp4`, desc:'Törzs statikus tartás.' },
+    { title: 'Egylábas kitörés',                       file: g => `szalkasitas${sx(g)}3.mp4`, desc:'Láb és egyensúly.' },
+    { title: 'Oldaltartás (könyökön plank)',           file: g => `szalkasitas${sx(g)}4.mp4`, desc:'Ferde hasizom.' },
+    { title: 'Guggolás felrúgással',                   file: g => `szalkasitas${sx(g)}5.mp4`, desc:'Teljes test, pulzus.' },
+  ],
 };
 
-// ---------- Lista render ----------
+/* ---------- Biztos listaépítés: a fenti listát HU_META-val normalizáljuk ---------- */
+function getExercisesSafe() {
+  const goal   = state.goal;     // 'fogyas' | 'szalkasitas' | 'hizas'
+  const gender = state.gender;   // 'ferfi' | 'no'
+  const base = (exercises[goal] || []);
+
+  return base.map(ex => {
+    const fname = typeof ex.file === 'function' ? ex.file(gender) : ex.file;
+    const meta  = HU_META[fname] || {};
+    return {
+      title: meta.title || ex.title || fname,
+      desc:  meta.desc  || ex.desc  || '',
+      file:  fname
+    };
+  });
+}
+
+/* ---------- Lista render – EZ AZ EGY fut (nincs duplikáció) ---------- */
 const exList = document.getElementById('exerciseList');
 function renderExerciseList(){
   exList.innerHTML = '';
-  const arr = exercises[state.goal];
+  const arr = getExercisesSafe();
   arr.forEach((ex, i)=>{
     const el = document.createElement('div');
     el.className = 'exercise-item';
     el.innerHTML = `
       <div class="title">#${i+1}. gyakorlat</div>
       <div class="muted">${ex.title}</div>
+      <button class="open-btn">Megnyit</button>
     `;
+    el.querySelector('.open-btn').onclick = (e)=>{ e.stopPropagation(); openExerciseModal(ex); };
     el.onclick = ()=> openExerciseModal(ex);
     exList.appendChild(el);
   });
 }
 renderExerciseList();
 
-// újrarender, ha cél vált
-document.getElementById('btnToHome').addEventListener('click', renderExerciseList);
-document.getElementById('btnChangeGoal').addEventListener('click', ()=>{});
-
-// ---------- Modál + időzítő ----------
+/* ---------- Modál + időzítő (videó loop, 15 mp pihenő) ---------- */
 const modal = document.getElementById('exerciseModal');
 const exTitle = document.getElementById('exTitle');
 const exDesc  = document.getElementById('exDesc');
@@ -239,9 +199,8 @@ function mmss(sec){
 function paintTimer(text){ timerDisplay.textContent = text; }
 
 function startTimer(){
-  // beolvas beállítások
   totalSets = Math.max(1, +setsInp.value||1);
-  reps = Math.max(1, +repsInp.value||1);
+  reps      = Math.max(1, +repsInp.value||1);
   secPerRep = Math.max(1, +secPerRepInp.value||1);
   curSet = 1; curRep = 1;
   runRep();
@@ -258,11 +217,10 @@ function runRep(){
     if(left<=0){
       clearInterval(tInt);
       beep.play().catch(()=>{});
-      if(curRep < reps){ // következő ismétlés
+      if(curRep < reps){
         curRep++;
         runRep();
       }else{
-        // kör vége -> pihenő 15 mp
         restPhase();
       }
     }
@@ -283,7 +241,6 @@ function restPhase(){
         curSet++; curRep=1;
         runRep();
       }else{
-        // teljesen kész
         timerInfo.textContent = 'Gratulálok! Készen vagyunk. Lépj vissza a listához és válaszd a következő gyakorlatot.';
         paintTimer('00:00');
         incrementDone();
@@ -308,13 +265,13 @@ function nextSetManual(){
 }
 
 function openExerciseModal(ex){
+  const src = typeof ex.file === 'function' ? ex.file(state.gender) : ex.file;
   exTitle.textContent = ex.title;
-  exDesc.textContent = ex.desc;
-  exVideo.src = ex.file(state.gender);
+  exDesc.textContent  = ex.desc || '';
+  exVideo.src = src;
   exVideo.setAttribute('loop','');
   exVideo.play().catch(()=>{});
   modal.classList.add('show');
-  // reset timer UI
   pauseTimer();
   paintTimer('00:00');
   timerInfo.textContent = '';
@@ -322,14 +279,15 @@ function openExerciseModal(ex){
 document.getElementById('exClose').onclick = ()=> modal.classList.remove('show');
 document.getElementById('btnStartTimer').onclick = startTimer;
 document.getElementById('btnPauseTimer').onclick = pauseTimer;
-document.getElementById('btnNextSet').onclick = nextSetManual;
+document.getElementById('btnNextSet').onclick  = nextSetManual;
 
-// ---------- Kalória ----------
-const mealInp = document.getElementById('mealInp');
-const kcalInp = document.getElementById('kcalInp');
-const calList = document.getElementById('calList');
+/* ---------- Kalória ---------- */
+const mealInp  = document.getElementById('mealInp');
+const kcalInp  = document.getElementById('kcalInp');
+const calList  = document.getElementById('calList');
 const calTotal = document.getElementById('calTotal');
-const calData = JSON.parse(localStorage.getItem('calData')||'[]');
+const calData  = JSON.parse(localStorage.getItem('calData')||'[]');
+
 function renderCal(){
   calList.innerHTML='';
   let sum=0;
@@ -355,20 +313,19 @@ document.getElementById('btnAddMeal').onclick = ()=>{
 };
 renderCal();
 
-// ---------- Teljesítmény ----------
+/* ---------- Teljesítmény ---------- */
 function incrementDone(){
   state.done++;
   localStorage.setItem('done', String(state.done));
   document.getElementById('doneWorkouts').textContent = state.done;
-  // nagyon egyszerű „streak” – ha ma már pipált, most nem foglalkozunk dátumokkal
   state.streak = Math.max(state.streak,1);
   localStorage.setItem('streak', String(state.streak));
   document.getElementById('streakDays').textContent = state.streak;
 }
-document.getElementById('streakDays').textContent = state.streak;
+document.getElementById('streakDays').textContent   = state.streak;
 document.getElementById('doneWorkouts').textContent = state.done;
 
-// ---------- Chat (frontend-buborék; backendhez már be van kötve nálad) ----------
+/* ---------- Chat (frontend buborék) ---------- */
 const chatBox = document.getElementById('chatBox');
 function pushBubble(txt, me=false){
   const b = document.createElement('div');
@@ -382,18 +339,17 @@ document.getElementById('chatSend').onclick = async ()=>{
   if(!q) return;
   document.getElementById('chatInp').value='';
   pushBubble(q,true);
-
   try{
-    // Hívd a saját Netlify function-öd endpointját, ha használod:
+    // Ha működik a Netlify function-öd:
     // const r = await fetch('/.netlify/functions/ai-chat',{method:'POST',body:JSON.stringify({q,state})});
     // const {text} = await r.json();
     // pushBubble(text || 'Oké!');
-    // Amíg a backend javítást végzed, legyen helyettesítő válasz:
     pushBubble('Oké! Dolgozom rajta… (A backend válasz itt jelenik meg.)');
   }catch(e){
     pushBubble('Hopp, a chat backend most nem elérhető.');
   }
 };
 
-// első megjelenítés
+/* ---------- Indítás ---------- */
+renderExerciseList();
 show('splash');

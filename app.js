@@ -1,193 +1,304 @@
-<!doctype html>
-<html lang="hu">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>FitMate HU</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <!-- Globális háttér -->
-  <div id="bg"></div>
+// ---------- állapot ----------
+const state = {
+  goal: localStorage.getItem('goal') || 'fogyas',
+  gender: localStorage.getItem('gender') || 'no',
+  streak: +(localStorage.getItem('streak') || 0),
+  done: +(localStorage.getItem('done') || 0),
+};
 
-  <!-- Splash -->
-  <section id="view-splash" class="view show">
-    <div class="panel center glass">
-      <h1>FitMate <span class="accent">HU</span></h1>
-      <p>Magyar fitnesz – egyszerűen, szépen, okosan.</p>
-      <button class="btn primary" id="btnStart">Kezdjük</button>
-    </div>
-  </section>
+// ---------- háttér képek váltása ----------
+const bgEl = document.getElementById('bg');
+function setBackgroundFor(section) {
+  // section: splash | goal | home | workout | cal | perf | chat
+  const map = {
+    splash: 'kezdo.png',
+    goal: 'fogyas.png',
+    home: state.goal + '.png',
+    workout: state.goal + '.png',
+    cal: 'fogyas.png',
+    perf: 'szalkasitas.png',
+    chat: 'hizas.png',
+  };
+  const img = map[section] || 'kezdo.png';
+  bgEl.style.backgroundImage =
+    `linear-gradient(0deg, rgba(11,15,20,.68), rgba(11,15,20,.68)), url('${img}')`;
+}
 
-  <!-- Célválasztó -->
-  <section id="view-goal" class="view">
-    <button class="back" data-back="splash">Vissza</button>
-    <header class="page-title">
-      <h2>Válaszd ki a célod</h2>
-      <p>Ezt később bármikor módosíthatod.</p>
-    </header>
+// ---------- nézet váltó ----------
+function show(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('show'));
+  document.getElementById('view-'+id).classList.add('show');
+  setBackgroundFor(id);
+}
+document.getElementById('btnStart').onclick = ()=>show('goal');
+document.getElementById('btnToHome').onclick = ()=>{
+  localStorage.setItem('goal', state.goal);
+  localStorage.setItem('gender', state.gender);
+  hydrateHome();
+  show('home');
+};
+document.getElementById('btnChangeGoal').onclick = ()=>show('goal');
+document.getElementById('btnToSplash').onclick = ()=>show('splash');
+document.querySelectorAll('.back').forEach(b=>{
+  b.onclick = ()=> show(b.dataset.back);
+});
 
-    <div class="goal-list">
-      <div class="goal-card" data-goal="fogyas">
-        <img src="fogyas.png" alt="Fogyás" />
-        <div>
-          <h3>Fogyás</h3>
-          <p>Zsírégetés, kíméletes tempó</p>
-        </div>
-      </div>
-      <div class="goal-card" data-goal="szalkasitas">
-        <img src="szalkasitas.png" alt="Szálkásítás" />
-        <div>
-          <h3>Szálkásítás</h3>
-          <p>Deficit + tónusos izom</p>
-        </div>
-      </div>
-      <div class="goal-card" data-goal="hizas">
-        <img src="hizas.png" alt="Hízás" />
-        <div>
-          <h3>Hízás</h3>
-          <p>Izomtömeg növelés, szuficit</p>
-        </div>
-      </div>
-    </div>
+// ---------- célválasztás ----------
+const goalCards = document.querySelectorAll('.goal-card');
+goalCards.forEach(c=>{
+  if(c.dataset.goal===state.goal) c.classList.add('active');
+  c.onclick = ()=>{
+    goalCards.forEach(x=>x.classList.remove('active'));
+    c.classList.add('active');
+    state.goal = c.dataset.goal;
+  };
+});
+const genderPick = document.getElementById('genderPick');
+genderPick.value = state.gender;
+genderPick.onchange = e => state.gender = e.target.value;
 
-    <div class="row">
-      <label class="select-label">Nem:</label>
-      <select id="genderPick" class="select">
-        <option value="no">Nő</option>
-        <option value="ferfi">Férfi</option>
-      </select>
-      <button class="btn primary" id="btnToHome">Tovább a főmenübe</button>
-    </div>
-  </section>
+// ---------- Főmenü feltöltés ----------
+function hydrateHome(){
+  document.getElementById('currentGoalLbl').textContent =
+    (state.goal==='fogyas'?'Fogyás':state.goal==='szalkasitas'?'Szálkásítás':'Hízás');
+}
+hydrateHome();
+document.querySelectorAll('#view-home .card').forEach(btn=>{
+  btn.onclick = ()=>show(btn.dataset.open);
+});
 
-  <!-- Főmenü -->
-  <section id="view-home" class="view">
-    <button class="back" data-back="goal">Vissza</button>
-    <div class="home-head">
-      <div class="pill">Cél: <span id="currentGoalLbl">–</span></div>
-      <button class="btn subtle" id="btnChangeGoal">Cél módosítása</button>
-      <button class="btn subtle" id="btnToSplash">Kezdő</button>
-    </div>
+// ---------- Gyakorlatok listája (név + videó fájl) ----------
+/** Helper: fájlnév prefix nem szerint */
+const sx = g => g==='no' ? '_w' : '';
+const exercises = {
+  // A sorrend és címek a kérésed szerint
+  hizas: [
+    {title:'Csípőemelés', file: g => `hizas${sx(g)}1.mp4`,
+     desc:'Far és hamstring erősítés.'},
+    {title:'Négyütemű fekvőtámasz', file: g => `hizas${sx(g)}2.mp4`,
+     desc:'Teljes test állóképesség (burpee).'},
+    {title:'Guggolás', file: g => `hizas${sx(g)}3.mp4`,
+     desc:'Alap alsótest gyakorlat, törzs feszítéssel.'},
+    {title:'Plank', file: g => `hizas${sx(g)}4.mp4`,
+     desc:'Törzs statikus erősítés.'},
+    {title:'Glute bridge', file: g => `hizas${sx(g)}5.mp4`,
+     desc:'Csípőnyújtás, farizom aktiválás.'},
+  ],
+  fogyas: [
+    {title:'Jumping jacks', file:g=>`fogyas${sx(g)}1.mp4`, desc:'Kardió, teljes test bemelegítés.'},
+    {title:'Switch jump mountain climber', file:g=>`fogyas${sx(g)}2.mp4`, desc:'Intenzív kardió core-dominánsan.'},
+    {title:'Cardio jumping jacks', file:g=>`fogyas${sx(g)}3.mp4`, desc:'Pulzus fokozása.'},
+    {title:'Plank', file:g=>`fogyas${sx(g)}4.mp4`, desc:'Core stabilitás.'},
+    {title:'Glute bridge', file:g=>`fogyas${sx(g)}5.mp4`, desc:'Farizom aktiválás.'},
+  ],
+  szalkasitas: [
+    {title:'Fekvőtámasz', file:g=>`szalkasitas${sx(g)}1.mp4`, desc:'Mell, tricepsz, core.'},
+    {title:'Váll oldalemelés', file:g=>`szalkasitas${sx(g)}2.mp4`, desc:'Vállközép aktiválás.'},
+    {title:'Kitörés', file:g=>`szalkasitas${sx(g)}3.mp4`, desc:'Láb, egyensúly.'},
+    {title:'Plank', file:g=>`szalkasitas${sx(g)}4.mp4`, desc:'Törzs statikus.'},
+    {title:'Híd', file:g=>`szalkasitas${sx(g)}5.mp4`, desc:'Alsótest tónus.'},
+  ]
+};
 
-    <div class="menu">
-      <button class="card" data-open="workout">
-        <h4>Edzés</h4>
-        <p>Válassz gyakorlatot, időzítővel.</p>
-      </button>
-      <button class="card" data-open="cal">
-        <h4>Kalóriaszámláló</h4>
-        <p>Egyszerű napi bevitel.</p>
-      </button>
-      <button class="card" data-open="perf">
-        <h4>Napi teljesítmény</h4>
-        <p>Streak és kész napok.</p>
-      </button>
-      <button class="card" data-open="chat">
-        <h4>AI chat</h4>
-        <p>Magyar tanácsok.</p>
-      </button>
-    </div>
-  </section>
+// ---------- Lista render ----------
+const exList = document.getElementById('exerciseList');
+function renderExerciseList(){
+  exList.innerHTML = '';
+  const arr = exercises[state.goal];
+  arr.forEach((ex, i)=>{
+    const el = document.createElement('div');
+    el.className = 'exercise-item';
+    el.innerHTML = `
+      <div class="title">#${i+1}. gyakorlat</div>
+      <div class="muted">${ex.title}</div>
+    `;
+    el.onclick = ()=> openExerciseModal(ex);
+    exList.appendChild(el);
+  });
+}
+renderExerciseList();
 
-  <!-- Edzés – lista -->
-  <section id="view-workout" class="view">
-    <button class="back" data-back="home">Vissza</button>
-    <header class="page-title">
-      <h2>Napi edzés</h2>
-      <p>Válassz gyakorlatot a célod alapján (5 db / kategória)</p>
-    </header>
-    <div id="exerciseList" class="exercise-list"></div>
-  </section>
+// újrarender, ha cél vált
+document.getElementById('btnToHome').addEventListener('click', renderExerciseList);
+document.getElementById('btnChangeGoal').addEventListener('click', ()=>{});
 
-  <!-- Edzés – részletek (MODÁL) -->
-  <div id="exerciseModal" class="modal">
-    <div class="modal-body">
-      <button class="close" id="exClose">×</button>
-      <h3 id="exTitle"></h3>
-      <p id="exDesc" class="muted"></p>
+// ---------- Modál + időzítő ----------
+const modal = document.getElementById('exerciseModal');
+const exTitle = document.getElementById('exTitle');
+const exDesc  = document.getElementById('exDesc');
+const exVideo = document.getElementById('exVideo');
+const setsInp = document.getElementById('setsInp');
+const repsInp = document.getElementById('repsInp');
+const secPerRepInp = document.getElementById('secPerRepInp');
+const timerDisplay = document.getElementById('timerDisplay');
+const timerInfo = document.getElementById('timerInfo');
+const beep = document.getElementById('beep');
 
-      <div class="video-wrap">
-        <video id="exVideo" playsinline muted autoplay loop></video>
-      </div>
+let tInt=null, running=false, curSet=1, curRep=1, totalSets=3, reps=12, secPerRep=2;
 
-      <div class="grid-3">
-        <div>
-          <label>Körök:</label>
-          <input id="setsInp" type="number" min="1" value="3" />
-        </div>
-        <div>
-          <label>Ismétlés/kör:</label>
-          <input id="repsInp" type="number" min="1" value="12" />
-        </div>
-        <div>
-          <label>Idő/ism. (mp):</label>
-          <input id="secPerRepInp" type="number" min="1" value="2" />
-        </div>
-      </div>
+function mmss(sec){
+  const m = String(Math.floor(sec/60)).padStart(2,'0');
+  const s = String(sec%60).padStart(2,'0');
+  return `${m}:${s}`;
+}
+function paintTimer(text){ timerDisplay.textContent = text; }
 
-      <div class="timer">
-        <h4>Készen állsz?</h4>
-        <div id="timerDisplay">00:00</div>
-        <div class="row btns">
-          <button class="btn primary" id="btnStartTimer">Start</button>
-          <button class="btn" id="btnPauseTimer">Szünet</button>
-          <button class="btn" id="btnNextSet">Következő</button>
-        </div>
-        <div id="timerInfo" class="muted"></div>
-      </div>
-    </div>
-  </div>
+function startTimer(){
+  // beolvas beállítások
+  totalSets = Math.max(1, +setsInp.value||1);
+  reps = Math.max(1, +repsInp.value||1);
+  secPerRep = Math.max(1, +secPerRepInp.value||1);
+  curSet = 1; curRep = 1;
+  runRep();
+}
+function runRep(){
+  running = true;
+  let left = secPerRep;
+  paintTimer(mmss(left));
+  timerInfo.textContent = `Kör ${curSet}/${totalSets} – Ismétlés ${curRep}/${reps}`;
+  clearInterval(tInt);
+  tInt = setInterval(()=>{
+    left--;
+    paintTimer(mmss(left));
+    if(left<=0){
+      clearInterval(tInt);
+      beep.play().catch(()=>{});
+      if(curRep < reps){ // következő ismétlés
+        curRep++;
+        runRep();
+      }else{
+        // kör vége -> pihenő 15 mp
+        restPhase();
+      }
+    }
+  },1000);
+}
+function restPhase(){
+  running=false;
+  let rest = 15;
+  timerInfo.textContent = `Pihenő (15 mp) – kész kör: ${curSet}/${totalSets}`;
+  paintTimer(mmss(rest));
+  clearInterval(tInt);
+  tInt = setInterval(()=>{
+    rest--;
+    paintTimer(mmss(rest));
+    if(rest<=0){
+      clearInterval(tInt);
+      if(curSet < totalSets){
+        curSet++; curRep=1;
+        runRep();
+      }else{
+        // teljesen kész
+        timerInfo.textContent = 'Gratulálok! Készen vagyunk. Lépj vissza a listához és válaszd a következő gyakorlatot.';
+        paintTimer('00:00');
+        incrementDone();
+      }
+    }
+  },1000);
+}
+function pauseTimer(){
+  if(!running && tInt){ // folytatás
+    runRep();
+    return;
+  }
+  running=false;
+  clearInterval(tInt);
+}
+function nextSetManual(){
+  clearInterval(tInt);
+  if(curSet < totalSets){
+    curSet++; curRep=1;
+    runRep();
+  }
+}
 
-  <!-- Kalóriaszámláló -->
-  <section id="view-cal" class="view">
-    <button class="back" data-back="home">Vissza</button>
-    <header class="page-title">
-      <h2>Kalóriaszámláló (egyszerű v1)</h2>
-    </header>
-    <div class="cal">
-      <input id="mealInp" class="input" placeholder="Étkezés (pl. csirkemell, rizs)" />
-      <input id="kcalInp" class="input small" placeholder="kcal" type="number" />
-      <button class="btn primary" id="btnAddMeal">Hozzáad</button>
-      <div id="calList" class="list"></div>
-      <div class="total">Napi összesen: <strong id="calTotal">0</strong> kcal</div>
-    </div>
-  </section>
+function openExerciseModal(ex){
+  exTitle.textContent = ex.title;
+  exDesc.textContent = ex.desc;
+  exVideo.src = ex.file(state.gender);
+  exVideo.setAttribute('loop','');
+  exVideo.play().catch(()=>{});
+  modal.classList.add('show');
+  // reset timer UI
+  pauseTimer();
+  paintTimer('00:00');
+  timerInfo.textContent = '';
+}
+document.getElementById('exClose').onclick = ()=> modal.classList.remove('show');
+document.getElementById('btnStartTimer').onclick = startTimer;
+document.getElementById('btnPauseTimer').onclick = pauseTimer;
+document.getElementById('btnNextSet').onclick = nextSetManual;
 
-  <!-- Teljesítmény -->
-  <section id="view-perf" class="view">
-    <button class="back" data-back="home">Vissza</button>
-    <header class="page-title">
-      <h2>Napi teljesítmény</h2>
-    </header>
-    <div class="perf">
-      <div class="stat"><span id="streakDays">0</span> nap folyamatosan</div>
-      <div class="stat"><span id="doneWorkouts">0</span> befejezett edzés</div>
-      <p class="muted">Az értékek az eszközödön tárolódnak (LocalStorage).</p>
-    </div>
-  </section>
+// ---------- Kalória ----------
+const mealInp = document.getElementById('mealInp');
+const kcalInp = document.getElementById('kcalInp');
+const calList = document.getElementById('calList');
+const calTotal = document.getElementById('calTotal');
+const calData = JSON.parse(localStorage.getItem('calData')||'[]');
+function renderCal(){
+  calList.innerHTML='';
+  let sum=0;
+  calData.forEach((it,idx)=>{
+    sum+=it.kcal;
+    const row = document.createElement('div');
+    row.className='item';
+    row.innerHTML = `<span>${it.label}</span><span>${it.kcal} kcal</span>`;
+    row.onclick = ()=>{ calData.splice(idx,1); saveCal(); };
+    calList.appendChild(row);
+  });
+  calTotal.textContent = sum;
+}
+function saveCal(){
+  localStorage.setItem('calData', JSON.stringify(calData));
+  renderCal();
+}
+document.getElementById('btnAddMeal').onclick = ()=>{
+  const label = mealInp.value.trim(); const kcal = +kcalInp.value||0;
+  if(!label || !kcal) return;
+  calData.push({label,kcal}); mealInp.value=''; kcalInp.value='';
+  saveCal();
+};
+renderCal();
 
-  <!-- AI Chat -->
-  <section id="view-chat" class="view">
-    <button class="back" data-back="home">Vissza</button>
-    <header class="page-title">
-      <h2>AI chat (magyar)</h2>
-    </header>
-    <div class="chat">
-      <div id="chatBox" class="chat-box">
-        <div class="bubble bot">Szia! Miben segíthetek?</div>
-      </div>
-      <div class="chat-input">
-        <input id="chatInp" class="input" placeholder="Írd ide a kérdésed..." />
-        <button id="chatSend" class="btn primary">Küldés</button>
-      </div>
-    </div>
-  </section>
+// ---------- Teljesítmény ----------
+function incrementDone(){
+  state.done++;
+  localStorage.setItem('done', String(state.done));
+  document.getElementById('doneWorkouts').textContent = state.done;
+  // nagyon egyszerű „streak” – ha ma már pipált, most nem foglalkozunk dátumokkal
+  state.streak = Math.max(state.streak,1);
+  localStorage.setItem('streak', String(state.streak));
+  document.getElementById('streakDays').textContent = state.streak;
+}
+document.getElementById('streakDays').textContent = state.streak;
+document.getElementById('doneWorkouts').textContent = state.done;
 
-  <audio id="beep">
-    <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABYAAAABAAgAZGF0YQAAAAA=" type="audio/wav">
-  </audio>
+// ---------- Chat (frontend-buborék; backendhez már be van kötve nálad) ----------
+const chatBox = document.getElementById('chatBox');
+function pushBubble(txt, me=false){
+  const b = document.createElement('div');
+  b.className = 'bubble ' + (me?'me':'bot');
+  b.textContent = txt;
+  chatBox.appendChild(b);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+document.getElementById('chatSend').onclick = async ()=>{
+  const q = document.getElementById('chatInp').value.trim();
+  if(!q) return;
+  document.getElementById('chatInp').value='';
+  pushBubble(q,true);
 
-  <script src="app.js"></script>
-</body>
-</html>
+  try{
+    // Hívd a saját Netlify function-öd endpointját, ha használod:
+    // const r = await fetch('/.netlify/functions/ai-chat',{method:'POST',body:JSON.stringify({q,state})});
+    // const {text} = await r.json();
+    // pushBubble(text || 'Oké!');
+    // Amíg a backend javítást végzed, legyen helyettesítő válasz:
+    pushBubble('Oké! Dolgozom rajta… (A backend válasz itt jelenik meg.)');
+  }catch(e){
+    pushBubble('Hopp, a chat backend most nem elérhető.');
+  }
+};
+
+// első megjelenítés
+show('splash');

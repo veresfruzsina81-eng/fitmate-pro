@@ -1,41 +1,44 @@
-// --- segédek
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
 const cap = (t) => t ? t[0].toUpperCase()+t.slice(1) : t;
 
-// --- egyszerű router
 function show(id){
   $$(".screen").forEach(sec => sec.classList.remove("visible"));
   document.getElementById(id).classList.add("visible");
+  if(id === "screen-menu"){ refreshUI(); }
 }
 
-// --- cél & nem helyi tárolása
 const getGoal = () => localStorage.getItem("goal") || "fogyas";
 const setGoal = (g) => localStorage.setItem("goal", g);
 const getGender = () => localStorage.getItem("gender") || "male";
 const setGender = (g) => localStorage.setItem("gender", g);
 
-// --- háttérképek a főbb képernyőkhöz
+// hátterek
 function refreshBackgrounds(){
   const g = getGoal();
-  // célválasztó háttere a választott gomb felett is változhat
-  const goalBg = $("#goalBg");
-  goalBg.style.setProperty("--bg", `url('${g}.png')`);
-
-  // edzés oldal semleges háttér: a cél képe halványítva
-  const workoutBg = $("#workoutBg");
-  workoutBg.style.setProperty("--bg", `url('${g}.png')`);
+  $("#goalBg")?.style.setProperty("--bg", `url('${g}.png')`);
+  $("#workoutBg")?.style.setProperty("--bg", `url('${g}.png')`);
+  $("#menuBg")?.style.setProperty("--bg", `url('${g}.png')`);
 }
 
-// --- videó forrás konvenció (férfi: base1.mp4, nő: base_w1.mp4)
+// UI
+function refreshUI(){
+  $("#currentGoal").textContent = `Cél: ${cap(getGoal())}`;
+  $("#gender").value = getGender();
+  renderExerciseList();
+  refreshBackgrounds();
+}
+
+// fájlnév
 function videoName(base, gender, index){
-  const suf = gender === "female" ? "_w" : "";
+  const suf = (gender === "female") ? "_w" : "";
   return `${base}${suf}${index}.mp4`;
 }
 
-// --- edzés lista generálás (5 elem)
+// edzéslista
 function renderExerciseList(){
   const wrap = $("#exerciseList");
+  if(!wrap) return;
   wrap.innerHTML = "";
   const goal = getGoal();
   const gender = getGender();
@@ -49,20 +52,18 @@ function renderExerciseList(){
     btn.addEventListener("click", () => openExercise(i));
     wrap.appendChild(btn);
   }
-
-  // vissza alap nézet
   $("#exerciseDetail").classList.add("hide");
-  wrap.parentElement.scrollTo({top:0, behavior:"smooth"});
 }
 
-// --- videó betöltés
+// videó betöltés
 function setVideo(src){
   const v = $("#exerciseVideo"), s = $("#exerciseSrc");
   if(!v||!s) return;
-  s.src = `${src}?v=${Date.now()}`; // cache-buster
+  s.src = `${src}?v=${Date.now()}`;
   v.load();
   v.play().catch(()=>{});
 }
+
 function openExercise(idx){
   const goal = getGoal(), gender = getGender();
   const name = videoName(goal, gender, idx);
@@ -72,7 +73,7 @@ function openExercise(idx){
   $("#exerciseDetail").scrollIntoView({behavior:"smooth"});
 }
 
-// --- időzítő (egyszerű v1)
+// időzítő
 let tHandle=null, t=0, running=false;
 const fmt = (s)=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
 function tick(){ t++; $("#timerClock").textContent = fmt(t); }
@@ -85,19 +86,18 @@ function initTimer(){
   });
   $("#btnFinish").addEventListener("click", ()=>{
     running=false; clearInterval(tHandle); $("#timerState").textContent="Kész! 🎉";
-    // teljesítmény számláló
     const done = Number(localStorage.getItem("doneWorkouts")||"0")+1;
     localStorage.setItem("doneWorkouts", String(done));
     updateProgress();
-    setTimeout(()=>{ t=0; $("#timerClock").textContent="00:00"; }, 800);
+    setTimeout(()=>{ t=0; $("#timerClock").textContent="00:00"; }, 700);
   });
   $("#backToList").addEventListener("click", ()=>{
     $("#exerciseDetail").classList.add("hide");
-    document.querySelector("#exerciseList").scrollIntoView({behavior:"smooth"});
+    $("#exerciseList")?.scrollIntoView({behavior:"smooth"});
   });
 }
 
-// --- kalóriaszámláló
+// kalória
 function initCalories(){
   const list = $("#calList"), sum = $("#calSum");
   const key = "cal-entries";
@@ -124,13 +124,13 @@ function initCalories(){
   render();
 }
 
-// --- teljesítmény
+// teljesítmény
 function updateProgress(){
   $("#doneWorkouts").textContent = localStorage.getItem("doneWorkouts") || "0";
   $("#streak").textContent = localStorage.getItem("streak") || "0";
 }
 
-// --- AI chat
+// AI chat (status gombbal)
 function initChat(){
   $("#btnSend").addEventListener("click", async ()=>{
     const input=$("#chatInput"), out=$("#chatOut");
@@ -163,24 +163,16 @@ function initChat(){
   });
 }
 
-// --- események
+// init
 window.addEventListener("DOMContentLoaded", ()=>{
-  // gombok a képernyők között
   $$("[data-target]").forEach(b=>b.addEventListener("click", ()=>show(b.dataset.target)));
-
-  // cél választás / nem
   $$(".goal").forEach(g=>g.addEventListener("click", ()=>{
     setGoal(g.dataset.goal);
-    $("#currentGoal").textContent = `Cél: ${cap(getGoal())}`;
-    refreshBackgrounds();
+    refreshUI();
   }));
-  $("#gender").addEventListener("change", (e)=> setGender(e.target.value));
+  $("#gender").addEventListener("change", (e)=> { setGender(e.target.value); refreshUI(); });
 
-  // induló állapot
-  $("#currentGoal").textContent = `Cél: ${cap(getGoal())}`;
-  $("#gender").value = getGender();
-  refreshBackgrounds();
-  renderExerciseList();
+  refreshUI();
   initTimer();
   initCalories();
   updateProgress();

@@ -5,535 +5,368 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>FitMate HU</title>
 <style>
-  :root{
-    --bg: #0c1116;
-    --card:#111826d9; /* üveges, de olvasható */
-    --text:#e6eef6;
-    --muted:#a9b4c0;
-    --pink:#ff5aa5;
-    --ring:#77d0ff;
-    --ok:#76e0a6;
-    --danger:#ff7b7b;
-    --shadow: 0 10px 30px rgba(0,0,0,.35);
-    --radius:20px;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-  }
-  /* háttér */
-  #bg{
-    position:fixed;inset:0;background:#000 center/cover no-repeat;opacity:.35;z-index:-2;
-    transition: background-image .4s ease, opacity .25s ease;
-  }
-  /* sötét overlay hogy ne olvadjon bele a szöveg */
-  #shade{position:fixed;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.45),rgba(0,0,0,.55));z-index:-1}
-
-  .container{max-width:950px;margin:0 auto;padding:20px 16px 120px}
-
-  h1,h2,h3{margin:0 0 10px}
-  h1{font-size:38px;letter-spacing:.3px}
-  h2{font-size:28px}
-  p{margin:0 0 8px;color:var(--muted)}
-
-  .card{
-    background:var(--card);backdrop-filter: blur(10px);
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:var(--radius);box-shadow:var(--shadow);
-  }
-  .pad{padding:18px}
-
-  .btn{
-    display:inline-flex;align-items:center;justify-content:center;
-    height:48px;padding:0 20px;border-radius:999px;border:none;cursor:pointer;
-    font-weight:700;background:var(--pink);color:#12141a;transition:transform .05s ease,opacity .2s;
-  }
-  .btn:active{transform:translateY(1px)}
-  .btn.ghost{
-    background:transparent;color:var(--text);border:1px solid rgba(255,255,255,.16)
-  }
-  .row{display:flex;gap:16px;flex-wrap:wrap}
-  .grid{display:grid;gap:14px}
-  .menu{grid-template-columns:1fr}
-  @media(min-width:720px){.menu{grid-template-columns:1fr 1fr}}
-
-  .pill{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}
-
-  .list-item{
-    display:flex;gap:14px;align-items:center;padding:14px;border-radius:16px;background:rgba(255,255,255,.06);
-    border:1px solid rgba(255,255,255,.1);cursor:pointer
-  }
-  .thumb{width:72px;height:52px;border-radius:12px;object-fit:cover;border:1px solid rgba(255,255,255,.12)}
-  .muted{color:var(--muted)}
-  .select{height:44px;padding:0 14px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:#0f141b;color:var(--text)}
-
-  /* „nézetek” */
-  .view{display:none}
-  .view.show{display:block}
-
-  /* Splash középre */
-  .centerbox{
-    max-width:520px;margin:clamp(16px,15vh,180px) auto 0;
-    text-align:center;padding:22px;border-radius:28px
-  }
-
-  /* fejléc vissza gomb */
-  .backbar{display:flex;align-items:center;gap:12px;margin:8px 0 18px}
-  .back{padding:10px 16px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);cursor:pointer}
-
-  /* modal (gyakorlat részletes) */
-  .modal{
-    position:fixed;inset:0;display:none;place-items:center;padding:20px;z-index:50;
-    background:rgba(0,0,0,.55)
-  }
-  .modal.show{display:grid}
-  .sheet{width:100%;max-width:880px}
-  video{width:100%;height:auto;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:#000}
-
-  /* számláló blokk */
-  .counter{
-    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
-    border-radius:20px;padding:16px;margin-top:14px
-  }
-  .kpi{font-size:56px;font-weight:800;letter-spacing:2px}
-  .ok{color:var(--ok)} .danger{color:var(--danger)}
-  .footer-space{height:80px}
+:root{
+  --bg:#0c1117; --text:#e9eef6; --muted:#aeb6c4;
+  --card:rgba(18,24,36,.94); --glass:rgba(18,24,36,.86);
+  --pink:#ff4fa0; --accent:#7cd0ff; --ring:rgba(255,79,160,.35);
+  --radius:20px; --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box} html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Segoe UI,Roboto,Inter,Arial}
+#bg{position:fixed;inset:0;z-index:-2;background:center/cover no-repeat;filter:contrast(1) brightness(.9) saturate(1)}
+#shade{position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.65))}
+.container{max-width:960px;margin:0 auto;padding:24px 16px 96px}
+h1,h2,h3{margin:.5rem 0 1rem} h1{font-size:38px} h2{font-size:28px}
+p{margin:.25rem 0 .75rem} .muted{color:var(--muted)}
+.view{display:none;min-height:100vh} .view.show{display:block}
+.centerbox{max-width:560px;margin:18vh auto 0;padding:26px;border-radius:28px;background:var(--card);box-shadow:var(--shadow);text-align:center}
+.accent{color:var(--accent)}
+.btn{border:0;border-radius:16px;padding:12px 18px;font-weight:800;cursor:pointer}
+.btn.primary{background:var(--pink);color:#1b1020;box-shadow:0 0 0 6px var(--ring) inset}
+.btn.ghost{background:transparent;color:#fff;border:1px solid #ffffff22}
+.btn.dark{background:#1f2937;color:#e9eef6}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.grid{display:grid;gap:14px}
+.menu{grid-template-columns:1fr} @media(min-width:720px){.menu{grid-template-columns:1fr 1fr}}
+.card{background:var(--card);backdrop-filter:blur(8px);border-radius:20px;border:1px solid #ffffff14}
+.pad{padding:16px}
+.back{position:sticky;top:14px;background:#121a26;color:#fff;border:1px solid #ffffff22;border-radius:999px;padding:10px 16px;cursor:pointer;margin-bottom:12px}
+.select,.input{padding:12px 14px;border-radius:12px;border:1px solid #2a3446;background:#101722;color:#e9eef6}
+.goal-list .item{display:flex;gap:12px;align-items:center;padding:12px;border-radius:16px;background:var(--glass);border:2px solid transparent;cursor:pointer}
+.goal-list .item img{width:76px;height:56px;border-radius:12px;object-fit:cover}
+.goal-list .item.active{border-color:var(--pink);box-shadow:0 0 0 6px var(--ring) inset}
+.menu .tile{padding:18px;border-radius:18px}
+.menu .tile h3{margin:0 0 6px 0}
+.list-item{display:flex;gap:12px;align-items:center;padding:12px;border-radius:16px;background:var(--glass);border:1px solid #ffffff14}
+.thumb{width:70px;height:52px;border-radius:12px;object-fit:cover}
+.modal{position:fixed;inset:0;display:none;place-items:center;padding:20px;background:rgba(0,0,0,.55);z-index:50}
+.modal.show{display:grid}
+.sheet{width:min(920px,96vw);background:var(--card);border-radius:20px;padding:18px;border:1px solid #ffffff14}
+.sheet h3{margin:4px 40px 6px 0}
+.close{position:absolute;right:20px;top:16px;border:0;background:#121a26;color:#fff;border-radius:50%;width:36px;height:36px}
+.video-wrap{border-radius:16px;overflow:hidden;background:#000;margin:10px 0;border:1px solid #ffffff12}
+video{width:100%;display:block;object-fit:cover;max-height:58vh}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.counter{background:#0f1622;border:1px solid #2a3446;border-radius:16px;padding:12px;margin-top:10px}
+.kpi{font-size:48px;font-weight:900;letter-spacing:2px}
+.chat-box{background:var(--card);border-radius:16px;padding:12px;min-height:36vh;max-height:56vh;overflow:auto}
+.bubble{max-width:88%;padding:10px 14px;border-radius:14px;margin:6px 0}
+.bubble.me{background:var(--pink);color:#1b1020;margin-left:auto}
+.bubble.bot{background:#1a2230}
+.item-row{display:flex;justify-content:space-between;align-items:center;background:#0f1622;border:1px solid #2a3446;padding:10px 12px;border-radius:12px}
+.total{margin-top:10px;font-weight:900}
+@media (max-width:720px){.grid3{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div id="bg"></div>
-<div id="shade"></div>
+<div id="bg"></div><div id="shade"></div>
 
 <!-- SPLASH -->
-<section id="view-splash" class="view show">
+<section id="v-splash" class="view show">
   <div class="container">
-    <div class="card centerbox">
-      <h1>FitMate <span style="color:var(--ring)">HU</span></h1>
+    <div class="centerbox">
+      <h1>FitMate <span class="accent">HU</span></h1>
       <p>Magyar fitnesz – egyszerűen, szépen, okosan.</p>
-      <div style="margin-top:18px">
-        <button id="btnStart" class="btn">Kezdjük</button>
-      </div>
+      <button class="btn primary" id="start">Kezdjük</button>
     </div>
   </div>
 </section>
 
 <!-- CÉLVÁLASZTÓ -->
-<section id="view-goal" class="view">
+<section id="v-goal" class="view">
   <div class="container">
-    <div class="backbar"><button class="back" data-go="splash">← Vissza</button></div>
-    <h1>Válaszd ki a célod</h1>
-    <p>Ezt később bármikor módosíthatod.</p>
-
-    <div class="grid" style="margin-top:18px">
-      <div class="list-item" data-goal="fogyas">
-        <img class="thumb" src="./fogyas.png" alt="Fogyás" />
-        <div><div style="font-weight:800">Fogyás</div><div class="muted">Zsírégetés, kíméletes tempó</div></div>
-      </div>
-      <div class="list-item" data-goal="szalkasitas">
-        <img class="thumb" src="./szalkasitas.png" alt="Szálkásítás" />
-        <div><div style="font-weight:800">Szálkásítás</div><div class="muted">Deficit + tónusos izom</div></div>
-      </div>
-      <div class="list-item" data-goal="hizas">
-        <img class="thumb" src="./hizas.png" alt="Hízás" />
-        <div><div style="font-weight:800">Hízás</div><div class="muted">Izomtömeg növelés, szuficit</div></div>
-      </div>
+    <button class="back" data-go="splash">← Vissza</button>
+    <h2>Válaszd ki a célod</h2>
+    <p class="muted">Ezt később bármikor módosíthatod.</p>
+    <div class="goal-list grid" style="margin-top:12px">
+      <div class="item" data-goal="fogyas"><img src="fogyas.png" alt=""><div><b>Fogyás</b><div class="muted">Zsírégetés</div></div></div>
+      <div class="item" data-goal="szalkasitas"><img src="szalkasitas.png" alt=""><div><b>Szálkásítás</b><div class="muted">Deficit + tónus</div></div></div>
+      <div class="item" data-goal="hizas"><img src="hizas.png" alt=""><div><b>Hízás</b><div class="muted">Izomtömeg</div></div></div>
     </div>
-
-    <div class="row" style="margin-top:16px">
-      <div class="pill">Nem:
-        <select id="gender" class="select" style="margin-left:10px">
-          <option value="no">Nő</option>
-          <option value="ferfi">Férfi</option>
-        </select>
-      </div>
-      <button id="btnToMenu" class="btn">Tovább a főmenübe</button>
+    <div class="row" style="margin-top:12px">
+      <label class="muted">Nem:</label>
+      <select id="gender" class="select">
+        <option value="no">Nő</option><option value="ferfi">Férfi</option>
+      </select>
+      <button class="btn primary" id="toHome">Tovább a főmenübe</button>
     </div>
   </div>
 </section>
 
 <!-- FŐMENÜ -->
-<section id="view-menu" class="view">
+<section id="v-home" class="view">
   <div class="container">
-    <div class="backbar"><button class="back" data-go="goal">← Vissza</button></div>
-    <div class="row" style="align-items:center;justify-content:space-between">
-      <div class="pill">Üdv! <strong id="stateGoal" style="margin-left:8px">Cél: –</strong></div>
+    <button class="back" data-go="goal">← Vissza</button>
+    <div class="row" style="justify-content:space-between">
+      <div class="card pad" style="border-radius:999px"><b id="goalLabel">Cél: –</b></div>
       <div class="row">
         <button class="btn ghost" data-go="goal">Cél módosítása</button>
         <button class="btn ghost" data-go="splash">Kezdő</button>
       </div>
     </div>
-
-    <div class="grid menu" style="margin-top:18px">
-      <div class="card pad" data-go="workouts">
-        <h2>Edzés</h2><p>Kategória szerinti lista, időzítővel.</p>
-      </div>
-      <div class="card pad" data-go="cal">
-        <h2>Kalóriaszámláló</h2><p>Egyszerű napi bevitel.</p>
-      </div>
-      <div class="card pad" data-go="perf">
-        <h2>Napi teljesítmény</h2><p>Streak és kész napok.</p>
-      </div>
-      <div class="card pad" data-go="chat">
-        <h2>AI chat</h2><p>Magyar tanácsok.</p>
-      </div>
+    <div class="grid menu" style="margin-top:14px">
+      <div class="tile card pad" data-open="workout"><h3>Edzés</h3><p class="muted">Válassz gyakorlatot, időzítővel.</p></div>
+      <div class="tile card pad" data-open="cal"><h3>Kalóriaszámláló</h3><p class="muted">Egyszerű napi bevitel.</p></div>
+      <div class="tile card pad" data-open="perf"><h3>Napi teljesítmény</h3><p class="muted">Streak és kész napok.</p></div>
+      <div class="tile card pad" data-open="chat"><h3>AI chat</h3><p class="muted">Magyar tanácsok.</p></div>
     </div>
   </div>
 </section>
 
 <!-- EDZÉS LISTA -->
-<section id="view-workouts" class="view">
+<section id="v-workout" class="view">
   <div class="container">
-    <div class="backbar"><button class="back" data-go="menu">← Vissza</button><h2 style="margin:0">Napi edzés</h2></div>
-    <p>Válassz gyakorlatot a célod alapján (5 db / kategória).</p>
-
-    <div id="workoutList" class="grid" style="margin-top:14px"></div>
-    <div class="footer-space"></div>
+    <button class="back" data-go="home">← Vissza</button>
+    <h2>Napi edzés</h2><p class="muted">Válassz gyakorlatot (5 db / kategória).</p>
+    <div id="exList" class="grid" style="margin-top:12px"></div>
   </div>
 </section>
 
-<!-- KALÓRIASZÁMLÁLÓ (egyszerű) -->
-<section id="view-cal" class="view">
-  <div class="container">
-    <div class="backbar"><button class="back" data-go="menu">← Vissza</button><h2 style="margin:0">Kalóriaszámláló</h2></div>
-    <div class="card pad">
-      <div class="row">
-        <input id="mealName" class="select" style="flex:2" placeholder="Étkezés (pl. csirkemell, rizs)" />
-        <input id="mealKcal" class="select" style="flex:1" placeholder="kcal" type="number" />
-        <button id="btnAddMeal" class="btn">Hozzáad</button>
-      </div>
-      <div id="mealList" class="grid" style="margin-top:12px"></div>
-      <div class="pill" style="margin-top:12px">Napi összesen: <strong id="kcalSum" style="margin-left:6px">0 kcal</strong></div>
-    </div>
-  </div>
-</section>
-
-<!-- NAPI TELJESÍTMÉNY -->
-<section id="view-perf" class="view">
-  <div class="container">
-    <div class="backbar"><button class="back" data-go="menu">← Vissza</button><h2 style="margin:0">Napi teljesítmény</h2></div>
-    <div class="grid">
-      <div class="card pad"><div class="muted">Folyamatos napok (streak)</div><h2 id="streak">0 nap</h2></div>
-      <div class="card pad"><div class="muted">Összes befejezett edzés</div><h2 id="doneCount">0</h2></div>
-    </div>
-    <p class="muted" style="margin-top:10px">Az értékek a készülékeden tárolódnak (LocalStorage).</p>
-  </div>
-</section>
-
-<!-- AI CHAT (front-end) -->
-<section id="view-chat" class="view">
-  <div class="container">
-    <div class="backbar"><button class="back" data-go="menu">← Vissza</button><h2 style="margin:0">AI chat (magyar)</h2></div>
-    <div class="card pad" style="min-height:320px">
-      <div id="chatBox" class="card pad" style="min-height:180px;background:rgba(255,255,255,.03)">
-        <div class="pill" style="float:right;background:var(--pink);color:#12141a">Szia</div>
-        <p style="margin-top:40px">Szia! Miben segíthetek a <span id="chatGoal">célodban</span>?</p>
-      </div>
-      <div class="row" style="margin-top:12px">
-        <input id="chatInput" class="select" style="flex:1" placeholder="Írd ide a kérdésed..." />
-        <button id="btnSend" class="btn">Küldés</button>
-      </div>
-      <p class="muted" style="margin-top:8px">Megjegyzés: a backend kulcskezelés Netlify functionban van. Ha nincs beállítva, itt minta választ kapsz.</p>
-    </div>
-  </div>
-</section>
-
-<!-- MODAL (GYAKORLAT RÉSZLET) -->
+<!-- EDZÉS MODÁL -->
 <div id="modal" class="modal">
-  <div class="sheet card pad">
-    <div class="row" style="justify-content:space-between;align-items:center">
-      <h2 id="exTitle" style="margin:0">Gyakorlat</h2>
-      <button id="modalClose" class="btn ghost">✕</button>
+  <div class="sheet">
+    <button class="close" id="mClose">×</button>
+    <h3 id="exTitle">–</h3>
+    <p id="exDesc" class="muted">–</p>
+    <div class="video-wrap"><video id="exVideo" playsinline muted autoplay loop></video></div>
+    <div class="grid3">
+      <div><label class="muted">Körök</label><input id="iSets" class="input" type="number" min="1" value="3"></div>
+      <div><label class="muted">Ismétlés/kör</label><input id="iReps" class="input" type="number" min="1" value="12"></div>
+      <div><label class="muted">Idő/ism. (mp)</label><input id="iSec" class="input" type="number" min="1" value="2"></div>
     </div>
-    <p id="exDesc" class="muted">Leírás.</p>
-    <video id="exVideo" playsinline muted loop autoplay></video>
-
-    <div class="row" style="margin-top:12px">
-      <div class="pill">Körök: <input id="inpSets" class="select" type="number" min="1" value="3" style="width:80px;margin-left:8px"></div>
-      <div class="pill">Ismétlés/kör: <input id="inpReps" class="select" type="number" min="1" value="12" style="width:90px;margin-left:8px"></div>
-      <div class="pill">Idő/ism. (mp): <input id="inpSec" class="select" type="number" min="1" value="2" style="width:90px;margin-left:8px"></div>
-    </div>
-
     <div class="counter">
-      <h2>Készen állsz?</h2>
-      <div id="big" class="kpi">00:00</div>
-      <div class="row" style="margin-top:8px">
-        <button id="btnStartSet" class="btn">Start</button>
-        <button id="btnPause" class="btn ghost">Szünet</button>
-        <button id="btnNext" class="btn ghost">Következő</button>
+      <h3>Készen állsz?</h3>
+      <div id="clock" class="kpi">00:00</div>
+      <div class="row">
+        <button id="bStart" class="btn primary">Start</button>
+        <button id="bPause" class="btn dark">Szünet</button>
+        <button id="bNext" class="btn dark">Következő</button>
       </div>
-      <p id="statusLine" class="muted" style="margin-top:8px"></p>
+      <p id="status" class="muted" style="margin-top:6px"></p>
     </div>
   </div>
 </div>
 
+<!-- KALÓRIA -->
+<section id="v-cal" class="view">
+  <div class="container">
+    <button class="back" data-go="home">← Vissza</button>
+    <h2>Kalóriaszámláló</h2>
+    <div class="card pad">
+      <div class="row">
+        <input id="mealName" class="input" style="flex:2" placeholder="Étkezés (pl. csirkemell, rizs)">
+        <input id="mealKcal" class="input" style="flex:1" type="number" placeholder="kcal">
+        <button id="addMeal" class="btn primary">Hozzáad</button>
+      </div>
+      <div id="mealList" class="grid" style="margin-top:10px"></div>
+      <div class="total">Napi összesen: <span id="sumKcal"><b>0</b></span> kcal</div>
+    </div>
+  </div>
+</section>
+
+<!-- TELJESÍTMÉNY -->
+<section id="v-perf" class="view">
+  <div class="container">
+    <button class="back" data-go="home">← Vissza</button>
+    <h2>Teljesítmény</h2>
+    <div class="grid">
+      <div class="card pad"><div class="muted">Folyamatos napok (streak)</div><h2 id="streak">0</h2></div>
+      <div class="card pad"><div class="muted">Összes befejezett edzés</div><h2 id="done">0</h2></div>
+    </div>
+  </div>
+</section>
+
+<!-- CHAT -->
+<section id="v-chat" class="view">
+  <div class="container">
+    <button class="back" data-go="home">← Vissza</button>
+    <h2>AI chat (magyar)</h2>
+    <div class="chat-box" id="chatBox"></div>
+    <div class="row" style="margin-top:10px">
+      <input id="chatInput" class="input" placeholder="Írd ide a kérdésed…">
+      <button id="sendChat" class="btn primary">Küldés</button>
+    </div>
+  </div>
+</section>
+
 <script>
-/* ===== KIS „ROUTER” + ÁLLAPOT ===== */
-const S = {
-  goal: localStorage.getItem('goal') || null,
-  gender: localStorage.getItem('gender') || 'no',
-  done: +(localStorage.getItem('done') || 0),
-  streak: +(localStorage.getItem('streak') || 0),
-  lastDoneDate: localStorage.getItem('lastDoneDate') || null
-};
-const qs = s=>document.querySelector(s);
-const qsa = s=>[...document.querySelectorAll(s)];
-function show(id){
-  qsa('.view').forEach(v=>v.classList.remove('show'));
-  qs('#view-'+id).classList.add('show');
-  if(id==='menu'){ renderMenu(); }
-  if(id==='workouts'){ renderWorkouts(); }
-  if(id==='chat'){ qs('#chatGoal').textContent = S.goalHun||'célodban'; }
-  setBackgroundFor(id);
-}
-function setBackgroundFor(view){
-  let url = 'url("./kezdo.png")';
-  if(view==='goal' || view==='menu'){ // célhoz illő header
-    if(S.goal==='fogyas') url='url("./fogyas.png")';
-    if(S.goal==='szalkasitas') url='url("./szalkasitas.png")';
-    if(S.goal==='hizas') url='url("./hizas.png")';
-  }else if(view==='workouts'){
-    if(S.goal==='fogyas') url='url("./fogyas.png")';
-    if(S.goal==='szalkasitas') url='url("./szalkasitas.png")';
-    if(S.goal==='hizas') url='url("./hizas.png")';
-  }else{
-    url='url("./kezdo.png")';
-  }
-  const bg=qs('#bg'); bg.style.backgroundImage=url; bg.style.opacity=.35;
+/* ============== ÁLLAPOT + SEGÉDEK ============== */
+const S={goal:null, gender:'no', done:+(localStorage.getItem('done')||0), streak:+(localStorage.getItem('streak')||0)};
+const qs=s=>document.querySelector(s), qsa=s=>[...document.querySelectorAll(s)];
+function show(id){ qsa('.view').forEach(v=>v.classList.remove('show')); qs('#v-'+id).classList.add('show'); setBG(id); }
+function setBG(view){
+  const m={splash:'kezdo.png', goal:'fogyas.png', home:(S.goal||'fogyas')+'.png', workout:(S.goal||'fogyas')+'.png', cal:'hizas.png', perf:'szalkasitas.png', chat:'fogyas.png'};
+  qs('#bg').style.backgroundImage=`url('${m[view]||'kezdo.png'}')`;
 }
 
-/* ===== SPLASH -> GOAL ===== */
-qs('#btnStart').addEventListener('click',()=>show('goal'));
+/* ============== SPLASH → GOAL ============== */
+qs('#start').onclick=()=>show('goal');
 
-/* ===== GOAL UI ===== */
-let tempGoal = S.goal || 'fogyas';
-let tempGender = S.gender;
-qsa('#view-goal .list-item').forEach(item=>{
-  item.addEventListener('click',()=>{
-    tempGoal = item.dataset.goal;
-    qsa('#view-goal .list-item').forEach(i=>i.style.outline='none');
-    item.style.outline = `2px solid var(--ring)`;
-  });
+/* ============== GOAL PICK ============== */
+let tmpGoal='fogyas'; let tmpGender='no';
+qsa('.goal-list .item').forEach(it=>{
+  it.onclick=()=>{ qsa('.goal-list .item').forEach(x=>x.classList.remove('active')); it.classList.add('active'); tmpGoal=it.dataset.goal; qs('#bg').style.backgroundImage=`url('${tmpGoal}.png')`; };
 });
-qs('#gender').value = tempGender;
-qs('#gender').addEventListener('change',e=> tempGender = e.target.value);
-qs('#btnToMenu').addEventListener('click',()=>{
-  S.goal = tempGoal; S.gender=tempGender;
-  S.goalHun = ({fogyas:'Fogyás', szalkasitas:'Szálkásítás', hizas:'Hízás'})[S.goal] || '–';
-  localStorage.setItem('goal',S.goal);
-  localStorage.setItem('gender',S.gender);
-  show('menu');
-});
-
-/* ===== FŐMENÜ KATT ===== */
-qsa('#view-menu [data-go]').forEach(el=>el.addEventListener('click',()=>show(el.dataset.go)));
-qsa('.back').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go)));
-
-/* ===== MENÜ RENDER ===== */
-function renderMenu(){
-  qs('#stateGoal').textContent = `Cél: ${S.goalHun||'–'}`;
-}
-
-/* ===== KALÓRIA SZÁMLÁLÓ ===== */
-const M = {items: JSON.parse(localStorage.getItem('meals')||'[]')};
-function saveMeals(){ localStorage.setItem('meals', JSON.stringify(M.items)); }
-function renderMeals(){
-  const wrap = qs('#mealList'); wrap.innerHTML='';
-  let sum=0;
-  M.items.forEach((m,i)=>{
-    sum+=m.kcal;
-    const row = document.createElement('div');
-    row.className='list-item';
-    row.innerHTML = `<div style="flex:1"><strong>${m.name}</strong><div class="muted">${m.kcal} kcal</div></div>
-      <button class="btn ghost">Törlés</button>`;
-    row.querySelector('button').onclick=()=>{M.items.splice(i,1);saveMeals();renderMeals();}
-    wrap.appendChild(row);
-  });
-  qs('#kcalSum').textContent = `${sum} kcal`;
-}
-qs('#btnAddMeal').onclick=()=>{
-  const name = qs('#mealName').value.trim(); const kcal = +qs('#mealKcal').value||0;
-  if(!name || !kcal) return;
-  M.items.push({name,kcal}); saveMeals(); renderMeals();
-  qs('#mealName').value=''; qs('#mealKcal').value='';
+qs('#gender').onchange=e=>tmpGender=e.target.value;
+qs('#toHome').onclick=()=>{
+  S.goal=tmpGoal; S.gender=tmpGender;
+  localStorage.setItem('goal',S.goal); localStorage.setItem('gender',S.gender);
+  qs('#goalLabel').textContent=`Cél: ${S.goal==='fogyas'?'Fogyás':S.goal==='szalkasitas'?'Szálkásítás':'Hízás'}`;
+  show('home');
 };
-renderMeals();
 
-/* ===== GYAKORLAT ADATOK (példa – „Hízás / otthoni”, Férfi & Nő) ===== */
-const DATA = {
-  hizas: {
-    ferfi: [
-      {t:'Csípőemelés', f:'hizas1.mp4', d:'Far és hát alsó szakasz erősítése.'},
-      {t:'Négyütemű fekvőtámasz', f:'hizas2.mp4', d:'Teljes test állóképesség, dinamika.'},
-      {t:'Guggolás', f:'hizas3.mp4', d:'Klasszikus alsótest; törzs feszes.'},
-      {t:'Plank', f:'hizas4.mp4', d:'Törzs stabilizáció, derék tehermentesítése.'},
-      {t:'Híd váltott lábbal', f:'hizas5.mp4', d:'Glute bridge haladó változat.'},
+/* ============== NAV ============== */
+qsa('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
+qsa('#v-home [data-open]').forEach(t=>t.onclick=()=>{ const to=t.dataset.open; if(to==='workout') renderExList(); show(to); });
+
+/* ============== GYAKORLAT ADATOK (mindhárom téma, női és férfi 5-5) ============== */
+const DATA={
+  fogyas:{
+    ferfi:[
+      {t:'Jumping jacks',f:'fogyas1.mp4',d:'Pulzusfokozó bemelegítés, teljes test.'},
+      {t:'Switch jump mountain climber',f:'fogyas2.mp4',d:'Core + kardió, intenzív.'},
+      {t:'Cardio jumping jacks',f:'fogyas3.mp4',d:'Dinamikus kardió, ritmikus légzés.'},
+      {t:'Plank',f:'fogyas4.mp4',d:'Törzs stabilizáció, váll a könyök fölött.'},
+      {t:'Glute bridge',f:'fogyas5.mp4',d:'Farizom aktiválás, derék kímélése.'},
     ],
-    no: [
-      {t:'Csípőemelés', f:'hizas_w1.mp4', d:'Farizom, hamstring aktiválás.'},
-      {t:'Négyütemű fekvőtámasz', f:'hizas_w2.mp4', d:'Pulzus emelés + teljes test.'},
-      {t:'Guggolás', f:'hizas_w3.mp4', d:'Saját testsúlyos guggolás, térd a lábfej irányába.'},
-      {t:'Plank', f:'hizas_w4.mp4', d:'Könyök a váll alatt, törzs feszes.'},
-      {t:'Híd váltott lábbal', f:'hizas_w5.mp4', d:'Glute bridge váltott lábemeléssel.'},
+    no:[
+      {t:'Jumping jacks',f:'fogyas_w1.mp4',d:'Pulzusfokozó bemelegítés, teljes test.'},
+      {t:'Switch jump mountain climber',f:'fogyas_w2.mp4',d:'Core + kardió, intenzív.'},
+      {t:'Cardio jumping jacks',f:'fogyas_w3.mp4',d:'Dinamikus kardió, ritmikus légzés.'},
+      {t:'Plank',f:'fogyas_w4.mp4',d:'Törzs stabilizáció, váll a könyök fölött.'},
+      {t:'Glute bridge',f:'fogyas_w5.mp4',d:'Farizom aktiválás, derék kímélése.'},
     ]
   },
-  fogyas: { ferfi:[], no:[] },
-  szalkasitas: { ferfi:[], no:[] }
+  szalkasitas:{
+    ferfi:[
+      {t:'Fekvőtámasz',f:'szalkasitas1.mp4',d:'Mell, tricepsz; kontrollált tempó.'},
+      {t:'Oldalemelés (váll)',f:'szalkasitas2.mp4',d:'Vállközép aktiválás, könnyű tempó.'},
+      {t:'Kitörés',f:'szalkasitas3.mp4',d:'Láb + egyensúly, térd a lábfej irányába.'},
+      {t:'Plank vállérintéssel',f:'szalkasitas4.mp4',d:'Anti-rotáció, vállstabilitás.'},
+      {t:'Híd',f:'szalkasitas5.mp4',d:'Alsótest tónus, farizom.'},
+    ],
+    no:[
+      {t:'Fekvőtámasz térdelve',f:'szalkasitas_w1.mp4',d:'Mell, tricepsz; kezdő változat.'},
+      {t:'Oldalsó kitörés',f:'szalkasitas_w2.mp4',d:'Oldalsík, comb és far.'},
+      {t:'Kitörés hátra',f:'szalkasitas_w3.mp4',d:'Stabil törzs, egyenes törzshelyzet.'},
+      {t:'Plank',f:'szalkasitas_w4.mp4',d:'Core tartás, egyenes testhelyzet.'},
+      {t:'Glute bridge',f:'szalkasitas_w5.mp4',d:'Farizom izoláció.'},
+    ]
+  },
+  hizas:{
+    ferfi:[
+      {t:'Csípőemelés',f:'hizas1.mp4',d:'Far és hamstring erősítés.'},
+      {t:'Négyütemű fekvőtámasz',f:'hizas2.mp4',d:'Teljes test állóképesség.'},
+      {t:'Guggolás',f:'hizas3.mp4',d:'Quadriceps + farizom.'},
+      {t:'Plank',f:'hizas4.mp4',d:'Törzs stabilitás.'},
+      {t:'Glute bridge (váltott)',f:'hizas5.mp4',d:'Haladó farizom gyakorlat.'},
+    ],
+    no:[
+      {t:'Csípőemelés',f:'hizas_w1.mp4',d:'Farizom és hamstring.'},
+      {t:'Négyütemű fekvőtámasz',f:'hizas_w2.mp4',d:'Pulzusnövelő, teljes test.'},
+      {t:'Guggolás',f:'hizas_w3.mp4',d:'Saját testsúly, sarok a talajon.'},
+      {t:'Plank',f:'hizas_w4.mp4',d:'Has + vállöv stabilitás.'},
+      {t:'Glute bridge (váltott)',f:'hizas_w5.mp4',d:'Farizom fókusz.'},
+    ]
+  }
 };
 
-/* ===== EDZÉS LISTA ===== */
-function renderWorkouts(){
-  const list = qs('#workoutList'); list.innerHTML='';
-  const items = (DATA[S.goal] && DATA[S.goal][S.gender]) || [];
-  if(!items.length){
-    list.innerHTML = `<div class="card pad"><h3>Még nincsenek videók ehhez a célhoz.</h3><p class="muted">Később feltöltjük őket.</p></div>`;
-    return;
-  }
-  items.forEach((it,idx)=>{
-    const row = document.createElement('div');
+/* ============== EDZÉS LISTA RENDER ============== */
+function renderExList(){
+  const wrap=qs('#exList'); wrap.innerHTML='';
+  const arr=(DATA[S.goal]||{})[S.gender]||[];
+  if(!arr.length){ wrap.innerHTML='<div class="card pad"><b>Még nincs feltöltve ehhez a célhoz.</b></div>'; return; }
+  arr.forEach((it,i)=>{
+    const row=document.createElement('div');
     row.className='list-item';
-    row.innerHTML = `
-      <img class="thumb" src="./${S.goal}.png" alt="${S.goal}">
-      <div style="flex:1">
-        <div style="font-weight:800">#${idx+1}. gyakorlat</div>
-        <div class="muted">${it.t}</div>
-      </div>
+    row.innerHTML=`
+      <img class="thumb" src="${S.goal}.png" alt="">
+      <div style="flex:1"><div style="font-weight:800">#${i+1}. gyakorlat</div><div class="muted">${it.t}</div></div>
       <button class="btn">Megnyit</button>`;
-    row.querySelector('.btn').onclick = ()=> openExercise(it);
-    list.appendChild(row);
+    row.querySelector('.btn').onclick=()=>openEx(it);
+    wrap.appendChild(row);
   });
 }
 
-/* ===== MODAL + IDŐZÍTŐ ===== */
-const modal = qs('#modal');
-const exVideo = qs('#exVideo');
-let timer=null, paused=false;
-let cur={sets:0,reps:0,sec:0, setNow:1, repNow:0};
+/* ============== MODÁL + IDŐZÍTŐ ============== */
+const modal=qs('#modal'), mClose=qs('#mClose'), v=qs('#exVideo'), title=qs('#exTitle'), desc=qs('#exDesc');
+const iSets=qs('#iSets'), iReps=qs('#iReps'), iSec=qs('#iSec');
+const bStart=qs('#bStart'), bPause=qs('#bPause'), bNext=qs('#bNext');
+const clock=qs('#clock'), status=qs('#status');
 
-function beep(){
-  // kis „beep” WebAudio-val
-  try{
-    const ctx=new (window.AudioContext||window.webkitAudioContext)();
-    const o=ctx.createOscillator(), g=ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.type='sine'; o.frequency.value=880; g.gain.value=.06;
-    o.start(); setTimeout(()=>{o.stop();ctx.close()},180);
-  }catch(e){}
+let tInt=null, paused=false, curSet=1, curRep=0, totalSets=3, reps=12, secPer=2;
+
+function mmss(s){const m=String(Math.floor(s/60)).padStart(2,'0'); const ss=String(s%60).padStart(2,'0'); return `${m}:${ss}`;}
+function beep(){try{const ctx=new (window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.value=900;g.gain.value=.06;o.start();setTimeout(()=>{o.stop();ctx.close()},160);}catch(e){}}
+
+function openEx(it){
+  title.textContent=it.t; desc.textContent=it.d||''; v.src=it.f; v.play().catch(()=>{});
+  iSets.value=3; iReps.value=12; iSec.value=2; clock.textContent='00:00'; status.textContent='';
+  stopTimer(); modal.classList.add('show');
 }
+mClose.onclick=()=>{stopTimer(); modal.classList.remove('show'); v.pause();};
 
-function openExercise(it){
-  qs('#exTitle').textContent = it.t;
-  qs('#exDesc').textContent = it.d || '';
-  exVideo.src = `./${it.f}`; exVideo.play().catch(()=>{});
-  qs('#inpSets').value=3; qs('#inpReps').value=12; qs('#inpSec').value=2;
-  qs('#big').textContent='00:00'; qs('#statusLine').textContent='';
-  modal.classList.add('show');
-}
-qs('#modalClose').onclick=()=>{ stopTimer(); modal.classList.remove('show'); exVideo.pause(); };
+function stopTimer(){ if(tInt){clearInterval(tInt); tInt=null;} }
 
-function stopTimer(){ if(timer){ clearInterval(timer); timer=null; } }
-
-qs('#btnStartSet').onclick=()=>{
-  cur.sets = Math.max(1, +qs('#inpSets').value||1);
-  cur.reps = Math.max(1, +qs('#inpReps').value||1);
-  cur.sec  = Math.max(1, +qs('#inpSec').value||1);
-  cur.setNow = 1; cur.repNow = 0; paused=false;
-  runSet();
+bStart.onclick=()=>{
+  totalSets=Math.max(1,+iSets.value||1);
+  reps=Math.max(1,+iReps.value||1);
+  secPer=Math.max(1,+iSec.value||1);
+  curSet=1; curRep=0; paused=false; runRep();
+};
+bPause.onclick=()=>{ paused=!paused; bPause.textContent=paused?'Folytatás':'Szünet'; };
+bNext.onclick=()=>{ // manuális ugrás
+  stopTimer(); curSet++; if(curSet<=totalSets){ restPhase(()=>runRep()); } else { finishExercise(); }
 };
 
-qs('#btnPause').onclick=()=>{ paused=!paused; qs('#btnPause').textContent = paused?'Folytatás':'Szünet'; };
-
-qs('#btnNext').onclick=()=>{ // manuális továbblépés
-  stopTimer(); cur.setNow++; if(cur.setNow<=cur.sets){ restPhase(()=>runSet()); } else finishExercise();
-};
-
-function runSet(){
+function runRep(){
+  let left=secPer; clock.textContent=mmss(left); status.textContent=`Kör ${curSet}/${totalSets} • Ismétlés ${curRep+1}/${reps}`;
   stopTimer();
-  qs('#statusLine').textContent = `Kör ${cur.setNow} / ${cur.sets} — indul!`;
-  cur.repNow = 0; let t=cur.sec;
-  updateKPI(t);
-  timer = setInterval(()=>{
+  tInt=setInterval(()=>{
     if(paused) return;
-    t--; updateKPI(t);
-    if(t<=0){
-      cur.repNow++; beep();
-      if(cur.repNow>=cur.reps){
-        // kör kész
-        stopTimer();
-        cur.setNow++;
-        if(cur.setNow<=cur.sets){
-          restPhase(()=>runSet());
-        }else{
-          finishExercise();
-        }
-      }else{
-        t=cur.sec; // következő ismétlés
-        qs('#statusLine').textContent = `Kör ${cur.setNow} / ${cur.sets} — ismétlés ${cur.repNow+1} / ${cur.reps}`;
+    left--; clock.textContent=mmss(left);
+    if(left<=0){
+      beep(); curRep++;
+      if(curRep<reps){ left=secPer; status.textContent=`Kör ${curSet}/${totalSets} • Ismétlés ${curRep+1}/${reps}`; }
+      else { // kör vége
+        stopTimer(); curSet++; if(curSet<=totalSets){ restPhase(()=>{curRep=0; runRep();}); } else { finishExercise(); }
       }
     }
   },1000);
 }
 
 function restPhase(cb){
-  let r=15; qs('#statusLine').textContent=`Pihenő ${r} mp`;
-  updateKPI(r,true);
-  const rint = setInterval(()=>{
+  let r=15; status.textContent=`Pihenő ${r} mp`; clock.textContent=mmss(r);
+  const ri=setInterval(()=>{
     if(paused) return;
-    r--; updateKPI(r,true);
-    if(r<=0){ clearInterval(rint); beep(); cb(); }
+    r--; clock.textContent=mmss(r); if(r<=0){ clearInterval(ri); beep(); cb(); }
   },1000);
 }
 
 function finishExercise(){
-  qs('#statusLine').innerHTML = `<span class="ok">Ügyes vagy! 🎉 Befejeztük a kört.</span> Lépj vissza és válaszd a következőt.`;
-  updateKPI(0);
-  // teljesítmény számláló
-  S.done++; localStorage.setItem('done',S.done); qs('#doneCount').textContent=S.done;
-  const today=(new Date()).toDateString();
-  if(S.lastDoneDate!==today){ S.streak++; localStorage.setItem('streak',S.streak); localStorage.setItem('lastDoneDate',today); qs('#streak').textContent=S.streak+' nap'; }
+  status.innerHTML='🎉 <b>Ügyes vagy! Büszke vagyok rád!</b> Lépj vissza a listához és válaszd a következőt.';
+  clock.textContent='00:00'; stopTimer();
+  S.done++; localStorage.setItem('done',S.done); qs('#done').textContent=S.done;
+  const today=new Date().toDateString(), last=localStorage.getItem('lastDone')||'';
+  if(last!==today){ S.streak++; localStorage.setItem('streak',S.streak); localStorage.setItem('lastDone',today); qs('#streak').textContent=S.streak; }
 }
 
-function updateKPI(n,rest){
-  const mm = String(Math.floor(n/60)).padStart(2,'0');
-  const ss = String(n%60).padStart(2,'0');
-  qs('#big').textContent = `${mm}:${ss}`;
-  qs('#big').className = `kpi ${rest?'muted':''}`;
-}
+/* ============== KALÓRIA ============== */
+const meals=JSON.parse(localStorage.getItem('meals')||'[]');
+function saveMeals(){ localStorage.setItem('meals',JSON.stringify(meals)); }
+function renderMeals(){ const wrap=qs('#mealList'); wrap.innerHTML=''; let sum=0; meals.forEach((m,i)=>{ sum+=m.k; const r=document.createElement('div'); r.className='item-row'; r.innerHTML=`<span>${m.n}</span><span>${m.k} kcal</span>`; r.onclick=()=>{meals.splice(i,1);saveMeals();renderMeals();}; wrap.appendChild(r); }); qs('#sumKcal').innerHTML='<b>'+sum+'</b>'; }
+qs('#addMeal').onclick=()=>{ const n=qs('#mealName').value.trim(); const k=+qs('#mealKcal').value||0; if(!n||!k) return; meals.push({n,k}); saveMeals(); renderMeals(); qs('#mealName').value=''; qs('#mealKcal').value=''; };
+renderMeals();
 
-/* ===== CHAT (front: ha nincs backend, dummy válasz) ===== */
-qs('#btnSend').onclick = async ()=>{
-  const q = qs('#chatInput').value.trim(); if(!q) return;
-  const box = qs('#chatBox');
-  const you = document.createElement('div'); you.className='pill'; you.style.cssText='float:right;background:var(--pink);color:#12141a;margin-top:8px'; you.textContent=q;
-  box.appendChild(you);
-  qs('#chatInput').value='';
-  // próbáljuk meghívni a Netlify functiont, ha nincs: fallback
-  let reply = '';
-  try{
-    const r = await fetch('/.netlify/functions/ai-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({goal:S.goal,gender:S.gender,question:q})});
-    if(r.ok){ const j = await r.json(); reply = j.reply || ''; }
-  }catch(e){}
-  if(!reply){
-    reply = `Itt lesz a személyre szabott válasz. (Cél: ${S.goalHun||'–'}, nem: ${S.gender==='no'?'nő':'férfi'})`;
-  }
-  const ai = document.createElement('div'); ai.className='card pad'; ai.style.cssText='margin-top:8px;background:rgba(255,255,255,.03)'; ai.textContent = reply;
-  box.appendChild(ai);
-  box.scrollTop = box.scrollHeight;
-};
+/* ============== CHAT (egyszerű, megbízható) ============== */
+function pushBubble(t,me=false){ const b=document.createElement('div'); b.className='bubble'+(me?' me':' bot'); b.textContent=t; qs('#chatBox').appendChild(b); qs('#chatBox').scrollTop=1e9; }
+qs('#sendChat').onclick=async()=>{ const q=qs('#chatInput').value.trim(); if(!q) return; qs('#chatInput').value=''; pushBubble(q,true); let reply=''; try{ const r=await fetch('/.netlify/functions/ai-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:q,goal:S.goal,gender:S.gender})}); if(r.ok){ const j=await r.json(); reply=j.reply||''; } }catch(e){} if(!reply){ reply = 'Megvagyok! Írj, miben segítsek az edzés/étrend kapcsán. 😉'; } pushBubble(reply,false); };
 
-/* ===== INITIAL ===== */
-(function init(){
-  // failsafe – ha valamiért itt állnánk, legalább a splash->goal működjön
-  document.getElementById('btnStart')?.addEventListener('click',()=>show('goal'));
-  if(localStorage.getItem('goal')){
-    S.goalHun = ({fogyas:'Fogyás', szalkasitas:'Szálkásítás', hizas:'Hízás'})[localStorage.getItem('goal')] || '–';
-    show('menu');
-  }else{
-    show('splash');
-  }
-  // alap KPI
-  qs('#doneCount').textContent = S.done;
-  qs('#streak').textContent = S.streak + ' nap';
+/* ============== INDÍTÁS ============== */
+(function boot(){
+  S.goal = null; // mindig Splash -> Goal-lal nyitunk, kérésed szerint
+  qs('#done').textContent=S.done; qs('#streak').textContent=S.streak;
+  show('splash');
 })();
 </script>
 </body>

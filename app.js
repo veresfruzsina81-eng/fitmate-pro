@@ -1,12 +1,12 @@
 const $  = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 
-/* ---- background helper + router ---- */
+/* ---- háttér + router ---- */
 function applyBg(section){
   if(!section) return;
   const p = section.getAttribute("data-bg");
   if (p) section.style.backgroundImage =
-    `linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.75)), url('${p}')`;
+    `linear-gradient(180deg, rgba(0,0,0,.38), rgba(0,0,0,.58)), url('${p}')`;
 }
 function show(selector){
   $$(".screen").forEach(el=>el.classList.remove("active"));
@@ -16,7 +16,7 @@ function show(selector){
 ["#splash","#goals","#home","#workout","#woDetail","#calories","#progress","#chat"].forEach(sel=>applyBg($(sel)));
 show("#splash");
 
-/* ---- goal profile ---- */
+/* ---- profil (cél) ---- */
 const GSTR="fit_profile";
 const goalName = g=>({fogyas:"Fogyás",szalkasitas:"Szálkásítás",hizas:"Hízás"})[g]||"—";
 const loadProf = ()=>{ try{return JSON.parse(localStorage.getItem(GSTR)||"null");}catch{return null;} };
@@ -43,7 +43,7 @@ $$("[data-nav='workout']").forEach(b=>b.addEventListener("click",()=>show("#work
 
 const prof=loadProf(); if(prof?.goal) $("#goalLabel").textContent=goalName(prof.goal);
 
-/* ---- main menu open ---- */
+/* ---- menü ---- */
 $$("[data-open]").forEach(a=>{
   a.addEventListener("click",(e)=>{
     e.preventDefault();
@@ -56,19 +56,19 @@ $$("[data-open]").forEach(a=>{
   });
 });
 
-/* ---- workout: list + detail ---- */
+/* ---- edzés: lista + részlet ---- */
 const PLAN = [
-  {name:"Jumping jacks",  img:"https://images.unsplash.com/photo-1518644961665-ed172691aaa1?q=80&w=1600&auto=format&fit=crop", desc:"Ugrálás terpesz–zár, karok lendítése."},
-  {name:"Guggolás",       img:"https://images.unsplash.com/photo-1594737625785-c6683fc9b176?q=80&w=1600&auto=format&fit=crop", desc:"Csípő hátra, térd a lábfej irányába."},
-  {name:"Fekvőtámasz",    img:"https://images.unsplash.com/photo-1517963879433-6ad2b056d712?q=80&w=1600&auto=format&fit=crop", desc:"Core feszes, könyök 45°."},
-  {name:"Plank",          img:"https://images.unsplash.com/photo-1514517220036-3ad3d2aa3eb0?q=80&w=1600&auto=format&fit=crop", desc:"Egyenes törzs, farizom feszes."},
-  {name:"Kitörés váltva", img:"https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=1600&auto=format&fit=crop", desc:"Hosszú lépés, hát egyenes."},
+  {key:"jumping_jacks",  name:"Jumping jacks",  img:"assets/exercises/jumping_jacks.png", desc:"Ugrálás terpesz–zár, karok lendítése."},
+  {key:"guggolas",       name:"Guggolás",       img:"assets/exercises/guggolas.png",       desc:"Csípő hátra, térd a lábfej irányába."},
+  {key:"fekvotamasz",    name:"Fekvőtámasz",    img:"assets/exercises/fekvotamasz.png",    desc:"Core feszes, könyök 45°."},
+  {key:"plank",          name:"Plank",          img:"assets/exercises/plank.png",          desc:"Egyenes törzs, farizom feszes."},
+  {key:"kitores",        name:"Kitörés váltva", img:"assets/exercises/kitores.png",        desc:"Hosszú lépés, hát egyenes."},
 ];
 
 function buildPlan(){
   $("#woList").innerHTML = PLAN.map((x,i)=>`
     <article class="wocard" data-i="${i}">
-      <img src="${x.img}" alt="${x.name}">
+      ${x.img ? `<img src="${x.img}" alt="${x.name}" loading="eager">` : `<div style="height:180px;background:#16233b"></div>`}
       <div class="wobody">
         <h4>${i+1}. ${x.name}</h4>
         <p>${x.desc}</p>
@@ -89,7 +89,7 @@ function openDetail(idx){
   const ex = PLAN[idx]; D = {i:idx, sets:3, reps:12, sec:2, curSet:1, curRep:0, running:false, t:null};
   $("#wdTitle").textContent = ex.name;
   $("#wdDesc").textContent  = ex.desc;
-  $("#wdImg").src = ex.img; $("#wdImg").alt = ex.name;
+  $("#wdImg").src = ex.img || ""; $("#wdImg").alt = ex.name || "gyakorlat";
   $("#wdSets").value=3; $("#wdReps").value=12; $("#wdSec").value=2;
   $("#wdState").textContent="Készen állsz?"; $("#wdClock").textContent="00:00";
   $("#wdPause").disabled=true; $("#wdNextRep").disabled=true; $("#wdNextSet").disabled=true;
@@ -112,7 +112,8 @@ function nextRep(){
   D.running=true; let s=D.sec; clock(s);
   clearInterval(D.t);
   D.t=setInterval(()=>{
-    s--; clock(s); if(s<=0){ clearInterval(D.t); beep(); D.curRep++;
+    s--; clock(s); if(s<=0){
+      clearInterval(D.t); beep(); D.curRep++;
       if(D.curRep>=D.reps){ // kör kész
         D.curRep=0; D.curSet++;
         if(D.curSet>D.sets){ finishExercise(); return; }
@@ -165,7 +166,7 @@ function finishExercise(){
 }
 $("#modalOk").addEventListener("click", ()=>{ $("#modal").classList.add("hidden"); show("#workout"); });
 
-/* ---- calories ---- */
+/* ---- kalória ---- */
 function dayKey(d=new Date()){ return d.toISOString().slice(0,10); }
 const KC="fit_kcal";
 function getDayArr(key=dayKey()){ try{ const all=JSON.parse(localStorage.getItem(KC)||"{}"); return all[key]||[]; }catch{return [];} }
@@ -189,23 +190,21 @@ $("#kForm").addEventListener("submit", e=>{
   $("#kFood").value=""; $("#kKcal").value=""; renderK();
 });
 
-/* ---- progress ---- */
+/* ---- teljesítmény ---- */
 function renderProgress(){
   const S="fit_stats"; const st=JSON.parse(localStorage.getItem(S)||"{}");
   $("#streak").textContent = `${st.streak||0} nap`;
   $("#done").textContent   = `${st.done||0}`;
-  // 7 nap
   const LOG="fit_log"; const all=JSON.parse(localStorage.getItem(LOG)||"{}");
   let sum=0; for(let i=0;i<7;i++){ const d=new Date(); d.setDate(d.getDate()-i); const k=dayKey(d); sum += (all[k]?.minutes)||0; }
   $("#w7").textContent = `${sum|0} perc`;
-  // napi tábla
   const k=dayKey(); const today=all[k]?.exercises||[];
   $("#dailyLog").innerHTML = today.length
     ? `<div class="klist">` + today.map(e=>`<div class="krow"><span>${e.name}</span><span>${e.sets}×${e.reps} ism.</span><strong>${Math.round(e.seconds/60)} perc</strong></div>`).join("") + `</div>`
     : `<p class="muted">Még nincs felvéve gyakorlat ma.</p>`;
 }
 
-/* ---- chat ---- */
+/* ---- chat (Netlify Function) ---- */
 let chatInit=false;
 function addMsg(role, text){
   const row=document.createElement("div"); row.className=`msg ${role}`;
@@ -213,14 +212,16 @@ function addMsg(role, text){
   row.appendChild(b); $("#cLog").appendChild(row); $("#cLog").scrollTop=$("#cLog").scrollHeight;
 }
 function initChat(){ if(chatInit) return; addMsg("ai","Szia! Hogyan segíthetek a célodban?"); chatInit=true; }
+
 $("#cForm").addEventListener("submit", async e=>{
   e.preventDefault();
   const txt=$("#cInput").value.trim(); if(!txt) return;
   $("#cInput").value=""; addMsg("me", txt);
-  // kontextus: cél + ma
+
   const goal=(loadProf()?.goal)||"fogyas";
   const LOG="fit_log"; const all=JSON.parse(localStorage.getItem(LOG)||"{}"); const k=dayKey();
   const today=all[k]?.exercises?.map(e=>`${e.name} ${e.sets}x${e.reps}`)?.join(", ") || "ma még nem edzettem";
+
   try{
     const r = await fetch("/.netlify/functions/ai-chat", {
       method:"POST", headers:{"Content-Type":"application/json"},
@@ -228,5 +229,7 @@ $("#cForm").addEventListener("submit", async e=>{
     });
     const js = await r.json();
     addMsg("ai", js.reply || "❔ Nem érkezett érvényes válasz.");
-  }catch(err){ addMsg("ai","⚠️ Hiba történt a chat hívásakor."); }
+  }catch(err){
+    addMsg("ai","⚠️ Hiba történt a chat hívásakor.");
+  }
 });

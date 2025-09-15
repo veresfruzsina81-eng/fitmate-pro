@@ -1,157 +1,189 @@
 <!doctype html>
 <html lang="hu">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>FitMate HU</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
-  <!-- FEJLÉC -->
-  <header class="topbar">
-    <h1>FitMate <span class="accent">HU</span></h1>
-    <nav>
-      <button class="navbtn" data-target="screen-home">Főmenü</button>
-      <button class="navbtn" data-target="screen-workout">Edzés</button>
-      <button class="navbtn" data-target="screen-cal">Kalóriaszámláló</button>
-      <button class="navbtn" data-target="screen-progress">Teljesítmény</button>
-      <button class="navbtn" data-target="screen-chat">AI chat</button>
-    </nav>
-  </header>
 
-  <!-- KEZDŐ -->
-  <main>
-    <section id="screen-home" class="screen visible">
-      <div class="hero">
-        <img src="kezdo.png" alt="Kezdő háttér" class="hero-img" />
-        <div class="hero-overlay">
-          <h2>Magyar fitnesz – egyszerűen, szépen, okosan.</h2>
-          <button class="primary" data-target="screen-goal">Kezdjük</button>
-        </div>
+  <!-- Splash / Kezdő -->
+  <section id="screen-home" class="screen visible">
+    <div class="bg" style="--bg:url('kezdo.png')"></div>
+    <div class="overlay">
+      <h1>FitMate <span class="accent">HU</span></h1>
+      <p>Magyar fitnesz – egyszerűen, szépen, okosan.</p>
+      <div class="row gap">
+        <button class="primary" data-target="screen-goal">Kezdjük</button>
+        <button class="ghost" data-target="screen-menu">Ugrás a főmenübe</button>
       </div>
-      <div class="card soft">
-        <h3>Gyors rendszer teszt</h3>
-        <div class="row gap">
-          <button id="btnStatus" class="secondary">Backend / kulcs státusz</button>
-          <span id="statusOut" class="mono"></span>
-        </div>
-      </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Célválasztó -->
-    <section id="screen-goal" class="screen">
-      <div class="hero blur">
-        <img src="fogyas.png" alt="" class="hero-img" />
-        <div class="overlay-dark"></div>
-        <div class="goal-wrap">
-          <h2>Válaszd ki a célod</h2>
-          <p>Ezt később bármikor módosíthatod.</p>
-          <div class="goal-list">
-            <button class="goal" data-goal="fogyas">Fogyás</button>
-            <button class="goal" data-goal="szalkasitas">Szálkásítás</button>
-            <button class="goal" data-goal="hizas">Hízás</button>
-          </div>
-          <button class="primary" data-target="screen-home">Tovább a főmenübe</button>
-        </div>
-      </div>
-    </section>
+  <!-- Célválasztó -->
+  <section id="screen-goal" class="screen">
+    <div class="bg" id="goalBg"></div>
+    <div class="overlay">
+      <h2>Válaszd ki a célod</h2>
+      <p class="muted">Ezt később bármikor módosíthatod.</p>
 
-    <!-- FŐMENÜ KARIKÁK -->
-    <section id="screen-menu" class="screen">
-      <div class="card soft">
-        <div class="row spread center">
+      <div class="goal-list">
+        <button class="goal" data-goal="fogyas">
+          <img src="fogyas.png" alt="Fogyás hátter" class="thumb"/>
           <div>
-            <div id="currentGoal" class="pill">Cél: -</div>
-            <small>Üdv!</small>
+            <div class="g-title">Fogyás</div>
+            <div class="g-sub">Zsírégetés, kíméletes tempó</div>
           </div>
-          <button class="secondary" data-target="screen-goal">Cél módosítása</button>
-        </div>
-      </div>
-      <div class="grid">
-        <button class="tile" data-target="screen-workout">
-          <div class="tile-title">Edzés</div>
-          <div class="tile-sub">Képek/videó, időzítő, pihenő.</div>
         </button>
-        <button class="tile" data-target="screen-cal">
-          <div class="tile-title">Kalóriaszámláló</div>
-          <div class="tile-sub">Bevitel, törlés, napi összeg.</div>
-        </button>
-        <button class="tile" data-target="screen-progress">
-          <div class="tile-title">Napi teljesítmény</div>
-          <div class="tile-sub">Napló + 7 nap összesítő.</div>
-        </button>
-        <button class="tile" data-target="screen-chat">
-          <div class="tile-title">AI chat</div>
-          <div class="tile-sub">Magyar tanácsok.</div>
-        </button>
-      </div>
-    </section>
 
-    <!-- EDZÉS -->
-    <section id="screen-workout" class="screen">
+        <button class="goal" data-goal="szalkasitas">
+          <img src="szalkasitas.png" alt="Szálkásítás hátter" class="thumb"/>
+          <div>
+            <div class="g-title">Szálkásítás</div>
+            <div class="g-sub">Deficit + tónusos izom</div>
+          </div>
+        </button>
+
+        <button class="goal" data-goal="hizas">
+          <img src="hizas.png" alt="Hízás hátter" class="thumb"/>
+          <div>
+            <div class="g-title">Hízás</div>
+            <div class="g-sub">Izomtömeg növelés, szuficit</div>
+          </div>
+        </button>
+      </div>
+
+      <div class="row gap wrap">
+        <label class="pill">Nem:
+          <select id="gender">
+            <option value="male">Férfi</option>
+            <option value="female">Nő</option>
+          </select>
+        </label>
+        <button class="primary" data-target="screen-menu">Tovább a főmenübe</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Főmenü -->
+  <section id="screen-menu" class="screen">
+    <div class="bg dim"></div>
+    <header class="top">
+      <div>
+        <div class="muted small">Üdv!</div>
+        <div id="currentGoal" class="pill">Cél: –</div>
+      </div>
+      <div class="row gap">
+        <button class="ghost" data-target="screen-goal">Cél módosítása</button>
+        <button class="ghost" data-target="screen-home">Kezdő</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <button class="tile" data-target="screen-workout">
+        <div class="tile-title">Edzés</div>
+        <div class="tile-sub">Válassz gyakorlatot, időzítővel.</div>
+      </button>
+      <button class="tile" data-target="screen-cal">
+        <div class="tile-title">Kalóriaszámláló</div>
+        <div class="tile-sub">Egyszerű napi bevitel.</div>
+      </button>
+      <button class="tile" data-target="screen-progress">
+        <div class="tile-title">Napi teljesítmény</div>
+        <div class="tile-sub">Streak és kész napok.</div>
+      </button>
+      <button class="tile" data-target="screen-chat">
+        <div class="tile-title">AI chat</div>
+        <div class="tile-sub">Magyar tanácsok.</div>
+      </button>
+    </div>
+  </section>
+
+  <!-- Edzés -->
+  <section id="screen-workout" class="screen">
+    <div class="bg" id="workoutBg"></div>
+    <div class="overlay scroll">
       <h2>Napi edzés</h2>
-      <div class="video-wrap">
-        <video id="exerciseVideo" playsinline muted autoplay loop controls preload="metadata" poster="kezdo.png">
-          <source id="exerciseSrc" src="" type="video/mp4" />
-          A böngésződ nem támogatja a videót.
-        </video>
-      </div>
-      <div class="row gap">
-        <label>Körök: <input id="sets" type="number" value="3" min="1" max="10"></label>
-        <label>Ismétlés/kör: <input id="reps" type="number" value="12" min="1" max="50"></label>
-        <label>Idő/ism. (mp): <input id="sec" type="number" value="2" min="1" max="30"></label>
-      </div>
-      <div class="timer card center">
-        <div id="timerState" class="muted">Készen állsz?</div>
-        <div id="timerClock" class="clock">00:00</div>
-        <div class="row gap">
-          <button id="btnStart" class="primary">Start</button>
-          <button id="btnPause" class="secondary">Szünet</button>
-          <button id="btnNext" class="secondary">Következő</button>
-        </div>
-      </div>
-    </section>
+      <p class="muted">Válassz gyakorlatot a célod alapján. (5 db / kategória)</p>
 
-    <!-- KALÓRIA -->
-    <section id="screen-cal" class="screen">
-      <h2>Kalóriaszámláló (egyszerű v1)</h2>
-      <div class="row gap">
-        <input id="food" placeholder="Étkezés (pl. csirkemell, rizs)" />
-        <input id="kcal" placeholder="kcal" type="number" />
+      <div id="exerciseList" class="list"></div>
+
+      <div id="exerciseDetail" class="card hide">
+        <h3 id="exTitle">Gyakorlat</h3>
+        <div class="video-wrap">
+          <video id="exerciseVideo" playsinline muted autoplay loop controls preload="metadata" poster="kezdo.png">
+            <source id="exerciseSrc" src="" type="video/mp4"/>
+            A böngésződ nem támogatja a videó lejátszást.
+          </video>
+        </div>
+
+        <div class="row gap wrap">
+          <label>Körök: <input id="sets" type="number" value="3" min="1" max="10"/></label>
+          <label>Ismétlés/kör: <input id="reps" type="number" value="12" min="1" max="50"/></label>
+          <label>Idő/ism. (mp): <input id="sec" type="number" value="2" min="1" max="30"/></label>
+        </div>
+
+        <div class="timer card center">
+          <div id="timerState" class="muted">Készen állsz?</div>
+          <div id="timerClock" class="clock">00:00</div>
+          <div class="row gap">
+            <button id="btnStart" class="primary">Start</button>
+            <button id="btnPause" class="ghost">Szünet</button>
+            <button id="btnFinish" class="ghost">Befejez</button>
+          </div>
+        </div>
+
+        <button class="ghost" id="backToList">← Vissza a listához</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Kalóriaszámláló -->
+  <section id="screen-cal" class="screen">
+    <div class="bg dim"></div>
+    <div class="overlay scroll">
+      <h2>Kalóriaszámláló</h2>
+      <div class="row gap wrap">
+        <input id="food" placeholder="Étkezés (pl. csirkemell, rizs)"/>
+        <input id="kcal" placeholder="kcal" type="number"/>
         <button id="btnAddCal" class="primary">Hozzáad</button>
       </div>
       <ul id="calList" class="list"></ul>
       <div class="card"><strong>Napi összesen:</strong> <span id="calSum">0</span> kcal</div>
-    </section>
+    </div>
+  </section>
 
-    <!-- TELJESÍTMÉNY -->
-    <section id="screen-progress" class="screen">
+  <!-- Teljesítmény -->
+  <section id="screen-progress" class="screen">
+    <div class="bg dim"></div>
+    <div class="overlay">
       <h2>Teljesítmény</h2>
-      <div class="card">
-        <div class="row spread">
-          <div>Folyamatos napok (streak)</div>
-          <div><strong id="streak">0</strong> nap</div>
-        </div>
+      <div class="card row spread">
+        <div>Folyamatos napok (streak)</div>
+        <div><strong id="streak">0</strong> nap</div>
       </div>
-      <div class="card">
-        <div class="row spread">
-          <div>Összes befejezett edzés</div>
-          <div><strong id="doneWorkouts">0</strong></div>
-        </div>
+      <div class="card row spread">
+        <div>Összes befejezett edzés</div>
+        <div><strong id="doneWorkouts">0</strong></div>
       </div>
-      <small>Az értékek az eszközödön tárolódnak (LocalStorage).</small>
-    </section>
+      <small class="muted">Az értékek az eszközödön tárolódnak (LocalStorage).</small>
+    </div>
+  </section>
 
-    <!-- AI CHAT -->
-    <section id="screen-chat" class="screen">
+  <!-- AI chat -->
+  <section id="screen-chat" class="screen">
+    <div class="bg dim"></div>
+    <div class="overlay">
       <h2>AI chat (magyar)</h2>
-      <div class="row gap">
-        <input id="chatInput" placeholder="Írd ide a kérdésed…" />
+      <div class="row gap wrap">
+        <input id="chatInput" placeholder="Írd ide a kérdésed…"/>
         <button id="btnSend" class="primary">Küldés</button>
+        <button id="btnStatus" class="ghost">Backend / kulcs státusz</button>
       </div>
       <div id="chatOut" class="chat"></div>
-    </section>
-  </main>
+    </div>
+  </section>
 
   <script src="app.js" defer></script>
 </body>

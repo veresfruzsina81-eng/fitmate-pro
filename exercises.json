@@ -1,52 +1,44 @@
-const EXERCISES = {
-  hizas: {
-    ferfi: [
-      { file: 'hizas1.mp4',  title: 'Fekvőtámasz', desc: 'Mell és tricepsz erősítése.' },
-      { file: 'hizas2.mp4',  title: 'V alakú előrehajlás', desc: 'Core és mobilitás.' },
-      { file: 'hizas3.mp4',  title: 'Guggolásból felugrás', desc: 'Robbanékonyság, teljes test.' },
-      { file: 'hizas4.mp4',  title: 'Plank kézváltással', desc: 'Váll-stabilitás, core.' },
-      { file: 'hizas5.mp4',  title: 'Fekvőtámaszból felugrás', desc: 'Pulzusnövelő teljes test.' },
-    ],
-    no: [
-      { file: 'hizas_w1.mp4', title: 'Fekve csípőemelés', desc: 'Far és hamstring.' },
-      { file: 'hizas_w2.mp4', title: 'Folyamatos guggolás terpeszben', desc: 'Comb és far.' },
-      { file: 'hizas_w3.mp4', title: 'Fekvőtámasz térdelve', desc: 'Mell, tricepsz; kezdőknek.' },
-      { file: 'hizas_w4.mp4', title: 'Oldalfekvés lábemeléssel', desc: 'Far, csípő.' },
-      { file: 'hizas_w5.mp4', title: 'Fekvőtámasz pozíció – váltott láb előre', desc: 'Core és állóképesség.' },
-    ]
-  },
-
-  szalkasitas: {
-    ferfi: [
-      { file: 'szalkasitas1.mp4', title: 'Fekvőtámasz', desc: 'Mell és tricepsz.' },
-      { file: 'szalkasitas2.mp4', title: 'Plank', desc: 'Core tartás.' },
-      { file: 'szalkasitas3.mp4', title: 'Kitörés egy lábon', desc: 'Comb és far.' },
-      { file: 'szalkasitas4.mp4', title: 'Oldaltartás (plank) könyökön', desc: 'Ferde has.' },
-      { file: 'szalkasitas5.mp4', title: 'Guggolás felrúgással', desc: 'Teljes test, pulzus.' },
-    ],
-    no: [
-      { file: 'szalkasitas_w1.mp4', title: 'Fekve csípőemelés', desc: 'Far és hamstring.' },
-      { file: 'szalkasitas_w2.mp4', title: 'Fekvőtámaszban váltott láb előre', desc: 'Core, váll.' },
-      { file: 'szalkasitas_w3.mp4', title: 'Terpesz ugrás kéznyújtással', desc: 'Cardio.' },
-      { file: 'szalkasitas_w4.mp4', title: 'Fekvőtámasz tartás', desc: 'Core, váll.' },
-      { file: 'szalkasitas_w5.mp4', title: 'Terpesz guggolás kézisúllyal', desc: 'Comb, far. Súlyzó nélkül is végezhető.' },
-    ]
-  },
-
-  fogyas: {
-    ferfi: [
-      { file: 'fogyas1.mp4', title: 'Terpeszugrás kézemeléssel', desc: 'Cardio, bemelegítésnek is jó.' },
-      { file: 'fogyas2.mp4', title: 'Térdemelés kézmagasságig', desc: 'Cardio, csípő mobilitás.' },
-      { file: 'fogyas3.mp4', title: 'Fekvőtámaszból felugrás', desc: 'Pulzusnövelő teljes test.' },
-      { file: 'fogyas4.mp4', title: 'Váltott láb előre-hátra plank helyzetben', desc: 'Core + cardio.' },
-      { file: 'fogyas5.mp4', title: 'Guggolásból felugrás', desc: 'Comb és far, cardio.' },
-    ],
-    no: [
-      { file: 'fogyas_w1.mp4', title: 'Guggolás terpeszben', desc: 'Comb és far.' },
-      { file: 'fogyas_w2.mp4', title: 'Fekve csípőemelés', desc: 'Far és hamstring.' },
-      { file: 'fogyas_w3.mp4', title: 'Oldalsó ugrás keresztezve', desc: 'Cardio, koordináció.' },
-      { file: 'fogyas_w4.mp4', title: 'Guggolásból felugrás', desc: 'Comb és far, cardio.' },
-      { file: 'fogyas_w5.mp4', title: 'Ugrókötél', desc: 'Magas intenzitású cardio.' },
-    ]
-  }
-};
+{
+  "fogyas_m": [
+    { "src": "fogyas1.mp4", "title": "Terpeszugrás kézemeléssel", "desc": "Pulzusnövelő, teljes test." },
+    { "src": "fogyas2.mp4", "title": "Térdemelés kézmagasságig", "desc": "Tempós, core + csípőhajlítók." },
+    { "src": "fogyas3.mp4", "title": "Fekvőtámaszból felugrás", "desc": "Burpee-szerű, teljes test." },
+    { "src": "fogyas4.mp4", "title": "Hegymászó váltott lábbal", "desc": "Plank pozícióból, gyors lábmunka." },
+    { "src": "fogyas5.mp4", "title": "Guggolásból felugrás", "desc": "Explozív láb, nagy pulzus." }
+  ],
+  "fogyas_w": [
+    { "src": "fogyas_w1.mp4", "title": "Guggolás terpeszben", "desc": "Stabil alap, far + comb." },
+    { "src": "fogyas_w2.mp4", "title": "Csípőemelés hanyatt fekve", "desc": "Farizom fókusz." },
+    { "src": "fogyas_w3.mp4", "title": "Oldalsó ugrás, lábak keresztezve", "desc": "Oldalirányú állóképesség." },
+    { "src": "fogyas_w4.mp4", "title": "Guggolásból felugrás", "desc": "Explozív láb, nagy pulzus." },
+    { "src": "fogyas_w5.mp4", "title": "Ugrókötél", "desc": "Állóképesség, ritmus." }
+  ],
+  "hizas_m": [
+    { "src": "hizas1.mp4", "title": "Fekvőtámasz", "desc": "Mell, tricepsz; alap erősítő." },
+    { "src": "hizas2.mp4", "title": "V-alakú előrehajlás", "desc": "Core + csípő mobilitás." },
+    { "src": "hizas3.mp4", "title": "Guggolásból felugrás", "desc": "Robbanékony láb; erő-álló." },
+    { "src": "hizas4.mp4", "title": "Plank kézváltással", "desc": "Vállstabilitás, core." },
+    { "src": "hizas5.mp4", "title": "Fekvőtámaszból felugrás", "desc": "Teljes test, erő + állóképesség." }
+  ],
+  "hizas_w": [
+    { "src": "hizas_w1.mp4", "title": "Csípőemelés hanyatt fekve", "desc": "Farizom fókusz." },
+    { "src": "hizas_w2.mp4", "title": "Folyamatos guggolás terpeszben", "desc": "Comb + far, egyenletes tempó." },
+    { "src": "hizas_w3.mp4", "title": "Fekvőtámasz térdelve", "desc": "Kezdő változat, mell + tricepsz." },
+    { "src": "hizas_w4.mp4", "title": "Oldalfekvés lábemeléssel", "desc": "Oldalsó farizom (gluteus med.)." },
+    { "src": "hizas_w5.mp4", "title": "Plank váltott láb előrelépéssel", "desc": "Core + csípő mobilitás." }
+  ],
+  "szalkasitas_m": [
+    { "src": "szalkasitas1.mp4", "title": "Fekvőtámasz", "desc": "Tiszta technika, kontroll." },
+    { "src": "szalkasitas2.mp4", "title": "Plank", "desc": "Statikus core; feszes tartás." },
+    { "src": "szalkasitas3.mp4", "title": "Kitörés egy lábon", "desc": "Egyensúly + comb, far." },
+    { "src": "szalkasitas4.mp4", "title": "Oldaltartás (plank) könyökön", "desc": "Obliquus, törzsstabilitás." },
+    { "src": "szalkasitas5.mp4", "title": "Guggolás felrúgással", "desc": "Láb + core, kontrollált rúgás." }
+  ],
+  "szalkasitas_w": [
+    { "src": "szalkasitas_w1.mp4", "title": "Csípőemelés hanyatt fekve", "desc": "Farizom fókusz." },
+    { "src": "szalkasitas_w2.mp4", "title": "Váltott láb előre plankben", "desc": "Core + mobilitás." },
+    { "src": "szalkasitas_w3.mp4", "title": "Terpeszugrás kéznyújtással", "desc": "Pulzusnövelő, teljes test." },
+    { "src": "szalkasitas_w4.mp4", "title": "Fekvőtámasz tartás", "desc": "Izometriás mell + váll + core." },
+    { "src": "szalkasitas_w5.mp4", "title": "Terpesz guggolás kézisúllyal", "desc": "Láb + far; súly nélkül is végezhető." }
+  ]
+}

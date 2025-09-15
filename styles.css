@@ -4,26 +4,18 @@
 *{box-sizing:border-box} html,body{height:100%}
 body{margin:0; font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto; color:var(--text); background:var(--bg)}
 
-/* Screens */
 .screen{position:relative; min-height:100dvh; display:flex; flex-direction:column}
-.screen--cover::before{
-  content:""; position:absolute; inset:0; z-index:0;
+.screen--cover{
   background:
     radial-gradient(1200px 600px at 10% -10%, rgba(255,255,255,.04), transparent 60%),
     radial-gradient(1000px 500px at 110% 10%, rgba(255,255,255,.03), transparent 60%),
     linear-gradient(180deg, #0b1220 0%, #16233b 100%);
   background-size:cover; background-position:center;
 }
-.screen--cover[data-bg]:has(.overlay)::before{
-  background-image:
-    linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.65)),
-    url("assets/bg/fallback.jpg");
-  background-blend-mode: normal, multiply;
-}
 .hidden{display:none}
 
 .overlay{
-  z-index:1; margin:auto; padding:24px; width:min(960px, 94%);
+  z-index:1; margin:auto; padding:24px; width:min(960px,94%);
   display:flex; flex-direction:column; align-items:center; text-align:center;
 }
 .overlay.narrow{width:min(720px,92%)}
@@ -35,12 +27,10 @@ body{margin:0; font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto; color:var(
 .btn-lg{padding:14px 22px; border-radius:16px; font-size:1.05rem}
 .btn-full{width:100%}
 
-/* Topbar */
-.topbar{position:absolute; inset:auto 0  auto 0; top:8px; display:flex; align-items:center; gap:8px; padding:8px 12px}
+.topbar{position:absolute; inset:auto 0 auto 0; top:8px; display:flex; align-items:center; gap:8px; padding:8px 12px}
 .link{background:none; border:1px solid rgba(255,255,255,.25); color:var(--text); padding:6px 10px; border-radius:999px; cursor:pointer}
 .spacer{flex:1}
 
-/* Goal */
 .goal-grid{display:grid; gap:12px; grid-template-columns: repeat(3, 1fr); margin:14px 0}
 @media (max-width:900px){ .goal-grid{grid-template-columns: 1fr} }
 .goal-card{
@@ -53,7 +43,6 @@ body{margin:0; font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto; color:var(
 .goal-title{font-weight:800; font-size:1.2rem}
 .goal-sub{color:var(--muted)}
 
-/* Home */
 .home-head{
   display:flex; align-items:center; justify-content:space-between;
   padding:16px; background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));

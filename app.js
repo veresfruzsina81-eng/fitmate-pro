@@ -1,13 +1,23 @@
-/* ======= segédek + router ======= */
+/* ======= segédek + router + háttér ======= */
 const qs=s=>document.querySelector(s), qsa=s=>[...document.querySelectorAll(s)];
-const S={goal:null, gender:'no', done:+(localStorage.getItem('done')||0), streak:+(localStorage.getItem('streak')||0)};
+const S={
+  goal:null, gender:localStorage.getItem('gender')||'no',
+  done:+(localStorage.getItem('done')||0),
+  streak:+(localStorage.getItem('streak')||0)
+};
 
-function show(id){
+let viewStack=[]; // vissza gombhoz
+function show(id, push=true){
+  const cur = document.querySelector('.view.show');
+  if (push && cur) viewStack.push(cur.id.replace('v-',''));
   qsa('.view').forEach(v=>v.classList.remove('show'));
   qs('#v-'+id).classList.add('show');
   setBG(id);
 }
-
+function goBack(){
+  const prev = viewStack.pop();
+  show(prev||'home', false);
+}
 function setBG(view){
   const foods=['food1.png','food2.png','food3.png'];
   const pick=()=>foods[Math.floor(Math.random()*foods.length)]||'fogyas.png';
@@ -19,18 +29,20 @@ function setBG(view){
     weights:(S.goal||'fogyas')+'.png',
     cal:pick(),
     perf:pick(),
-    chat:'hizas.png'
+    chat:(S.goal||'fogyas')+'.png'
   };
   qs('#bg').style.backgroundImage=
     `linear-gradient(0deg, rgba(11,15,20,.68), rgba(11,15,20,.68)), url('${m[view]||'kezdo.png'}')`;
 }
+qsa('[data-back]').forEach(b=>b.onclick=goBack);
 
 /* ======= Splash → Goal ======= */
 qs('#start').onclick=()=>show('goal');
 
 /* ======= Goal pick ======= */
-let tmpGoal='fogyas', tmpGender='no';
+let tmpGoal=localStorage.getItem('goal')||'fogyas', tmpGender=S.gender;
 qsa('.goal-list .item').forEach(it=>{
+  if(it.dataset.goal===tmpGoal) it.classList.add('active');
   it.onclick=()=>{
     qsa('.goal-list .item').forEach(x=>x.classList.remove('active'));
     it.classList.add('active');
@@ -38,7 +50,9 @@ qsa('.goal-list .item').forEach(it=>{
     qs('#bg').style.backgroundImage=`url('${tmpGoal}.png')`;
   };
 });
+qs('#gender').value = (tmpGender==='ferfi'?'ferfi':'no');
 qs('#gender').onchange=e=>tmpGender=e.target.value;
+
 qs('#toHome').onclick=()=>{
   S.goal=tmpGoal; S.gender=tmpGender;
   localStorage.setItem('goal',S.goal); localStorage.setItem('gender',S.gender);
@@ -52,10 +66,12 @@ document.getElementById('tileWeights').onclick=()=>show('weights');
 qsa('#v-home [data-open]').forEach(t=>t.onclick=()=>{
   const to=t.dataset.open;
   if(to==='chat') ensureChatWelcome();
+  if(to==='perf') drawPerfChart();
   show(to);
 });
+qs('#changeGoal').onclick=()=>show('goal');
 
-/* ======= Bodyweight videóadatok – a te listáiddal ======= */
+/* ======= Bodyweight videóadatok ======= */
 const DATA = {
   // FOGYÁS
   fogyas: {
@@ -182,19 +198,93 @@ function restPhase(cb){
 function finishExercise(){
   status.innerHTML='🎉 <b>Ügyes vagy! Büszke vagyok rád!</b> Lépj vissza a listához és válaszd a következőt.';
   clock.textContent='00:00'; stopTimer();
-  S.done++; localStorage.setItem('done',S.done); qs('#done').textContent=S.done;
-  const today=new Date().toDateString(), last=localStorage.getItem('lastDone')||'';
-  if(last!==today){ S.streak++; localStorage.setItem('streak',S.streak); localStorage.setItem('lastDone',today); qs('#streak').textContent=S.streak; }
+  // naplózzuk a befejezést
+  S.done++; localStorage.setItem('done',S.done); qs('#done') && (qs('#done').textContent=S.done);
+  const todayStr=new Date().toISOString().slice(0,10);
+  const hist = JSON.parse(localStorage.getItem('workHist')||'{}'); hist[todayStr]=(hist[todayStr]||0)+1;
+  localStorage.setItem('workHist', JSON.stringify(hist));
+  // streak
+  const last=localStorage.getItem('lastDone')||'';
+  if(last!==todayStr){ S.streak++; localStorage.setItem('streak',S.streak); localStorage.setItem('lastDone',todayStr); qs('#streak') && (qs('#streak').textContent=S.streak); }
 }
 
-/* ======= Kalória ======= */
-const meals=JSON.parse(localStorage.getItem('meals')||'[]');
-function saveMeals(){ localStorage.setItem('meals',JSON.stringify(meals)); }
-function renderMeals(){ const wrap=qs('#mealList'); if(!wrap) return; wrap.innerHTML=''; let sum=0; meals.forEach((m,i)=>{ sum+=m.k; const r=document.createElement('div'); r.className='item-row'; r.innerHTML=`<span>${m.n}</span><span>${m.k} kcal</span>`; r.onclick=()=>{meals.splice(i,1);saveMeals();renderMeals();}; wrap.appendChild(r); }); const t=qs('#sumKcal'); if(t) t.innerHTML='<b>'+sum+'</b>'; }
-const addBtn=qs('#addMeal'); if(addBtn){ addBtn.onclick=()=>{ const n=qs('#mealName').value.trim(); const k=+qs('#mealKcal').value||0; if(!n||!k) return; meals.push({n,k}); saveMeals(); renderMeals(); qs('#mealName').value=''; qs('#mealKcal').value=''; }; renderMeals(); }
+/* ======= Kalória (napi + heti összesítés, makrók) ======= */
+function dayKey(d=new Date()){ return d.toISOString().slice(0,10); }
+function weekDays(){
+  const days=[]; const d=new Date();
+  for(let i=6;i>=0;i--){ const dd=new Date(d); dd.setDate(d.getDate()-i); days.push(dayKey(dd)); }
+  return days;
+}
+function loadMealsFor(dateKey){ return JSON.parse(localStorage.getItem('meals:'+dateKey) || '[]'); }
+function saveMealsFor(dateKey, arr){ localStorage.setItem('meals:'+dateKey, JSON.stringify(arr)); }
+function renderMeals(){
+  const today=dayKey(), wrap=qs('#mealList'); if(!wrap) return;
+  let items=loadMealsFor(today);
+  wrap.innerHTML='';
+  let kcal=0,P=0,C=0,F=0;
+  items.forEach((m,i)=>{
+    kcal+=+m.k||0; P+=+m.p||0; C+=+m.c||0; F+=+m.f||0;
+    const r=document.createElement('div');
+    r.className='item-row';
+    r.innerHTML=`<span>${m.n}</span><span>${m.k||0} kcal • P:${m.p||0}g • CH:${m.c||0}g • Zs:${m.f||0}g</span>`;
+    r.onclick=()=>{ items.splice(i,1); saveMealsFor(today,items); renderMeals(); };
+    wrap.appendChild(r);
+  });
+  qs('#sumKcal').textContent=kcal;
+  qs('#sumP').textContent=P; qs('#sumC').textContent=C; qs('#sumF').textContent=F;
 
-/* ======= Teljesítmény kezdeti kiírás ======= */
-const sEl=qs('#streak'), dEl=qs('#done'); if(sEl) sEl.textContent=S.streak; if(dEl) dEl.textContent=S.done;
+  // heti összes kcal
+  const days=weekDays();
+  let w=0; days.forEach(k=>{ const arr=loadMealsFor(k); w+=arr.reduce((s,m)=>s+(+m.k||0),0); });
+  qs('#weekKcal').textContent=w;
+}
+const addMealBtn=qs('#addMeal');
+if(addMealBtn){
+  addMealBtn.onclick=()=>{
+    const n=qs('#mealName').value.trim();
+    const k=+qs('#mealKcal').value||0;
+    const p=+qs('#mealP').value||0;
+    const c=+qs('#mealC').value||0;
+    const f=+qs('#mealF').value||0;
+    if(!n || !k) return;
+    const today=dayKey(); const arr=loadMealsFor(today);
+    arr.push({n,k,p,c,f}); saveMealsFor(today,arr);
+    qs('#mealName').value=''; qs('#mealKcal').value=''; qs('#mealP').value=''; qs('#mealC').value=''; qs('#mealF').value='';
+    renderMeals();
+  };
+  qs('#clearDay').onclick=()=>{ saveMealsFor(dayKey(), []); renderMeals(); };
+}
+
+/* ======= Teljesítmény grafikon (utolsó 7 nap) ======= */
+function drawPerfChart(){
+  const canvas=qs('#perfChart'); if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const days=weekDays();
+  const hist = JSON.parse(localStorage.getItem('workHist')||'{}');
+  const vals=days.map(d=>hist[d]||0);
+  const max=Math.max(1, ...vals);
+  // tengelyek
+  ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(40,10); ctx.lineTo(40,H-30); ctx.lineTo(W-10,H-30); ctx.stroke();
+  // oszlopok
+  const n=vals.length, gap=10, bw=(W-70-(n-1)*gap)/n;
+  for(let i=0;i<n;i++){
+    const x=40+i*(bw+gap);
+    const h=Math.round((H-50)*vals[i]/max);
+    ctx.fillStyle='rgba(255,79,160,0.8)';
+    ctx.fillRect(x, H-30-h, bw, h);
+    ctx.fillStyle='rgba(255,255,255,0.6)';
+    ctx.font='12px system-ui'; ctx.textAlign='center';
+    ctx.fillText(vals[i], x+bw/2, H-36-h);
+    ctx.fillText(days[i].slice(5), x+bw/2, H-12);
+  }
+  // címkék
+  const streakEl=qs('#streak'), doneEl=qs('#done');
+  streakEl && (streakEl.textContent = +localStorage.getItem('streak')||0);
+  doneEl && (doneEl.textContent   = +localStorage.getItem('done')||0);
+}
 
 /* ======= Chat – egyszeri üdvözlés célenként ======= */
 const chatBox = qs('#chatBox');
@@ -206,6 +296,9 @@ const sendBtn=qs('#sendChat'); if(sendBtn){ sendBtn.onclick=async()=>{ const inp
 
 /* ======= Indítás ======= */
 (function boot(){
-  S.goal=null; // mindig Splash -> Goal
-  show('splash');
+  // mindig Splash -> Goal-lal kezdünk
+  S.goal=null;
+  qs('#done') && (qs('#done').textContent=S.done);
+  qs('#streak') && (qs('#streak').textContent=S.streak);
+  show('splash', false);
 })();

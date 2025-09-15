@@ -22,13 +22,11 @@
     <header class="bar">
       <button class="chip" data-nav="splash">← Vissza</button>
       <div class="spacer"></div>
-      <button class="chip" id="skipGoal">Kihagyom</button>
+      <button id="skipGoal" class="chip">Kihagyom</button>
     </header>
-
     <div class="layer narrow">
       <h2>Válaszd ki a célod</h2>
-      <p class="muted">Ezt később bármikor módosíthatod.</p>
-
+      <p class="muted small">Ezt később bármikor módosíthatod.</p>
       <div class="goal-grid">
         <button class="goal" data-goal="fogyas" data-bg="assets/fogyas.png">
           <div class="goal-t">Fogyás</div>
@@ -40,60 +38,54 @@
         </button>
         <button class="goal" data-goal="hizas" data-bg="assets/hizas.png">
           <div class="goal-t">Hízás</div>
-          <div class="goal-s">Izomtömeg növelés, szuficit</div>
+          <div class="goal-s">Izomtömeg növelés, szufficit</div>
         </button>
       </div>
-
-      <button id="toHome" class="btn btn-lg btn-full" disabled>Tovább a főmenübe</button>
+      <button id="toHome" class="btn btn-lg" disabled>Tovább a főmenübe</button>
     </div>
   </section>
 
   <!-- FŐMENÜ -->
   <section id="home" class="screen cover" data-bg="assets/bg_home.png">
-    <header class="bar glass">
-      <div class="hi">
-        <div class="small">Üdv!</div>
-        <div>Aktuális cél: <strong id="goalLabel">–</strong></div>
-      </div>
+    <header class="bar">
+      <div>Üdv!<br>Aktuális cél: <span id="goalLabel">–</span></div>
       <div class="spacer"></div>
       <button id="changeGoal" class="chip">Cél módosítása</button>
     </header>
-
     <main class="wrap">
-      <nav class="grid">
+      <div class="grid">
         <a href="#" class="card" data-open="workout">
           <div class="card-t">Edzés</div>
-          <div class="muted">Lista → kiválasztás → részletes nézet.</div>
+          <div>Képek, leírás, időzítő, pihenő.</div>
         </a>
         <a href="#" class="card" data-open="calories">
           <div class="card-t">Kalóriaszámláló</div>
-          <div class="muted">Bevitel, törlés, napi összeg.</div>
+          <div>Napi bevitel, törlés, összeg.</div>
         </a>
         <a href="#" class="card" data-open="progress">
           <div class="card-t">Napi teljesítmény</div>
-          <div class="muted">Napló + 7 nap összesítés.</div>
+          <div>Napló + heti összesítő.</div>
         </a>
         <a href="#" class="card" data-open="chat">
           <div class="card-t">AI chat</div>
-          <div class="muted">Magyar edzés/étrend tanácsok.</div>
+          <div>Magyar tanácsok edzéshez/étrendhez.</div>
         </a>
-      </nav>
+      </div>
     </main>
   </section>
 
-  <!-- EDZÉS – LISTA -->
+  <!-- EDZÉS LISTA -->
   <section id="workout" class="screen cover" data-bg="assets/bg_workout.png">
     <header class="bar">
       <button class="chip" data-nav="home">← Vissza</button>
-      <h3>Napi edzésprogram</h3>
-      <div class="spacer"></div>
+      <h3>Edzésprogram</h3>
     </header>
     <main class="wrap">
       <div id="woList" class="wolist"></div>
     </main>
   </section>
 
-  <!-- EDZÉS – RÉSZLET -->
+  <!-- EDZÉS RÉSZLET -->
   <section id="woDetail" class="screen cover" data-bg="assets/bg_workout.png">
     <header class="bar">
       <button class="chip" data-nav="workout">← Vissza</button>
@@ -102,7 +94,10 @@
     </header>
     <main class="wrap">
       <div class="wd-wrap">
-        <img id="wdImg" class="wd-img" alt="">
+        <div class="wd-media" id="wdMedia">
+          <img id="wdImg" class="wd-img" alt="">
+          <div id="wdPh" class="wd-ph">Nincs kép ehhez a gyakorlathoz</div>
+        </div>
         <div class="wd-info">
           <p id="wdDesc" class="muted"></p>
           <div class="wd-ctrls">
@@ -125,24 +120,20 @@
     </main>
   </section>
 
-  <!-- KALÓRIA -->
+  <!-- KALÓRIASZÁMLÁLÓ -->
   <section id="calories" class="screen cover" data-bg="assets/bg_calories.png">
     <header class="bar">
       <button class="chip" data-nav="home">← Vissza</button>
       <h3>Kalóriaszámláló</h3>
-      <div class="spacer"></div>
     </header>
     <main class="wrap">
       <form id="kForm" class="kform">
-        <input id="kFood" placeholder="Étkezés (pl. csirkemell, rizs)" required />
-        <input id="kKcal" type="number" min="0" step="1" placeholder="kcal" required />
+        <input id="kFood" placeholder="Étkezés (pl. csirkemell, rizs)">
+        <input id="kKcal" type="number" placeholder="kcal">
         <button class="btn">Hozzáad</button>
       </form>
       <div id="kList" class="klist"></div>
-      <div class="kpi">
-        <div>Napi összesen</div>
-        <strong id="kTotal">0 kcal</strong>
-      </div>
+      <div class="kpi"><span>Napi összesen</span><strong id="kTotal">0 kcal</strong></div>
     </main>
   </section>
 
@@ -150,15 +141,10 @@
   <section id="progress" class="screen cover" data-bg="assets/bg_progress.png">
     <header class="bar">
       <button class="chip" data-nav="home">← Vissza</button>
-      <h3>Teljesítmény</h3>
-      <div class="spacer"></div>
+      <h3>Napi teljesítmény</h3>
     </header>
     <main class="wrap">
-      <div class="kpi"><div>Folyamatos napok (streak)</div><strong id="streak">0 nap</strong></div>
-      <div class="kpi"><div>Összes befejezett edzés</div><strong id="done">0</strong></div>
-      <div class="kpi"><div>Elmúlt 7 nap edzés percek</div><strong id="w7">0 perc</strong></div>
-      <h4>Mai napló</h4>
-      <div id="dailyLog"></div>
+      <div id="progBox"></div>
     </main>
   </section>
 
@@ -166,25 +152,22 @@
   <section id="chat" class="screen cover" data-bg="assets/bg_chat.png">
     <header class="bar">
       <button class="chip" data-nav="home">← Vissza</button>
-      <h3>AI chat (magyar)</h3>
-      <div class="spacer"></div>
+      <h3>AI chat</h3>
     </header>
     <main class="wrap">
-      <div id="cLog" class="chat"></div>
-      <form id="cForm" class="cform">
-        <input id="cInput" placeholder="Írj ide (pl. adj 4 napos edzéstervet)…" required />
+      <div id="chatBox" class="chat"></div>
+      <form id="chatForm" class="cform">
+        <input id="chatInput" placeholder="Írj ide egy kérdést...">
         <button class="btn">Küldés</button>
       </form>
-      <p class="muted small">A válaszok a kiválasztott célodhoz és a mai naplódhoz igazodnak.</p>
     </main>
   </section>
 
-  <!-- MODAL – dicséret -->
+  <!-- MODAL -->
   <div id="modal" class="modal hidden">
     <div class="modal-box">
-      <h3>Gratulálok! 🎉</h3>
-      <p id="modalTxt" class="muted">Kész vagy ezzel a gyakorlattal.</p>
-      <button id="modalOk" class="btn btn-lg">Vissza az edzéslistához</button>
+      <div id="modalTxt"></div>
+      <button id="modalOk" class="btn">Oké</button>
     </div>
   </div>
 

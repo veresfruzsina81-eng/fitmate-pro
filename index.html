@@ -19,7 +19,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Segoe
 h1,h2,h3{margin:.5rem 0 1rem} h1{font-size:38px} h2{font-size:28px}
 p{margin:.25rem 0 .75rem} .muted{color:var(--muted)}
 .view{display:none;min-height:100vh} .view.show{display:block}
-.centerbox{max-width:560px;margin:18vh auto 0;padding:26px;border-radius:28px;background:var(--card);box-shadow:var(--shadow);text-align:center}
+.centerbox{max-width:560px;margin:0;padding:26px;border-radius:28px;background:var(--card);box-shadow:var(--shadow);text-align:center}
 .accent{color:var(--accent)}
 .btn{border:0;border-radius:16px;padding:12px 18px;font-weight:800;cursor:pointer}
 .btn.primary{background:var(--pink);color:#1b1020;box-shadow:0 0 0 6px var(--ring) inset}
@@ -41,7 +41,7 @@ p{margin:.25rem 0 .75rem} .muted{color:var(--muted)}
 .thumb{width:70px;height:52px;border-radius:12px;object-fit:cover}
 .modal{position:fixed;inset:0;display:none;place-items:center;padding:20px;background:rgba(0,0,0,.55);z-index:50}
 .modal.show{display:grid}
-.sheet{width:min(920px,96vw);background:var(--card);border-radius:20px;padding:18px;border:1px solid #ffffff14;position:relative}
+.sheet{width:min(920px,96vw);background:var(--card);border-radius:20px;padding:18px;border:1px solid #ffffff14}
 .sheet h3{margin:4px 40px 6px 0}
 .close{position:absolute;right:20px;top:16px;border:0;background:#121a26;color:#fff;border-radius:50%;width:36px;height:36px}
 .video-wrap{border-radius:16px;overflow:hidden;background:#000;margin:10px 0;border:1px solid #ffffff12}
@@ -55,7 +55,10 @@ video{width:100%;display:block;object-fit:cover;max-height:58vh}
 .bubble.bot{background:#1a2230}
 .item-row{display:flex;justify-content:space-between;align-items:center;background:#0f1622;border:1px solid #2a3446;padding:10px 12px;border-radius:12px}
 .total{margin-top:10px;font-weight:900}
+.tabs .btn{border-radius:999px}
 @media (max-width:720px){.grid3{grid-template-columns:1fr}}
+/* Splash valódi középre */
+#v-splash .container{min-height:100vh;display:grid;place-items:center}
 </style>
 </head>
 <body>
@@ -101,24 +104,36 @@ video{width:100%;display:block;object-fit:cover;max-height:58vh}
       <div class="card pad" style="border-radius:999px"><b id="goalLabel">Cél: –</b></div>
       <div class="row">
         <button class="btn ghost" data-go="goal">Cél módosítása</button>
-        <button class="btn ghost" data-go="splash">Kezdő</button>
+        <button class="btn ghost" data-go="splash">Vissza</button>
       </div>
     </div>
     <div class="grid menu" style="margin-top:14px">
-      <div class="tile card pad" data-open="workout"><h3>Edzés</h3><p class="muted">Válassz gyakorlatot, időzítővel.</p></div>
-      <div class="tile card pad" data-open="cal"><h3>Kalóriaszámláló</h3><p class="muted">Egyszerű napi bevitel.</p></div>
-      <div class="tile card pad" data-open="perf"><h3>Napi teljesítmény</h3><p class="muted">Streak és kész napok.</p></div>
+      <div class="tile card pad" data-open="workout"><h3>Saját testsúllyal</h3><p class="muted">Válassz gyakorlatot, időzítővel.</p></div>
+      <div class="tile card pad" data-open="weights"><h3>Súlyzós edzés</h3><p class="muted">Hamarosan (5 videó / cél).</p></div>
+      <div class="tile card pad" data-open="cal"><h3>Kalóriaszámláló</h3><p class="muted">Bevitel + összegzés.</p></div>
+      <div class="tile card pad" data-open="perf"><h3>Napi teljesítmény</h3><p class="muted">Streak, kész edzések, előzmények.</p></div>
       <div class="tile card pad" data-open="chat"><h3>AI chat</h3><p class="muted">Magyar tanácsok.</p></div>
     </div>
   </div>
 </section>
 
-<!-- EDZÉS LISTA -->
+<!-- SAJÁT TESTSÚLY – LISTA -->
 <section id="v-workout" class="view">
   <div class="container">
     <button class="back" data-go="home">← Vissza</button>
     <h2>Napi edzés</h2><p class="muted">Válassz gyakorlatot (5 db / kategória).</p>
     <div id="exList" class="grid" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<!-- SÚLYZÓS EDZÉS – helyfoglaló -->
+<section id="v-weights" class="view">
+  <div class="container">
+    <button class="back" data-go="home">← Vissza</button>
+    <h2>Súlyzós edzés</h2>
+    <div class="card pad">
+      <p class="muted">Hamarosan feltöltjük a videókat minden célhoz (5–5 db).</p>
+    </div>
   </div>
 </section>
 
@@ -152,7 +167,13 @@ video{width:100%;display:block;object-fit:cover;max-height:58vh}
   <div class="container">
     <button class="back" data-go="home">← Vissza</button>
     <h2>Kalóriaszámláló</h2>
-    <div class="card pad">
+
+    <div class="row tabs" id="calTabs" style="margin-bottom:10px">
+      <button class="btn dark"  data-cal="intake">Bevitelek</button>
+      <button class="btn ghost" data-cal="summary">Összegzés</button>
+    </div>
+
+    <div id="calIntake" class="card pad">
       <div class="row">
         <input id="mealName" class="input" style="flex:2" placeholder="Étkezés (pl. csirkemell, rizs)">
         <input id="mealKcal" class="input" style="flex:1" type="number" placeholder="kcal">
@@ -160,6 +181,13 @@ video{width:100%;display:block;object-fit:cover;max-height:58vh}
       </div>
       <div id="mealList" class="grid" style="margin-top:10px"></div>
       <div class="total">Napi összesen: <span id="sumKcal"><b>0</b></span> kcal</div>
+    </div>
+
+    <div id="calSummary" class="card pad" style="display:none">
+      <h3>Mai összegzés</h3>
+      <p>Tételek száma: <b id="mealCount">0</b></p>
+      <p>Összes kcal: <b id="sumKcal2">0</b></p>
+      <p class="muted">Tipp: bontsd 3–5 étkezésre a napot, fehérje minden étkezéshez.</p>
     </div>
   </div>
 </section>
@@ -169,9 +197,40 @@ video{width:100%;display:block;object-fit:cover;max-height:58vh}
   <div class="container">
     <button class="back" data-go="home">← Vissza</button>
     <h2>Teljesítmény</h2>
-    <div class="grid">
-      <div class="card pad"><div class="muted">Folyamatos napok (streak)</div><h2 id="streak">0</h2></div>
-      <div class="card pad"><div class="muted">Összes befejezett edzés</div><h2 id="done">0</h2></div>
+
+    <div class="row tabs" id="perfTabs" style="margin-bottom:10px">
+      <button class="btn dark"  data-perf="metrics">Mutatók</button>
+      <button class="btn ghost" data-perf="history">Előzmények</button>
+    </div>
+
+    <!-- Mutatók -->
+    <div id="perfMetrics">
+      <div class="grid">
+        <div class="card pad">
+          <div class="muted">Folyamatos napok (streak)</div>
+          <h2 id="streak">0</h2>
+        </div>
+        <div class="card pad">
+          <div class="muted">Összes befejezett edzés</div>
+          <h2 id="done">0</h2>
+        </div>
+        <div class="card pad">
+          <div class="muted">Legjobb streak</div>
+          <h2 id="bestStreak">0</h2>
+        </div>
+        <div class="card pad">
+          <div class="muted">E heti edzések (H–V)</div>
+          <h2 id="weekCount">0</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Előzmények -->
+    <div id="perfHistory" style="display:none">
+      <div class="card pad">
+        <h3>Legutóbbi edzések</h3>
+        <div id="histList" class="grid"></div>
+      </div>
     </div>
   </div>
 </section>
@@ -189,6 +248,6 @@ video{width:100%;display:block;object-fit:cover;max-height:58vh}
   </div>
 </section>
 
-<script src="app.js?v=1" defer></script>
+<script src="app.js"></script>
 </body>
 </html>

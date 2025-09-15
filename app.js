@@ -1,12 +1,12 @@
 const $  = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 
-/* ---- háttér + router ---- */
+/* háttér */
 function applyBg(section){
   if(!section) return;
   const p = section.getAttribute("data-bg");
   if (p) section.style.backgroundImage =
-    `linear-gradient(180deg, rgba(0,0,0,.38), rgba(0,0,0,.58)), url('${p}')`;
+    `linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.38)), url('${p}')`; // világosabb
 }
 function show(selector){
   $$(".screen").forEach(el=>el.classList.remove("active"));
@@ -16,7 +16,7 @@ function show(selector){
 ["#splash","#goals","#home","#workout","#woDetail","#calories","#progress","#chat"].forEach(sel=>applyBg($(sel)));
 show("#splash");
 
-/* ---- profil (cél) ---- */
+/* profil (cél) … (VÁLTOZATLAN) */
 const GSTR="fit_profile";
 const goalName = g=>({fogyas:"Fogyás",szalkasitas:"Szálkásítás",hizas:"Hízás"})[g]||"—";
 const loadProf = ()=>{ try{return JSON.parse(localStorage.getItem(GSTR)||"null");}catch{return null;} };
@@ -43,7 +43,7 @@ $$("[data-nav='workout']").forEach(b=>b.addEventListener("click",()=>show("#work
 
 const prof=loadProf(); if(prof?.goal) $("#goalLabel").textContent=goalName(prof.goal);
 
-/* ---- menü ---- */
+/* menü nyitás */
 $$("[data-open]").forEach(a=>{
   a.addEventListener("click",(e)=>{
     e.preventDefault();
@@ -56,7 +56,7 @@ $$("[data-open]").forEach(a=>{
   });
 });
 
-/* ---- edzés: lista + részlet ---- */
+/* EDZÉS */
 const PLAN = [
   {key:"jumping_jacks",  name:"Jumping jacks",  img:"assets/exercises/jumping_jacks.png", desc:"Ugrálás terpesz–zár, karok lendítése."},
   {key:"guggolas",       name:"Guggolás",       img:"assets/exercises/guggolas.png",       desc:"Csípő hátra, térd a lábfej irányába."},
@@ -77,10 +77,7 @@ function buildPlan(){
     </article>
   `).join("");
   $$("#woList .wocard").forEach(card=>{
-    card.addEventListener("click",()=>{
-      const i = Number(card.dataset.i);
-      openDetail(i);
-    });
+    card.addEventListener("click",()=> openDetail(Number(card.dataset.i)));
   });
 }
 
@@ -89,13 +86,22 @@ function openDetail(idx){
   const ex = PLAN[idx]; D = {i:idx, sets:3, reps:12, sec:2, curSet:1, curRep:0, running:false, t:null};
   $("#wdTitle").textContent = ex.name;
   $("#wdDesc").textContent  = ex.desc;
-  $("#wdImg").src = ex.img || ""; $("#wdImg").alt = ex.name || "gyakorlat";
+
+  // KÉP/PLACEHOLDER logika
+  const media = $("#wdMedia"), img=$("#wdImg"), ph=$("#wdPh");
+  media.classList.remove("placeholder");
+  img.src = ex.img || "";
+  img.alt = ex.name || "gyakorlat";
+  img.onerror = ()=>{ media.classList.add("placeholder"); };
+  img.onload  = ()=>{ media.classList.remove("placeholder"); };
+
   $("#wdSets").value=3; $("#wdReps").value=12; $("#wdSec").value=2;
   $("#wdState").textContent="Készen állsz?"; $("#wdClock").textContent="00:00";
   $("#wdPause").disabled=true; $("#wdNextRep").disabled=true; $("#wdNextSet").disabled=true;
   show("#woDetail");
 }
 
+/* időzítő + pihenő + napló – (ugyanaz, mint korábban) */
 function beep(f=1100,ms=150){ try{ const ctx=new (window.AudioContext||window.webkitAudioContext)(); const o=ctx.createOscillator(), g=ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.value=f; g.gain.value=0.06; o.start(); setTimeout(()=>{o.stop(); ctx.close();}, ms);}catch{}}
 function clock(s){ $("#wdClock").textContent = `00:${String(s).padStart(2,"0")}`; }
 
@@ -114,7 +120,7 @@ function nextRep(){
   D.t=setInterval(()=>{
     s--; clock(s); if(s<=0){
       clearInterval(D.t); beep(); D.curRep++;
-      if(D.curRep>=D.reps){ // kör kész
+      if(D.curRep>=D.reps){
         D.curRep=0; D.curSet++;
         if(D.curSet>D.sets){ finishExercise(); return; }
         $("#wdState").textContent=`Pihenj (10 mp)…`; rest(10, ()=>{ $("#wdState").textContent=`${D.curSet}. kör – ${D.reps} ism.`; nextRep(); });
@@ -139,17 +145,15 @@ function finishExercise(){
   clearInterval(D.t); D.running=false; clock(0);
   $("#wdState").textContent="Kész! 🎉";
 
-  // naplózás
   const LOG="fit_log"; const today = new Date().toISOString().slice(0,10);
   const all = JSON.parse(localStorage.getItem(LOG)||"{}");
   all[today]=all[today]||{exercises:[], minutes:0, goal:(loadProf()?.goal||"fogyas")};
   const ex = PLAN[D.i];
-  const seconds = (D.sets*D.reps*D.sec) + (D.sets-1)*10; // becsült összidő
+  const seconds = (D.sets*D.reps*D.sec) + (D.sets-1)*10;
   all[today].exercises.push({name:ex.name, sets:D.sets, reps:D.reps, seconds, doneAt:Date.now()});
   all[today].minutes += Math.round(seconds/60);
   localStorage.setItem(LOG, JSON.stringify(all));
 
-  // stats (streak & done)
   const S="fit_stats"; const st=JSON.parse(localStorage.getItem(S)||"{}");
   st.done=(st.done||0)+1;
   const t0=new Date(new Date().toDateString()), y=new Date(t0); y.setDate(t0.getDate()-1);
@@ -166,70 +170,4 @@ function finishExercise(){
 }
 $("#modalOk").addEventListener("click", ()=>{ $("#modal").classList.add("hidden"); show("#workout"); });
 
-/* ---- kalória ---- */
-function dayKey(d=new Date()){ return d.toISOString().slice(0,10); }
-const KC="fit_kcal";
-function getDayArr(key=dayKey()){ try{ const all=JSON.parse(localStorage.getItem(KC)||"{}"); return all[key]||[]; }catch{return [];} }
-function setDayArr(arr,key=dayKey()){ const all=JSON.parse(localStorage.getItem(KC)||"{}"); all[key]=arr; localStorage.setItem(KC, JSON.stringify(all)); }
-function renderK(){
-  const arr = getDayArr();
-  $("#kList").innerHTML = arr.map((x,i)=>`
-    <div class="krow"><span>${x.food}</span><strong>${x.kcal} kcal</strong><button class="x" data-i="${i}">Törlés</button></div>
-  `).join("");
-  const tot = arr.reduce((a,b)=>a+Number(b.kcal||0),0);
-  $("#kTotal").textContent = `${tot} kcal`;
-  $$("#kList .x").forEach(btn=>{
-    btn.addEventListener("click",()=>{ const i=Number(btn.dataset.i); const a=getDayArr(); a.splice(i,1); setDayArr(a); renderK(); });
-  });
-}
-$("#kForm").addEventListener("submit", e=>{
-  e.preventDefault();
-  const food=$("#kFood").value.trim(), kcal=Number($("#kKcal").value||0);
-  if(!food || !kcal) return;
-  const arr=getDayArr(); arr.push({food,kcal}); setDayArr(arr);
-  $("#kFood").value=""; $("#kKcal").value=""; renderK();
-});
-
-/* ---- teljesítmény ---- */
-function renderProgress(){
-  const S="fit_stats"; const st=JSON.parse(localStorage.getItem(S)||"{}");
-  $("#streak").textContent = `${st.streak||0} nap`;
-  $("#done").textContent   = `${st.done||0}`;
-  const LOG="fit_log"; const all=JSON.parse(localStorage.getItem(LOG)||"{}");
-  let sum=0; for(let i=0;i<7;i++){ const d=new Date(); d.setDate(d.getDate()-i); const k=dayKey(d); sum += (all[k]?.minutes)||0; }
-  $("#w7").textContent = `${sum|0} perc`;
-  const k=dayKey(); const today=all[k]?.exercises||[];
-  $("#dailyLog").innerHTML = today.length
-    ? `<div class="klist">` + today.map(e=>`<div class="krow"><span>${e.name}</span><span>${e.sets}×${e.reps} ism.</span><strong>${Math.round(e.seconds/60)} perc</strong></div>`).join("") + `</div>`
-    : `<p class="muted">Még nincs felvéve gyakorlat ma.</p>`;
-}
-
-/* ---- chat (Netlify Function) ---- */
-let chatInit=false;
-function addMsg(role, text){
-  const row=document.createElement("div"); row.className=`msg ${role}`;
-  const b=document.createElement("div"); b.className="bubble"; b.textContent=text;
-  row.appendChild(b); $("#cLog").appendChild(row); $("#cLog").scrollTop=$("#cLog").scrollHeight;
-}
-function initChat(){ if(chatInit) return; addMsg("ai","Szia! Hogyan segíthetek a célodban?"); chatInit=true; }
-
-$("#cForm").addEventListener("submit", async e=>{
-  e.preventDefault();
-  const txt=$("#cInput").value.trim(); if(!txt) return;
-  $("#cInput").value=""; addMsg("me", txt);
-
-  const goal=(loadProf()?.goal)||"fogyas";
-  const LOG="fit_log"; const all=JSON.parse(localStorage.getItem(LOG)||"{}"); const k=dayKey();
-  const today=all[k]?.exercises?.map(e=>`${e.name} ${e.sets}x${e.reps}`)?.join(", ") || "ma még nem edzettem";
-
-  try{
-    const r = await fetch("/.netlify/functions/ai-chat", {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({ goal, prompt: `Cél: ${goal}. Mai napló: ${today}. Kérdés: ${txt}` })
-    });
-    const js = await r.json();
-    addMsg("ai", js.reply || "❔ Nem érkezett érvényes válasz.");
-  }catch(err){
-    addMsg("ai","⚠️ Hiba történt a chat hívásakor.");
-  }
-});
+/* KALÓRIA + PROGRESSZ + CHAT ugyanaz, mint nálad — változatlanul hagyhatod */

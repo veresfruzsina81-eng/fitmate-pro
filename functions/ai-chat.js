@@ -11,7 +11,8 @@ export async function handler(event) {
 
     const sys = `Magyar személyi edző és dietetikus asszisztens vagy.
 Stílus: rövid, érthető, bátorító. Cél: ${goal||"fogyas"}.
-Adj lépésről lépésre tanácsot, ha kérik; ha edzésterv kell, írd ki a sorozatot/időt, pihenőt.`;
+Ha edzéstervet kérnek: sorozatok/körök, ismétlés, pihenő, forma-tanácsok.
+Étel esetén: makrók, csereötletek, olcsó alternatívák.`;
 
     const resp = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",

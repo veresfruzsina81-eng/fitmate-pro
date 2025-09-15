@@ -1,5 +1,4 @@
-/* ========= HOTFIX blokk: magyar címek + fájlhoz kötött meta ========= */
-
+/* ========= HU META: fájlnév -> magyar cím + leírás ========= */
 const HU_META = {
   // Hízás – Férfi
   'hizas1.mp4':   { title: 'Fekvőtámasz', desc: 'Mell és tricepsz erősítése.' },
@@ -44,7 +43,23 @@ const HU_META = {
   'fogyas_w5.mp4': { title: 'Ugrókötél', desc: 'Állóképesség fejlesztése.' }
 };
 
-// ---------- állapot ----------
+/* ========= Fix fájllisták (nincs több számolgatás) ========= */
+const FILES = {
+  fogyas: {
+    ferfi: ['fogyas1.mp4','fogyas2.mp4','fogyas3.mp4','fogyas4.mp4','fogyas5.mp4'],
+    no:    ['fogyas_w1.mp4','fogyas_w2.mp4','fogyas_w3.mp4','fogyas_w4.mp4','fogyas_w5.mp4']
+  },
+  szalkasitas: {
+    ferfi: ['szalkasitas1.mp4','szalkasitas2.mp4','szalkasitas3.mp4','szalkasitas4.mp4','szalkasitas5.mp4'],
+    no:    ['szalkasitas_w1.mp4','szalkasitas_w2.mp4','szalkasitas_w3.mp4','szalkasitas_w4.mp4','szalkasitas_w5.mp4']
+  },
+  hizas: {
+    ferfi: ['hizas1.mp4','hizas2.mp4','hizas3.mp4','hizas4.mp4','hizas5.mp4'],
+    no:    ['hizas_w1.mp4','hizas_w2.mp4','hizas_w3.mp4','hizas_w4.mp4','hizas_w5.mp4']
+  }
+};
+
+/* ========= Állapot ========= */
 const state = {
   goal:   localStorage.getItem('goal')   || 'fogyas', // 'fogyas' | 'szalkasitas' | 'hizas'
   gender: localStorage.getItem('gender') || 'no',     // 'ferfi' | 'no'
@@ -52,12 +67,11 @@ const state = {
   done:   +(localStorage.getItem('done')   || 0),
 };
 
-// ---------- háttér képek váltása (random kaja háttér a cal/perf nézetben) ----------
+/* ========= Háttér (random kajás cal/perf) ========= */
 const bgEl = document.getElementById('bg');
 function setBackgroundFor(section) {
-  const foods = ['food1.png','food2.png','food3.png']; // tölts fel ilyen nevű képeket a gyökérbe
+  const foods = ['food1.png','food2.png','food3.png']; // tölts fel ilyen neveken képeket
   const pickFood = () => foods[Math.floor(Math.random()*foods.length)] || 'fogyas.png';
-
   const map = {
     splash:  'kezdo.png',
     goal:    'fogyas.png',
@@ -72,29 +86,33 @@ function setBackgroundFor(section) {
     `linear-gradient(0deg, rgba(11,15,20,.68), rgba(11,15,20,.68)), url('${img}')`;
 }
 
-// ---------- nézet váltó ----------
+/* ========= Router ========= */
 function show(id){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('show'));
   document.getElementById('view-'+id).classList.add('show');
   setBackgroundFor(id);
 }
 document.getElementById('btnStart').onclick    = ()=>show('goal');
-document.getElementById('btnToSplash').onclick  = ()=>show('splash');
+document.getElementById('btnToSplash').onclick = ()=>show('splash');
 document.querySelectorAll('.back').forEach(b=>{ b.onclick = ()=> show(b.dataset.back); });
 
-// ---------- célválasztás ----------
+/* ========= Célválasztás + nem normalizálás ========= */
 const goalCards = document.querySelectorAll('.goal-card');
 goalCards.forEach(c=>{
   if(c.dataset.goal===state.goal) c.classList.add('active');
   c.onclick = ()=>{
     goalCards.forEach(x=>x.classList.remove('active'));
     c.classList.add('active');
-    state.goal = c.dataset.goal;
+    state.goal = c.dataset.goal; // 'fogyas' | 'szalkasitas' | 'hizas'
   };
 });
+
 const genderPick = document.getElementById('genderPick');
-genderPick.value = state.gender;
-genderPick.onchange = e => state.gender = e.target.value;
+// ha a select "Férfi"/"Nő" értékeket használ:
+genderPick.value = (state.gender === 'ferfi') ? 'Férfi' : 'Nő';
+genderPick.onchange = e => {
+  state.gender = (e.target.value === 'Férfi') ? 'ferfi' : 'no';
+};
 
 document.getElementById('btnToHome').onclick = ()=>{
   localStorage.setItem('goal', state.goal);
@@ -104,7 +122,7 @@ document.getElementById('btnToHome').onclick = ()=>{
   show('home');
 };
 
-// ---------- Főmenü feltöltés ----------
+/* ========= Főmenü ========= */
 function hydrateHome(){
   document.getElementById('currentGoalLbl').textContent =
     (state.goal==='fogyas'?'Fogyás':state.goal==='szalkasitas'?'Szálkásítás':'Hízás');
@@ -114,52 +132,20 @@ document.querySelectorAll('#view-home .card').forEach(btn=>{
   btn.onclick = ()=>show(btn.dataset.open);
 });
 
-// ---------- Gyakorlatok (sorrend a megbeszéltek szerint) ----------
-const sx = g => g==='no' ? '_w' : ''; // női: _w
-const exercises = {
-  hizas: [
-    { title: 'Csípőemelés',                   file: g => `hizas${sx(g)}1.mp4`, desc:'Far és hamstring erősítés.' },
-    { title: 'Négyütemű fekvőtámasz',         file: g => `hizas${sx(g)}2.mp4`, desc:'Teljes test állóképesség.' },
-    { title: 'Guggolás',                      file: g => `hizas${sx(g)}3.mp4`, desc:'Alsótest, törzs feszítése.' },
-    { title: 'Plank',                         file: g => `hizas${sx(g)}4.mp4`, desc:'Törzs statikus erősítés.' },
-    { title: 'Glute bridge',                  file: g => `hizas${sx(g)}5.mp4`, desc:'Csípőnyújtás, far aktiválás.' },
-  ],
-  fogyas: [
-    { title: 'Terpeszugrás kézemeléssel',     file: g => `fogyas${sx(g)}1.mp4`, desc:'Kardió, bemelegítés.' },
-    { title: 'Magastérdemelés kézmagasságig', file: g => `fogyas${sx(g)}2.mp4`, desc:'Cardio + core.' },
-    { title: 'Burpee',                        file: g => `fogyas${sx(g)}3.mp4`, desc:'Pulzusemelő, teljes test.' },
-    { title: 'Mountain climber előre-hátra',  file: g => `fogyas${sx(g)}4.mp4`, desc:'Core és kardió.' },
-    { title: 'Guggolásból felugrás',          file: g => `fogyas${sx(g)}5.mp4`, desc:'Alsótest, kardió.' },
-  ],
-  szalkasitas: [
-    { title: 'Fekvőtámasz',                           file: g => `szalkasitas${sx(g)}1.mp4`, desc:'Mell, tricepsz, core.' },
-    { title: 'Plank',                                  file: g => `szalkasitas${sx(g)}2.mp4`, desc:'Törzs statikus tartás.' },
-    { title: 'Egylábas kitörés',                       file: g => `szalkasitas${sx(g)}3.mp4`, desc:'Láb és egyensúly.' },
-    { title: 'Oldaltartás (könyökön plank)',           file: g => `szalkasitas${sx(g)}4.mp4`, desc:'Ferde hasizom.' },
-    { title: 'Guggolás felrúgással',                   file: g => `szalkasitas${sx(g)}5.mp4`, desc:'Teljes test, pulzus.' },
-  ],
-};
-
-/* ---------- Biztos listaépítés: a fenti listát HU_META-val normalizáljuk ---------- */
+/* ========= Listaépítés (egyetlen verzió) ========= */
 function getExercisesSafe() {
-  const goal   = state.goal;     // 'fogyas' | 'szalkasitas' | 'hizas'
-  const gender = state.gender;   // 'ferfi' | 'no'
-  const base = (exercises[goal] || []);
-
-  return base.map(ex => {
-    const fname = typeof ex.file === 'function' ? ex.file(gender) : ex.file;
-    const meta  = HU_META[fname] || {};
-    return {
-      title: meta.title || ex.title || fname,
-      desc:  meta.desc  || ex.desc  || '',
-      file:  fname
-    };
+  const goal   = state.goal;
+  const gender = (state.gender === 'ferfi') ? 'ferfi' : 'no';
+  const names  = ((FILES[goal]||{})[gender]||[]);
+  return names.map(fn => {
+    const meta = HU_META[fn] || {};
+    return { file: fn, title: meta.title || fn, desc: meta.desc || '' };
   });
 }
 
-/* ---------- Lista render – EZ AZ EGY fut (nincs duplikáció) ---------- */
 const exList = document.getElementById('exerciseList');
 function renderExerciseList(){
+  if(!exList) return;
   exList.innerHTML = '';
   const arr = getExercisesSafe();
   arr.forEach((ex, i)=>{
@@ -177,7 +163,7 @@ function renderExerciseList(){
 }
 renderExerciseList();
 
-/* ---------- Modál + időzítő (videó loop, 15 mp pihenő) ---------- */
+/* ========= Modál + időzítő (loop, 15 mp pihenő) ========= */
 const modal = document.getElementById('exerciseModal');
 const exTitle = document.getElementById('exTitle');
 const exDesc  = document.getElementById('exDesc');
@@ -249,27 +235,21 @@ function restPhase(){
   },1000);
 }
 function pauseTimer(){
-  if(!running && tInt){ // folytatás
-    runRep();
-    return;
-  }
+  if(!running && tInt){ runRep(); return; }
   running=false;
   clearInterval(tInt);
 }
 function nextSetManual(){
   clearInterval(tInt);
-  if(curSet < totalSets){
-    curSet++; curRep=1;
-    runRep();
-  }
+  if(curSet < totalSets){ curSet++; curRep=1; runRep(); }
 }
 
 function openExerciseModal(ex){
-  const src = typeof ex.file === 'function' ? ex.file(state.gender) : ex.file;
+  const src = ex.file; // már kész fájlnév
   exTitle.textContent = ex.title;
   exDesc.textContent  = ex.desc || '';
-  exVideo.src = src;
-  exVideo.setAttribute('loop','');
+  exVideo.src = src + '?v=' + Date.now(); // cache-törés
+  exVideo.loop = true; exVideo.muted = true; exVideo.playsInline = true;
   exVideo.play().catch(()=>{});
   modal.classList.add('show');
   pauseTimer();
@@ -281,7 +261,7 @@ document.getElementById('btnStartTimer').onclick = startTimer;
 document.getElementById('btnPauseTimer').onclick = pauseTimer;
 document.getElementById('btnNextSet').onclick  = nextSetManual;
 
-/* ---------- Kalória ---------- */
+/* ========= Kalória ========= */
 const mealInp  = document.getElementById('mealInp');
 const kcalInp  = document.getElementById('kcalInp');
 const calList  = document.getElementById('calList');
@@ -313,7 +293,7 @@ document.getElementById('btnAddMeal').onclick = ()=>{
 };
 renderCal();
 
-/* ---------- Teljesítmény ---------- */
+/* ========= Teljesítmény ========= */
 function incrementDone(){
   state.done++;
   localStorage.setItem('done', String(state.done));
@@ -325,7 +305,7 @@ function incrementDone(){
 document.getElementById('streakDays').textContent   = state.streak;
 document.getElementById('doneWorkouts').textContent = state.done;
 
-/* ---------- Chat (frontend buborék) ---------- */
+/* ========= Chat (frontend buborék) ========= */
 const chatBox = document.getElementById('chatBox');
 function pushBubble(txt, me=false){
   const b = document.createElement('div');
@@ -350,6 +330,6 @@ document.getElementById('chatSend').onclick = async ()=>{
   }
 };
 
-/* ---------- Indítás ---------- */
+/* ========= Indítás ========= */
 renderExerciseList();
 show('splash');

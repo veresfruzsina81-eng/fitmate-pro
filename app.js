@@ -43,7 +43,7 @@ const HU_META = {
   'fogyas_w5.mp4': { title: 'Ugrókötél', desc: 'Állóképesség fejlesztése.' }
 };
 
-/* ========= Fix fájllisták (nincs több számolgatás) ========= */
+/* ========= Fix fájllisták ========= */
 const FILES = {
   fogyas: {
     ferfi: ['fogyas1.mp4','fogyas2.mp4','fogyas3.mp4','fogyas4.mp4','fogyas5.mp4'],
@@ -59,277 +59,192 @@ const FILES = {
   }
 };
 
-/* ========= Állapot ========= */
-const state = {
-  goal:   localStorage.getItem('goal')   || 'fogyas', // 'fogyas' | 'szalkasitas' | 'hizas'
-  gender: localStorage.getItem('gender') || 'no',     // 'ferfi' | 'no'
-  streak: +(localStorage.getItem('streak') || 0),
-  done:   +(localStorage.getItem('done')   || 0),
+/* ============== ÁLLAPOT + SEGÉDEK ============== */
+const S={
+  goal:null,
+  gender:(localStorage.getItem('gender')||'no')==='ferfi'?'ferfi':'no',
+  done:+(localStorage.getItem('done')||0),
+  streak:+(localStorage.getItem('streak')||0)
 };
+const qs=s=>document.querySelector(s), qsa=s=>[...document.querySelectorAll(s)];
+function show(id){ qsa('.view').forEach(v=>v.classList.remove('show')); qs('#v-'+id).classList.add('show'); setBG(id); }
 
-/* ========= Háttér (random kajás cal/perf) ========= */
-const bgEl = document.getElementById('bg');
-function setBackgroundFor(section) {
-  const foods = ['food1.png','food2.png','food3.png']; // tölts fel ilyen neveken képeket
-  const pickFood = () => foods[Math.floor(Math.random()*foods.length)] || 'fogyas.png';
-  const map = {
-    splash:  'kezdo.png',
-    goal:    'fogyas.png',
-    home:    state.goal + '.png',
-    workout: state.goal + '.png',
-    cal:     pickFood(),
-    perf:    pickFood(),
-    chat:    'hizas.png',
+// hátterek
+function setBG(view){
+  const foods = ['food1.png','food2.png','food3.png']; // opcionális képek a gyökérben
+  const pickFood = ()=> foods[Math.floor(Math.random()*foods.length)] || 'fogyas.png';
+  const m={
+    splash:'kezdo.png',
+    goal:'fogyas.png',
+    home:(S.goal||'fogyas')+'.png',
+    workout:(S.goal||'fogyas')+'.png',
+    cal: pickFood(),
+    perf: pickFood(),
+    chat:'hizas.png'
   };
-  const img = map[section] || 'kezdo.png';
-  bgEl.style.backgroundImage =
-    `linear-gradient(0deg, rgba(11,15,20,.68), rgba(11,15,20,.68)), url('${img}')`;
+  qs('#bg').style.backgroundImage=`linear-gradient(0deg, rgba(11,15,20,.68), rgba(11,15,20,.68)), url('${m[view]||'kezdo.png'}')`;
 }
 
-/* ========= Router ========= */
-function show(id){
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('show'));
-  document.getElementById('view-'+id).classList.add('show');
-  setBackgroundFor(id);
-}
-document.getElementById('btnStart').onclick    = ()=>show('goal');
-document.getElementById('btnToSplash').onclick = ()=>show('splash');
-document.querySelectorAll('.back').forEach(b=>{ b.onclick = ()=> show(b.dataset.back); });
+/* ============== SPLASH → GOAL ============== */
+qs('#start').onclick=()=>show('goal');
 
-/* ========= Célválasztás + nem normalizálás ========= */
-const goalCards = document.querySelectorAll('.goal-card');
-goalCards.forEach(c=>{
-  if(c.dataset.goal===state.goal) c.classList.add('active');
-  c.onclick = ()=>{
-    goalCards.forEach(x=>x.classList.remove('active'));
-    c.classList.add('active');
-    state.goal = c.dataset.goal; // 'fogyas' | 'szalkasitas' | 'hizas'
+/* ============== GOAL PICK ============== */
+let tmpGoal='fogyas'; let tmpGender=S.gender;
+qsa('.goal-list .item').forEach(it=>{
+  if(it.dataset.goal===tmpGoal) it.classList.add('active');
+  it.onclick=()=>{
+    qsa('.goal-list .item').forEach(x=>x.classList.remove('active'));
+    it.classList.add('active');
+    tmpGoal=it.dataset.goal;
+    qs('#bg').style.backgroundImage=`url('${tmpGoal}.png')`;
   };
 });
+const genderSel=qs('#gender');
+genderSel.value = tmpGender; // 'no' | 'ferfi'
+genderSel.onchange=e=>tmpGender=e.target.value;
 
-const genderPick = document.getElementById('genderPick');
-// ha a select "Férfi"/"Nő" értékeket használ:
-genderPick.value = (state.gender === 'ferfi') ? 'Férfi' : 'Nő';
-genderPick.onchange = e => {
-  state.gender = (e.target.value === 'Férfi') ? 'ferfi' : 'no';
-};
-
-document.getElementById('btnToHome').onclick = ()=>{
-  localStorage.setItem('goal', state.goal);
-  localStorage.setItem('gender', state.gender);
-  hydrateHome();
-  renderExerciseList();
+qs('#toHome').onclick=()=>{
+  S.goal=tmpGoal; S.gender=tmpGender;
+  localStorage.setItem('goal',S.goal);
+  localStorage.setItem('gender',S.gender);
+  qs('#goalLabel').textContent=`Cél: ${S.goal==='fogyas'?'Fogyás':S.goal==='szalkasitas'?'Szálkásítás':'Hízás'}`;
+  renderExList();
   show('home');
 };
 
-/* ========= Főmenü ========= */
-function hydrateHome(){
-  document.getElementById('currentGoalLbl').textContent =
-    (state.goal==='fogyas'?'Fogyás':state.goal==='szalkasitas'?'Szálkásítás':'Hízás');
-}
-hydrateHome();
-document.querySelectorAll('#view-home .card').forEach(btn=>{
-  btn.onclick = ()=>show(btn.dataset.open);
+/* ============== NAV ============== */
+qsa('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
+qsa('#v-home [data-open]').forEach(t=>t.onclick=()=>{
+  const to=t.dataset.open;
+  if(to==='workout') renderExList();
+  show(to);
 });
 
-/* ========= Listaépítés (egyetlen verzió) ========= */
-function getExercisesSafe() {
-  const goal   = state.goal;
-  const gender = (state.gender === 'ferfi') ? 'ferfi' : 'no';
-  const names  = ((FILES[goal]||{})[gender]||[]);
-  return names.map(fn => {
+/* ============== GYAKORLATLISTA (FILES → HU_META) ============== */
+function getExercises(){
+  const goal = (['fogyas','szalkasitas','hizas'].includes(S.goal)?S.goal:'fogyas');
+  const gender = (S.gender==='ferfi')?'ferfi':'no';
+  const names = ((FILES[goal]||{})[gender]||[]);
+  return names.map(fn=>{
     const meta = HU_META[fn] || {};
-    return { file: fn, title: meta.title || fn, desc: meta.desc || '' };
+    return {file:fn, title:meta.title||fn, desc:meta.desc||''};
   });
 }
 
-const exList = document.getElementById('exerciseList');
-function renderExerciseList(){
-  if(!exList) return;
-  exList.innerHTML = '';
-  const arr = getExercisesSafe();
-  arr.forEach((ex, i)=>{
-    const el = document.createElement('div');
-    el.className = 'exercise-item';
-    el.innerHTML = `
-      <div class="title">#${i+1}. gyakorlat</div>
-      <div class="muted">${ex.title}</div>
-      <button class="open-btn">Megnyit</button>
-    `;
-    el.querySelector('.open-btn').onclick = (e)=>{ e.stopPropagation(); openExerciseModal(ex); };
-    el.onclick = ()=> openExerciseModal(ex);
-    exList.appendChild(el);
-  });
-}
-renderExerciseList();
-
-/* ========= Modál + időzítő (loop, 15 mp pihenő) ========= */
-const modal = document.getElementById('exerciseModal');
-const exTitle = document.getElementById('exTitle');
-const exDesc  = document.getElementById('exDesc');
-const exVideo = document.getElementById('exVideo');
-const setsInp = document.getElementById('setsInp');
-const repsInp = document.getElementById('repsInp');
-const secPerRepInp = document.getElementById('secPerRepInp');
-const timerDisplay = document.getElementById('timerDisplay');
-const timerInfo = document.getElementById('timerInfo');
-const beep = document.getElementById('beep');
-
-let tInt=null, running=false, curSet=1, curRep=1, totalSets=3, reps=12, secPerRep=2;
-
-function mmss(sec){
-  const m = String(Math.floor(sec/60)).padStart(2,'0');
-  const s = String(sec%60).padStart(2,'0');
-  return `${m}:${s}`;
-}
-function paintTimer(text){ timerDisplay.textContent = text; }
-
-function startTimer(){
-  totalSets = Math.max(1, +setsInp.value||1);
-  reps      = Math.max(1, +repsInp.value||1);
-  secPerRep = Math.max(1, +secPerRepInp.value||1);
-  curSet = 1; curRep = 1;
-  runRep();
-}
-function runRep(){
-  running = true;
-  let left = secPerRep;
-  paintTimer(mmss(left));
-  timerInfo.textContent = `Kör ${curSet}/${totalSets} – Ismétlés ${curRep}/${reps}`;
-  clearInterval(tInt);
-  tInt = setInterval(()=>{
-    left--;
-    paintTimer(mmss(left));
-    if(left<=0){
-      clearInterval(tInt);
-      beep.play().catch(()=>{});
-      if(curRep < reps){
-        curRep++;
-        runRep();
-      }else{
-        restPhase();
-      }
-    }
-  },1000);
-}
-function restPhase(){
-  running=false;
-  let rest = 15;
-  timerInfo.textContent = `Pihenő (15 mp) – kész kör: ${curSet}/${totalSets}`;
-  paintTimer(mmss(rest));
-  clearInterval(tInt);
-  tInt = setInterval(()=>{
-    rest--;
-    paintTimer(mmss(rest));
-    if(rest<=0){
-      clearInterval(tInt);
-      if(curSet < totalSets){
-        curSet++; curRep=1;
-        runRep();
-      }else{
-        timerInfo.textContent = 'Gratulálok! Készen vagyunk. Lépj vissza a listához és válaszd a következő gyakorlatot.';
-        paintTimer('00:00');
-        incrementDone();
-      }
-    }
-  },1000);
-}
-function pauseTimer(){
-  if(!running && tInt){ runRep(); return; }
-  running=false;
-  clearInterval(tInt);
-}
-function nextSetManual(){
-  clearInterval(tInt);
-  if(curSet < totalSets){ curSet++; curRep=1; runRep(); }
-}
-
-function openExerciseModal(ex){
-  const src = ex.file; // már kész fájlnév
-  exTitle.textContent = ex.title;
-  exDesc.textContent  = ex.desc || '';
-  exVideo.src = src + '?v=' + Date.now(); // cache-törés
-  exVideo.loop = true; exVideo.muted = true; exVideo.playsInline = true;
-  exVideo.play().catch(()=>{});
-  modal.classList.add('show');
-  pauseTimer();
-  paintTimer('00:00');
-  timerInfo.textContent = '';
-}
-document.getElementById('exClose').onclick = ()=> modal.classList.remove('show');
-document.getElementById('btnStartTimer').onclick = startTimer;
-document.getElementById('btnPauseTimer').onclick = pauseTimer;
-document.getElementById('btnNextSet').onclick  = nextSetManual;
-
-/* ========= Kalória ========= */
-const mealInp  = document.getElementById('mealInp');
-const kcalInp  = document.getElementById('kcalInp');
-const calList  = document.getElementById('calList');
-const calTotal = document.getElementById('calTotal');
-const calData  = JSON.parse(localStorage.getItem('calData')||'[]');
-
-function renderCal(){
-  calList.innerHTML='';
-  let sum=0;
-  calData.forEach((it,idx)=>{
-    sum+=it.kcal;
-    const row = document.createElement('div');
-    row.className='item';
-    row.innerHTML = `<span>${it.label}</span><span>${it.kcal} kcal</span>`;
-    row.onclick = ()=>{ calData.splice(idx,1); saveCal(); };
-    calList.appendChild(row);
-  });
-  calTotal.textContent = sum;
-}
-function saveCal(){
-  localStorage.setItem('calData', JSON.stringify(calData));
-  renderCal();
-}
-document.getElementById('btnAddMeal').onclick = ()=>{
-  const label = mealInp.value.trim(); const kcal = +kcalInp.value||0;
-  if(!label || !kcal) return;
-  calData.push({label,kcal}); mealInp.value=''; kcalInp.value='';
-  saveCal();
-};
-renderCal();
-
-/* ========= Teljesítmény ========= */
-function incrementDone(){
-  state.done++;
-  localStorage.setItem('done', String(state.done));
-  document.getElementById('doneWorkouts').textContent = state.done;
-  state.streak = Math.max(state.streak,1);
-  localStorage.setItem('streak', String(state.streak));
-  document.getElementById('streakDays').textContent = state.streak;
-}
-document.getElementById('streakDays').textContent   = state.streak;
-document.getElementById('doneWorkouts').textContent = state.done;
-
-/* ========= Chat (frontend buborék) ========= */
-const chatBox = document.getElementById('chatBox');
-function pushBubble(txt, me=false){
-  const b = document.createElement('div');
-  b.className = 'bubble ' + (me?'me':'bot');
-  b.textContent = txt;
-  chatBox.appendChild(b);
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
-document.getElementById('chatSend').onclick = async ()=>{
-  const q = document.getElementById('chatInp').value.trim();
-  if(!q) return;
-  document.getElementById('chatInp').value='';
-  pushBubble(q,true);
-  try{
-    // Ha működik a Netlify function-öd:
-    // const r = await fetch('/.netlify/functions/ai-chat',{method:'POST',body:JSON.stringify({q,state})});
-    // const {text} = await r.json();
-    // pushBubble(text || 'Oké!');
-    pushBubble('Oké! Dolgozom rajta… (A backend válasz itt jelenik meg.)');
-  }catch(e){
-    pushBubble('Hopp, a chat backend most nem elérhető.');
+function renderExList(){
+  const wrap=qs('#exList'); wrap.innerHTML='';
+  const arr=getExercises();
+  if(!arr.length){
+    wrap.innerHTML='<div class="card pad"><b>Még nincs feltöltve ehhez a célhoz.</b></div>';
+    return;
   }
+  arr.forEach((it,i)=>{
+    const row=document.createElement('div');
+    row.className='list-item';
+    row.innerHTML=`
+      <img class="thumb" src="${S.goal}.png" alt="">
+      <div style="flex:1"><div style="font-weight:800">#${i+1}. gyakorlat</div><div class="muted">${it.title}</div></div>
+      <button class="btn">Megnyit</button>`;
+    row.querySelector('.btn').onclick=()=>openEx(it);
+    row.onclick=()=>openEx(it);
+    wrap.appendChild(row);
+  });
+}
+
+/* ============== MODÁL + IDŐZÍTŐ ============== */
+const modal=qs('#modal'), mClose=qs('#mClose'), v=qs('#exVideo'), title=qs('#exTitle'), desc=qs('#exDesc');
+const iSets=qs('#iSets'), iReps=qs('#iReps'), iSec=qs('#iSec');
+const bStart=qs('#bStart'), bPause=qs('#bPause'), bNext=qs('#bNext');
+const clock=qs('#clock'), status=qs('#status');
+
+let tInt=null, paused=false, curSet=1, curRep=0, totalSets=3, reps=12, secPer=2;
+
+function mmss(s){const m=String(Math.floor(s/60)).padStart(2,'0'); const ss=String(s%60).padStart(2,'0'); return `${m}:${ss}`;}
+function beep(){try{const ctx=new (window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.value=900;g.gain.value=.06;o.start();setTimeout(()=>{o.stop();ctx.close()},160);}catch(e){}}
+
+function openEx(it){
+  title.textContent=it.title;
+  desc.textContent=it.desc||'';
+  v.src = it.file + '?v=' + Date.now(); // cache-törés
+  v.loop = true; v.muted = true; v.playsInline = true; v.play().catch(()=>{});
+  iSets.value=3; iReps.value=12; iSec.value=2; clock.textContent='00:00'; status.textContent='';
+  stopTimer(); modal.classList.add('show');
+}
+mClose.onclick=()=>{stopTimer(); modal.classList.remove('show'); v.pause();};
+
+function stopTimer(){ if(tInt){clearInterval(tInt); tInt=null;} }
+
+bStart.onclick=()=>{
+  totalSets=Math.max(1,+iSets.value||1);
+  reps=Math.max(1,+iReps.value||1);
+  secPer=Math.max(1,+iSec.value||1);
+  curSet=1; curRep=0; paused=false; runRep();
+};
+bPause.onclick=()=>{ paused=!paused; bPause.textContent=paused?'Folytatás':'Szünet'; };
+bNext.onclick=()=>{ // manuális ugrás
+  stopTimer(); curSet++; if(curSet<=totalSets){ restPhase(()=>runRep()); } else { finishExercise(); }
 };
 
-/* ========= Indítás ========= */
-renderExerciseList();
-show('splash');
+function runRep(){
+  let left=secPer; clock.textContent=mmss(left); status.textContent=`Kör ${curSet}/${totalSets} • Ismétlés ${curRep+1}/${reps}`;
+  stopTimer();
+  tInt=setInterval(()=>{
+    if(paused) return;
+    left--; clock.textContent=mmss(left);
+    if(left<=0){
+      beep(); curRep++;
+      if(curRep<reps){ left=secPer; status.textContent=`Kör ${curSet}/${totalSets} • Ismétlés ${curRep+1}/${reps}`; }
+      else { // kör vége
+        stopTimer(); curSet++; if(curSet<=totalSets){ restPhase(()=>{curRep=0; runRep();}); } else { finishExercise(); }
+      }
+    }
+  },1000);
+}
+
+function restPhase(cb){
+  let r=15; status.textContent=`Pihenő ${r} mp`; clock.textContent=mmss(r);
+  const ri=setInterval(()=>{
+    if(paused) return;
+    r--; clock.textContent=mmss(r); if(r<=0){ clearInterval(ri); beep(); cb(); }
+  },1000);
+}
+
+function finishExercise(){
+  status.innerHTML='🎉 <b>Ügyes vagy! Büszke vagyok rád!</b> Lépj vissza a listához és válaszd a következőt.';
+  clock.textContent='00:00'; stopTimer();
+  S.done++; localStorage.setItem('done',S.done); qs('#done').textContent=S.done;
+  const today=new Date().toDateString(), last=localStorage.getItem('lastDone')||'';
+  if(last!==today){ S.streak++; localStorage.setItem('streak',S.streak); localStorage.setItem('lastDone',today); qs('#streak').textContent=S.streak; }
+}
+
+/* ============== KALÓRIA ============== */
+const meals=JSON.parse(localStorage.getItem('meals')||'[]');
+function saveMeals(){ localStorage.setItem('meals',JSON.stringify(meals)); }
+function renderMeals(){ const wrap=qs('#mealList'); wrap.innerHTML=''; let sum=0; meals.forEach((m,i)=>{ sum+=m.k; const r=document.createElement('div'); r.className='item-row'; r.innerHTML=`<span>${m.n}</span><span>${m.k} kcal</span>`; r.onclick=()=>{meals.splice(i,1);saveMeals();renderMeals();}; wrap.appendChild(r); }); qs('#sumKcal').innerHTML='<b>'+sum+'</b>'; }
+qs('#addMeal').onclick=()=>{ const n=qs('#mealName').value.trim(); const k=+qs('#mealKcal').value||0; if(!n||!k) return; meals.push({n,k}); saveMeals(); renderMeals(); qs('#mealName').value=''; qs('#mealKcal').value=''; };
+renderMeals();
+
+/* ============== CHAT ============== */
+function pushBubble(t,me=false){ const b=document.createElement('div'); b.className='bubble'+(me?' me':' bot'); b.textContent=t; qs('#chatBox').appendChild(b); qs('#chatBox').scrollTop=1e9; }
+qs('#sendChat').onclick=async()=>{
+  const q=qs('#chatInput').value.trim(); if(!q) return;
+  qs('#chatInput').value=''; pushBubble(q,true);
+  let reply='';
+  try{
+    const r=await fetch('/.netlify/functions/ai-chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({prompt:q,goal:S.goal||'fogyas',gender:S.gender})
+    });
+    if(r.ok){ const j=await r.json(); reply=j.reply||''; }
+  }catch(e){}
+  if(!reply){ reply = 'Megvagyok! Írj, miben segítsek az edzés/étrend kapcsán. 😉'; }
+  pushBubble(reply,false);
+};
+
+/* ============== INDÍTÁS ============== */
+(function boot(){
+  // mindig Splash -> Goal-lal nyitunk
+  qs('#done').textContent=S.done; qs('#streak').textContent=S.streak;
+  show('splash');
+})();

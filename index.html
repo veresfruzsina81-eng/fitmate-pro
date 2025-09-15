@@ -54,10 +54,12 @@ video{width:100%;display:block;object-fit:cover;max-height:58vh}
 .bubble.bot{background:#1a2230}
 .item-row{display:flex;justify-content:space-between;align-items:center;background:#0f1622;border:1px solid #2a3446;padding:10px 12px;border-radius:12px}
 .total{margin-top:10px;font-weight:900}
+.hr{height:1px;background:#ffffff1a;margin:10px 0}
 @media (max-width:720px){.grid3{grid-template-columns:1fr}}
 /* Splash fix: középre */
 #v-splash .container{min-height:100vh;display:flex;align-items:center;justify-content:center}
 #v-splash .centerbox{margin:0;width:min(560px,92vw)}
+canvas{width:100%;height:220px;display:block}
 </style>
 </head>
 <body>
@@ -77,7 +79,7 @@ video{width:100%;display:block;object-fit:cover;max-height:58vh}
 <!-- CÉLVÁLASZTÓ -->
 <section id="v-goal" class="view">
   <div class="container">
-    <button class="back" data-go="splash">← Vissza</button>
+    <button class="back" data-back>← Vissza</button>
     <h2>Válaszd ki a célod</h2>
     <p class="muted">Ezt később bármikor módosíthatod.</p>
     <div class="goal-list grid" style="margin-top:12px">
@@ -98,19 +100,18 @@ video{width:100%;display:block;object-fit:cover;max-height:58vh}
 <!-- FŐMENÜ -->
 <section id="v-home" class="view">
   <div class="container">
-    <button class="back" data-go="goal">← Vissza</button>
+    <button class="back" data-back>← Vissza</button>
     <div class="row" style="justify-content:space-between">
       <div class="card pad" style="border-radius:999px"><b id="goalLabel">Cél: –</b></div>
       <div class="row">
-        <button class="btn ghost" data-go="goal">Cél módosítása</button>
-        <button class="btn ghost" data-go="splash">Kezdő</button>
+        <button class="btn ghost" id="changeGoal">Cél módosítása</button>
       </div>
     </div>
     <div class="grid menu" style="margin-top:14px">
       <div id="tileBodyweight" class="tile card pad"><h3>Saját testsúly</h3><p class="muted">Válassz gyakorlatot, időzítővel.</p></div>
       <div id="tileWeights" class="tile card pad"><h3>Súlyzós edzés</h3><p class="muted">Hamarosan…</p></div>
-      <div class="tile card pad" data-open="cal"><h3>Kalóriaszámláló</h3><p class="muted">Egyszerű napi bevitel.</p></div>
-      <div class="tile card pad" data-open="perf"><h3>Napi teljesítmény</h3><p class="muted">Streak és kész napok.</p></div>
+      <div class="tile card pad" data-open="cal"><h3>Kalóriaszámláló</h3><p class="muted">Napi & heti összesítés.</p></div>
+      <div class="tile card pad" data-open="perf"><h3>Napi teljesítmény</h3><p class="muted">Streak + heti grafikon.</p></div>
       <div class="tile card pad" data-open="chat"><h3>AI chat</h3><p class="muted">Magyar tanácsok.</p></div>
     </div>
   </div>
@@ -119,7 +120,7 @@ video{width:100%;display:block;object-fit:cover;max-height:58vh}
 <!-- SAJÁT TESTSÚLY EDZÉS LISTA -->
 <section id="v-workout" class="view">
   <div class="container">
-    <button class="back" data-go="home">← Vissza</button>
+    <button class="back" data-back>← Vissza</button>
     <h2>Napi edzés</h2><p class="muted">Válassz gyakorlatot (5 db / kategória).</p>
     <div id="exList" class="grid" style="margin-top:12px"></div>
   </div>
@@ -128,7 +129,7 @@ video{width:100%;display:block;object-fit:cover;max-height:58vh}
 <!-- SÚLYZÓS (placeholder) -->
 <section id="v-weights" class="view">
   <div class="container">
-    <button class="back" data-go="home">← Vissza</button>
+    <button class="back" data-back>← Vissza</button>
     <h2>Súlyzós edzés</h2>
     <div class="card pad"><p>Hamarosan ide kerül 5-5 videó minden célhoz (fogyás / szálkásítás / hízás).</p></div>
   </div>
@@ -162,16 +163,30 @@ video{width:100%;display:block;object-fit:cover;max-height:58vh}
 <!-- KALÓRIA -->
 <section id="v-cal" class="view">
   <div class="container">
-    <button class="back" data-go="home">← Vissza</button>
+    <button class="back" data-back>← Vissza</button>
     <h2>Kalóriaszámláló</h2>
     <div class="card pad">
       <div class="row">
         <input id="mealName" class="input" style="flex:2" placeholder="Étkezés (pl. csirkemell, rizs)">
-        <input id="mealKcal" class="input" style="flex:1" type="number" placeholder="kcal">
+        <input id="mealKcal" class="input" style="width:120px" type="number" placeholder="kcal">
+        <input id="mealP" class="input" style="width:90px" type="number" placeholder="P (g)">
+        <input id="mealC" class="input" style="width:90px" type="number" placeholder="CH (g)">
+        <input id="mealF" class="input" style="width:90px" type="number" placeholder="Zs (g)">
         <button id="addMeal" class="btn primary">Hozzáad</button>
       </div>
+      <div class="hr"></div>
+      <div class="row">
+        <div class="card pad" style="flex:1">
+          <div class="muted">Mai összes</div>
+          <div><b id="sumKcal">0</b> kcal • P: <b id="sumP">0</b> g • CH: <b id="sumC">0</b> g • Zs: <b id="sumF">0</b> g</div>
+        </div>
+        <div class="card pad" style="flex:1">
+          <div class="muted">Heti összes</div>
+          <div><b id="weekKcal">0</b> kcal</div>
+        </div>
+        <button id="clearDay" class="btn dark">Mai törlése</button>
+      </div>
       <div id="mealList" class="grid" style="margin-top:10px"></div>
-      <div class="total">Napi összesen: <span id="sumKcal"><b>0</b></span> kcal</div>
     </div>
   </div>
 </section>
@@ -179,11 +194,15 @@ video{width:100%;display:block;object-fit:cover;max-height:58vh}
 <!-- TELJESÍTMÉNY -->
 <section id="v-perf" class="view">
   <div class="container">
-    <button class="back" data-go="home">← Vissza</button>
+    <button class="back" data-back>← Vissza</button>
     <h2>Teljesítmény</h2>
     <div class="grid">
       <div class="card pad"><div class="muted">Folyamatos napok (streak)</div><h2 id="streak">0</h2></div>
       <div class="card pad"><div class="muted">Összes befejezett edzés</div><h2 id="done">0</h2></div>
+    </div>
+    <div class="card pad" style="margin-top:12px">
+      <div class="muted">Utolsó 7 nap edzései</div>
+      <canvas id="perfChart" width="800" height="240"></canvas>
     </div>
   </div>
 </section>
@@ -191,7 +210,7 @@ video{width:100%;display:block;object-fit:cover;max-height:58vh}
 <!-- CHAT -->
 <section id="v-chat" class="view">
   <div class="container">
-    <button class="back" data-go="home">← Vissza</button>
+    <button class="back" data-back>← Vissza</button>
     <h2>AI chat (magyar)</h2>
     <div class="chat-box" id="chatBox"></div>
     <div class="row" style="margin-top:10px">

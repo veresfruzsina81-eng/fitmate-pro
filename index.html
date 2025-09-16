@@ -19,7 +19,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Segoe
 h1,h2,h3{margin:.5rem 0 1rem} h1{font-size:38px} h2{font-size:28px}
 p{margin:.25rem 0 .75rem} .muted{color:var(--muted)}
 .view{display:none;min-height:100vh} .view.show{display:block}
-.centerbox{max-width:560px;margin:18vh auto 0;padding:26px;border-radius:28px;background:var(--card);box-shadow:var(--shadow);text-align:center}
+.centerbox{max-width:560px;padding:26px;border-radius:28px;background:var(--card);box-shadow:var(--shadow);text-align:center}
 .accent{color:var(--accent)}
 .btn{border:0;border-radius:16px;padding:12px 18px;font-weight:800;cursor:pointer}
 .btn.primary{background:var(--pink);color:#1b1020;box-shadow:0 0 0 6px var(--ring) inset}
@@ -32,10 +32,6 @@ p{margin:.25rem 0 .75rem} .muted{color:var(--muted)}
 .pad{padding:16px}
 .back{position:sticky;top:14px;background:#121a26;color:#fff;border:1px solid #ffffff22;border-radius:999px;padding:10px 16px;cursor:pointer;margin-bottom:12px}
 .select,.input{padding:12px 14px;border-radius:12px;border:1px solid #2a3446;background:#101722;color:#e9eef6}
-.switch{appearance:none;width:56px;height:32px;border-radius:999px;background:#233044;position:relative;outline:0;cursor:pointer;border:1px solid #2a3446}
-.switch:checked{background:#3a475e}
-.switch::after{content:"";position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#fff;transition:.2s}
-.switch:checked::after{left:27px}
 .goal-list .item{display:flex;gap:12px;align-items:center;padding:12px;border-radius:16px;background:var(--glass);border:2px solid transparent;cursor:pointer}
 .goal-list .item img{width:76px;height:56px;border-radius:12px;object-fit:cover}
 .goal-list .item.active{border-color:var(--pink);box-shadow:0 0 0 6px var(--ring) inset}
@@ -45,11 +41,12 @@ p{margin:.25rem 0 .75rem} .muted{color:var(--muted)}
 .thumb{width:70px;height:52px;border-radius:12px;object-fit:cover}
 .modal{position:fixed;inset:0;display:none;place-items:center;padding:20px;background:rgba(0,0,0,.55);z-index:50}
 .modal.show{display:grid}
-.sheet{width:min(920px,96vw);background:var(--card);border-radius:20px;padding:18px;border:1px solid #ffffff14;position:relative}
-.sheet h3{margin:4px 40px 6px 0}
+.sheet{width:min(920px,96vw);background:var(--card);border-radius:20px;padding:18px;border:1px solid #ffffff14}
 .close{position:absolute;right:20px;top:16px;border:0;background:#121a26;color:#fff;border-radius:50%;width:36px;height:36px}
 .video-wrap{border-radius:16px;overflow:hidden;background:#000;margin:10px 0;border:1px solid #ffffff12}
 video{width:100%;display:block;object-fit:cover;max-height:58vh}
+.grid2{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:720px){.grid2{grid-template-columns:1fr 1fr}}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .counter{background:#0f1622;border:1px solid #2a3446;border-radius:16px;padding:12px;margin-top:10px}
 .kpi{font-size:48px;font-weight:900;letter-spacing:2px}
@@ -59,9 +56,12 @@ video{width:100%;display:block;object-fit:cover;max-height:58vh}
 .bubble.bot{background:#1a2230}
 .item-row{display:flex;justify-content:space-between;align-items:center;background:#0f1622;border:1px solid #2a3446;padding:10px 12px;border-radius:12px}
 .total{margin-top:10px;font-weight:900}
-canvas{width:100%;height:240px;background:#0f1622;border:1px solid #2a3446;border-radius:12px}
-.hint{font-size:12px;color:var(--muted)}
+.hr{height:1px;background:#ffffff1a;margin:10px 0}
 @media (max-width:720px){.grid3{grid-template-columns:1fr}}
+/* Splash fix: középre */
+#v-splash .container{min-height:100vh;display:flex;align-items:center;justify-content:center}
+#v-splash .centerbox{margin:0;width:min(560px,92vw)}
+canvas{width:100%;height:220px;display:block}
 </style>
 </head>
 <body>
@@ -81,7 +81,8 @@ canvas{width:100%;height:240px;background:#0f1622;border:1px solid #2a3446;borde
 <!-- CÉLVÁLASZTÓ -->
 <section id="v-goal" class="view">
   <div class="container">
-    <button class="back" data-go="splash">← Vissza</button>
+    <!-- FIX: vissza a splash-re -->
+    <button class="back" data-back="splash">← Vissza</button>
     <h2>Válaszd ki a célod</h2>
     <p class="muted">Ezt később bármikor módosíthatod.</p>
     <div class="goal-list grid" style="margin-top:12px">
@@ -102,40 +103,58 @@ canvas{width:100%;height:240px;background:#0f1622;border:1px solid #2a3446;borde
 <!-- FŐMENÜ -->
 <section id="v-home" class="view">
   <div class="container">
-    <button class="back" data-go="goal">← Vissza</button>
+    <!-- FIX: vissza a goal-ra -->
+    <button class="back" data-back="goal">← Vissza</button>
     <div class="row" style="justify-content:space-between">
       <div class="card pad" style="border-radius:999px"><b id="goalLabel">Cél: –</b></div>
       <div class="row">
-        <button class="btn ghost" data-go="goal">Cél módosítása</button>
-        <button class="btn ghost" data-go="splash">Kezdő</button>
+        <button class="btn ghost" id="changeGoal">Cél módosítása</button>
       </div>
     </div>
     <div class="grid menu" style="margin-top:14px">
-      <div class="tile card pad" data-open="workout"><h3>Saját testsúllyal</h3><p class="muted">Válassz gyakorlatot, időzítővel.</p></div>
-      <div class="tile card pad" data-open="weights"><h3>Súlyzós edzés</h3><p class="muted">(hamarosan bővítve)</p></div>
-      <div class="tile card pad" data-open="cal"><h3>Kalóriaszámláló</h3><p class="muted">Egyszerű napi bevitel.</p></div>
-      <div class="tile card pad" data-open="perf"><h3>Napi teljesítmény</h3><p class="muted">Streak, összes és grafikon.</p></div>
+      <!-- FIX: data-open attribútumok -->
+      <div id="tileBodyweight" class="tile card pad" data-open="workout"><h3>Saját testsúly</h3><p class="muted">Válassz gyakorlatot, időzítővel.</p></div>
+      <div id="tileWeights" class="tile card pad" data-open="weights"><h3>Súlyzós edzés</h3><p class="muted">Otthon és terem – 4–4 gyak.</p></div>
+      <div class="tile card pad" data-open="cal"><h3>Kalóriaszámláló</h3><p class="muted">Napi & heti összesítés.</p></div>
+      <div class="tile card pad" data-open="perf"><h3>Napi teljesítmény</h3><p class="muted">Streak + heti grafikon.</p></div>
       <div class="tile card pad" data-open="chat"><h3>AI chat</h3><p class="muted">Magyar tanácsok.</p></div>
-      <div class="tile card pad" data-open="profile"><h3>Profil</h3><p class="muted">Alapadatok, értesítés, szinkron.</p></div>
     </div>
   </div>
 </section>
 
-<!-- EDZÉS LISTA -->
+<!-- SAJÁT TESTSÚLY EDZÉS LISTA -->
 <section id="v-workout" class="view">
   <div class="container">
-    <button class="back" data-go="home">← Vissza</button>
+    <!-- FIX: vissza a home-ra -->
+    <button class="back" data-back="home">← Vissza</button>
     <h2>Napi edzés</h2><p class="muted">Válassz gyakorlatot (5 db / kategória).</p>
     <div id="exList" class="grid" style="margin-top:12px"></div>
   </div>
 </section>
 
-<!-- SÚLYZÓS LISTA (placeholder) -->
+<!-- SÚLYZÓS – VÁLASZTÓ (4 CSEMPE) -->
 <section id="v-weights" class="view">
   <div class="container">
-    <button class="back" data-go="home">← Vissza</button>
+    <!-- FIX: vissza a home-ra -->
+    <button class="back" data-back="home">← Vissza</button>
     <h2>Súlyzós edzés</h2>
-    <div class="card pad"><b>Hamarosan</b> – a struktúra készen áll, videókat bármikor fel tudjuk venni.</div>
+    <p class="muted">Válassz típust:</p>
+    <div class="grid2" style="margin-top:12px">
+      <div class="tile card pad" id="w_m_home"><h3>Férfi – otthoni kézisúlyzó</h3><p class="muted">4 gyakorlat</p></div>
+      <div class="tile card pad" id="w_w_home"><h3>Női – otthoni kézisúlyzó</h3><p class="muted">4 gyakorlat</p></div>
+      <div class="tile card pad" id="w_m_gym"><h3>Férfi – konditermi</h3><p class="muted">4 gyakorlat</p></div>
+      <div class="tile card pad" id="w_w_gym"><h3>Női – konditermi</h3><p class="muted">4 gyakorlat</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SÚLYZÓS – LISTA -->
+<section id="v-weightslist" class="view">
+  <div class="container">
+    <!-- FIX: vissza a weights-re -->
+    <button class="back" data-back="weights">← Vissza</button>
+    <h2 id="wTitle">Súlyzós edzés – lista</h2>
+    <div id="wList" class="grid" style="margin-top:12px"></div>
   </div>
 </section>
 
@@ -167,17 +186,31 @@ canvas{width:100%;height:240px;background:#0f1622;border:1px solid #2a3446;borde
 <!-- KALÓRIA -->
 <section id="v-cal" class="view">
   <div class="container">
-    <button class="back" data-go="home">← Vissza</button>
+    <!-- FIX: vissza a home-ra -->
+    <button class="back" data-back="home">← Vissza</button>
     <h2>Kalóriaszámláló</h2>
     <div class="card pad">
       <div class="row">
         <input id="mealName" class="input" style="flex:2" placeholder="Étkezés (pl. csirkemell, rizs)">
-        <input id="mealKcal" class="input" style="flex:1" type="number" placeholder="kcal">
+        <input id="mealKcal" class="input" style="width:120px" type="number" placeholder="kcal">
+        <input id="mealP" class="input" style="width:90px" type="number" placeholder="P (g)">
+        <input id="mealC" class="input" style="width:90px" type="number" placeholder="CH (g)">
+        <input id="mealF" class="input" style="width:90px" type="number" placeholder="Zs (g)">
         <button id="addMeal" class="btn primary">Hozzáad</button>
       </div>
+      <div class="hr"></div>
+      <div class="row">
+        <div class="card pad" style="flex:1">
+          <div class="muted">Mai összes</div>
+          <div><b id="sumKcal">0</b> kcal • P: <b id="sumP">0</b> g • CH: <b id="sumC">0</b> g • Zs: <b id="sumF">0</b> g</div>
+        </div>
+        <div class="card pad" style="flex:1">
+          <div class="muted">Heti összes</div>
+          <div><b id="weekKcal">0</b> kcal</div>
+        </div>
+        <button id="clearDay" class="btn dark">Mai törlése</button>
+      </div>
       <div id="mealList" class="grid" style="margin-top:10px"></div>
-      <div class="total">Napi összesen: <span id="sumKcal"><b>0</b></span> kcal</div>
-      <div class="hint">Tipp: ugyanazon a napon minden bevitel összeadódik; másnap új napot kezd.</div>
     </div>
   </div>
 </section>
@@ -185,16 +218,16 @@ canvas{width:100%;height:240px;background:#0f1622;border:1px solid #2a3446;borde
 <!-- TELJESÍTMÉNY -->
 <section id="v-perf" class="view">
   <div class="container">
-    <button class="back" data-go="home">← Vissza</button>
+    <!-- FIX: vissza a home-ra -->
+    <button class="back" data-back="home">← Vissza</button>
     <h2>Teljesítmény</h2>
     <div class="grid">
       <div class="card pad"><div class="muted">Folyamatos napok (streak)</div><h2 id="streak">0</h2></div>
       <div class="card pad"><div class="muted">Összes befejezett edzés</div><h2 id="done">0</h2></div>
-      <div class="card pad">
-        <div class="muted">Heti aktivitás</div>
-        <canvas id="perfChart" width="800" height="240"></canvas>
-        <div class="hint">A grafikon a múlt 7 nap befejezett edzéseit és bevitt kalóriáit mutatja.</div>
-      </div>
+    </div>
+    <div class="card pad" style="margin-top:12px">
+      <div class="muted">Utolsó 7 nap edzései</div>
+      <canvas id="perfChart" width="800" height="240"></canvas>
     </div>
   </div>
 </section>
@@ -202,7 +235,8 @@ canvas{width:100%;height:240px;background:#0f1622;border:1px solid #2a3446;borde
 <!-- CHAT -->
 <section id="v-chat" class="view">
   <div class="container">
-    <button class="back" data-go="home">← Vissza</button>
+    <!-- FIX: vissza a home-ra -->
+    <button class="back" data-back="home">← Vissza</button>
     <h2>AI chat (magyar)</h2>
     <div class="chat-box" id="chatBox"></div>
     <div class="row" style="margin-top:10px">
@@ -212,358 +246,6 @@ canvas{width:100%;height:240px;background:#0f1622;border:1px solid #2a3446;borde
   </div>
 </section>
 
-<!-- PROFIL -->
-<section id="v-profile" class="view">
-  <div class="container">
-    <button class="back" data-go="home">← Vissza</button>
-    <h2>Profil</h2>
-    <div class="grid">
-      <div class="card pad">
-        <h3>Alapadatok</h3>
-        <div class="row">
-          <input id="pName" class="input" placeholder="Név (opcionális)" style="flex:1">
-          <input id="pAge"  class="input" placeholder="Életkor" type="number" style="width:120px">
-          <input id="pHeight" class="input" placeholder="Magasság (cm)" type="number" style="width:140px">
-          <input id="pWeight" class="input" placeholder="Súly (kg)" type="number" style="width:140px">
-          <button id="saveProfile" class="btn primary">Mentés</button>
-        </div>
-      </div>
-      <div class="card pad">
-        <h3>Értesítések</h3>
-        <div class="row">
-          <label class="muted">Napi emlékeztető 09:00</label>
-          <input id="notifToggle" type="checkbox" class="switch"/>
-          <span id="notifStatus" class="muted"></span>
-        </div>
-        <div class="hint">Az értesítés helyi (offline). A böngésző engedélye szükséges.</div>
-      </div>
-      <div class="card pad">
-        <h3>Felhő szinkron (opcionális)</h3>
-        <div class="row">
-          <button id="btnGoogle" class="btn dark">Google bejelentkezés</button>
-          <button id="btnSignOut" class="btn ghost">Kijelentkezés</button>
-          <span id="cloudStatus" class="muted"></span>
-        </div>
-        <div class="hint">Ha nincs Firebase beállítva, az app továbbra is teljesen működik offline.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<script>
-/* ============== ÁLLAPOT + SEGÉDEK ============== */
-const S={goal:null, gender:'no', done:+(localStorage.getItem('done')||0), streak:+(localStorage.getItem('streak')||0)};
-const qs=s=>document.querySelector(s), qsa=s=>[...document.querySelectorAll(s)];
-function show(id){ qsa('.view').forEach(v=>v.classList.remove('show')); qs('#v-'+id).classList.add('show'); setBG(id); if(id==='perf') drawChart(); }
-function setBG(view){
-  const foods=['food1.png','food2.png','food3.png']; const pickFood=()=>foods[Math.floor(Math.random()*foods.length)]||'fogyas.png';
-  const m={splash:'kezdo.png', goal:'fogyas.png', home:(S.goal||'fogyas')+'.png', workout:(S.goal||'fogyas')+'.png', weights:(S.goal||'szalkasitas')+'.png', cal:pickFood(), perf:pickFood(), chat:(S.goal||'hizas')+'.png', profile:(S.goal||'fogyas')+'.png'};
-  qs('#bg').style.backgroundImage=`linear-gradient(0deg, rgba(11,15,20,.68), rgba(11,15,20,.68)), url('${m[view]||'kezdo.png'}')`;
-}
-
-/* ============== SPLASH → GOAL ============== */
-qs('#start').onclick=()=>show('goal');
-
-/* ============== GOAL PICK ============== */
-let tmpGoal='fogyas'; let tmpGender='no';
-qsa('.goal-list .item').forEach(it=>{
-  it.onclick=()=>{ qsa('.goal-list .item').forEach(x=>x.classList.remove('active')); it.classList.add('active'); tmpGoal=it.dataset.goal; setBG('goal'); };
-});
-qs('#gender').onchange=e=>tmpGender=e.target.value;
-qs('#toHome').onclick=()=>{
-  S.goal=tmpGoal; S.gender=tmpGender;
-  localStorage.setItem('goal',S.goal); localStorage.setItem('gender',S.gender);
-  qs('#goalLabel').textContent=`Cél: ${S.goal==='fogyas'?'Fogyás':S.goal==='szalkasitas'?'Szálkásítás':'Hízás'}`;
-  show('home');
-};
-
-/* ============== NAV ============== */
-qsa('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
-qsa('#v-home [data-open]').forEach(t=>t.onclick=()=>{ const to=t.dataset.open; if(to==='workout') renderExList(); show(to); });
-
-/* ============== GYAKORLAT ADATOK (a korábbi működő listáid) ============== */
-const DATA={
-  fogyas:{
-    ferfi:[
-      {t:'Jumping jacks',f:'fogyas1.mp4',d:'Pulzusfokozó bemelegítés, teljes test.'},
-      {t:'Switch jump mountain climber',f:'fogyas2.mp4',d:'Core + kardió, intenzív.'},
-      {t:'Cardio jumping jacks',f:'fogyas3.mp4',d:'Dinamikus kardió, ritmikus légzés.'},
-      {t:'Plank',f:'fogyas4.mp4',d:'Törzs stabilizáció, váll a könyök fölött.'},
-      {t:'Glute bridge',f:'fogyas5.mp4',d:'Farizom aktiválás, derék kímélése.'},
-    ],
-    no:[
-      {t:'Jumping jacks',f:'fogyas_w1.mp4',d:'Pulzusfokozó bemelegítés, teljes test.'},
-      {t:'Switch jump mountain climber',f:'fogyas_w2.mp4',d:'Core + kardió, intenzív.'},
-      {t:'Cardio jumping jacks',f:'fogyas_w3.mp4',d:'Dinamikus kardió, ritmikus légzés.'},
-      {t:'Plank',f:'fogyas_w4.mp4',d:'Törzs stabilizáció, váll a könyök fölött.'},
-      {t:'Glute bridge',f:'fogyas_w5.mp4',d:'Farizom aktiválás, derék kímélése.'},
-    ]
-  },
-  szalkasitas:{
-    ferfi:[
-      {t:'Fekvőtámasz',f:'szalkasitas1.mp4',d:'Mell, tricepsz; kontrollált tempó.'},
-      {t:'Oldalemelés (váll)',f:'szalkasitas2.mp4',d:'Vállközép aktiválás, könnyű tempó.'},
-      {t:'Kitörés',f:'szalkasitas3.mp4',d:'Láb + egyensúly, térd a lábfej irányába.'},
-      {t:'Plank vállérintéssel',f:'szalkasitas4.mp4',d:'Anti-rotáció, vállstabilitás.'},
-      {t:'Híd',f:'szalkasitas5.mp4',d:'Alsótest tónus, farizom.'},
-    ],
-    no:[
-      {t:'Fekvőtámasz térdelve',f:'szalkasitas_w1.mp4',d:'Mell, tricepsz; kezdő változat.'},
-      {t:'Oldalsó kitörés',f:'szalkasitas_w2.mp4',d:'Oldalsík, comb és far.'},
-      {t:'Kitörés hátra',f:'szalkasitas_w3.mp4',d:'Stabil törzs, egyenes törzshelyzet.'},
-      {t:'Plank',f:'szalkasitas_w4.mp4',d:'Core tartás, egyenes testhelyzet.'},
-      {t:'Glute bridge',f:'szalkasitas_w5.mp4',d:'Farizom izoláció.'},
-    ]
-  },
-  hizas:{
-    ferfi:[
-      {t:'Csípőemelés',f:'hizas1.mp4',d:'Far és hamstring erősítés.'},
-      {t:'Négyütemű fekvőtámasz',f:'hizas2.mp4',d:'Teljes test állóképesség.'},
-      {t:'Guggolás',f:'hizas3.mp4',d:'Quadriceps + farizom.'},
-      {t:'Plank',f:'hizas4.mp4',d:'Törzs stabilitás.'},
-      {t:'Glute bridge (váltott)',f:'hizas5.mp4',d:'Haladó farizom gyakorlat.'},
-    ],
-    no:[
-      {t:'Csípőemelés',f:'hizas_w1.mp4',d:'Farizom és hamstring.'},
-      {t:'Négyütemű fekvőtámasz',f:'hizas_w2.mp4',d:'Pulzusnövelő, teljes test.'},
-      {t:'Guggolás',f:'hizas_w3.mp4',d:'Saját testsúly, sarok a talajon.'},
-      {t:'Plank',f:'hizas_w4.mp4',d:'Has + vállöv stabilitás.'},
-      {t:'Glute bridge (váltott)',f:'hizas_w5.mp4',d:'Farizom fókusz.'},
-    ]
-  }
-};
-
-/* ============== EDZÉS LISTA RENDER ============== */
-function renderExList(){
-  const wrap=qs('#exList'); wrap.innerHTML='';
-  const arr=(DATA[S.goal]||{})[S.gender]||[];
-  if(!arr.length){ wrap.innerHTML='<div class="card pad"><b>Még nincs feltöltve ehhez a célhoz.</b></div>'; return; }
-  arr.forEach((it,i)=>{
-    const row=document.createElement('div');
-    row.className='list-item';
-    row.innerHTML=`
-      <img class="thumb" src="${S.goal}.png" alt="">
-      <div style="flex:1"><div style="font-weight:800">#${i+1}. gyakorlat</div><div class="muted">${it.t}</div></div>
-      <button class="btn">Megnyit</button>`;
-    row.querySelector('.btn').onclick=()=>openEx(it);
-    wrap.appendChild(row);
-  });
-}
-
-/* ============== MODÁL + IDŐZÍTŐ (15 mp pihenő) ============== */
-const modal=qs('#modal'), mClose=qs('#mClose'), v=qs('#exVideo'), title=qs('#exTitle'), desc=qs('#exDesc');
-const iSets=qs('#iSets'), iReps=qs('#iReps'), iSec=qs('#iSec');
-const bStart=qs('#bStart'), bPause=qs('#bPause'), bNext=qs('#bNext');
-const clock=qs('#clock'), status=qs('#status');
-
-let tInt=null, paused=false, curSet=1, curRep=0, totalSets=3, reps=12, secPer=2;
-
-function mmss(s){const m=String(Math.floor(s/60)).padStart(2,'0'); const ss=String(s%60).padStart(2,'0'); return `${m}:${ss}`;}
-function beep(){try{const ctx=new (window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.value=900;g.gain.value=.06;o.start();setTimeout(()=>{o.stop();ctx.close()},160);}catch(e){}}
-
-function openEx(it){
-  title.textContent=it.t; desc.textContent=it.d||''; v.src=it.f; v.play().catch(()=>{});
-  iSets.value=3; iReps.value=12; iSec.value=2; clock.textContent='00:00'; status.textContent='';
-  stopTimer(); modal.classList.add('show');
-}
-mClose.onclick=()=>{stopTimer(); modal.classList.remove('show'); v.pause();};
-
-function stopTimer(){ if(tInt){clearInterval(tInt); tInt=null;} }
-
-bStart.onclick=()=>{
-  totalSets=Math.max(1,+iSets.value||1);
-  reps=Math.max(1,+iReps.value||1);
-  secPer=Math.max(1,+iSec.value||1);
-  curSet=1; curRep=0; paused=false; runRep();
-};
-bPause.onclick=()=>{ paused=!paused; bPause.textContent=paused?'Folytatás':'Szünet'; };
-bNext.onclick=()=>{ stopTimer(); curSet++; if(curSet<=totalSets){ restPhase(()=>runRep()); } else { finishExercise(); } };
-
-function runRep(){
-  let left=secPer; clock.textContent=mmss(left); status.textContent=`Kör ${curSet}/${totalSets} • Ismétlés ${curRep+1}/${reps}`;
-  stopTimer();
-  tInt=setInterval(()=>{
-    if(paused) return;
-    left--; clock.textContent=mmss(left);
-    if(left<=0){
-      beep(); curRep++;
-      if(curRep<reps){ left=secPer; status.textContent=`Kör ${curSet}/${totalSets} • Ismétlés ${curRep+1}/${reps}`; }
-      else { stopTimer(); curSet++; if(curSet<=totalSets){ restPhase(()=>{curRep=0; runRep();}); } else { finishExercise(); } }
-    }
-  },1000);
-}
-
-function restPhase(cb){
-  let r=15; status.textContent=`Pihenő ${r} mp`; clock.textContent=mmss(r);
-  const ri=setInterval(()=>{
-    if(paused) return;
-    r--; clock.textContent=mmss(r); if(r<=0){ clearInterval(ri); beep(); cb(); }
-  },1000);
-}
-
-function finishExercise(){
-  status.innerHTML='🎉 <b>Ügyes vagy! Büszke vagyok rád!</b> Lépj vissza a listához és válaszd a következőt.';
-  clock.textContent='00:00'; stopTimer();
-  logWorkout(); // LOG + STATS
-  S.done++; localStorage.setItem('done',S.done); qs('#done').textContent=S.done;
-  const today=new Date().toDateString(), last=localStorage.getItem('lastDone')||'';
-  if(last!==today){ S.streak++; localStorage.setItem('streak',S.streak); localStorage.setItem('lastDone',today); qs('#streak').textContent=S.streak; }
-}
-
-/* ============== KALÓRIA (napi összeg + log 7 napra) ============== */
-const meals=JSON.parse(localStorage.getItem('meals')||'[]');
-function saveMeals(){ localStorage.setItem('meals',JSON.stringify(meals)); }
-function todayKey(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
-function renderMeals(){
-  const wrap=qs('#mealList'); wrap.innerHTML=''; let sum=0; const day=todayKey();
-  meals.filter(m=>m.day===day).forEach((m,i)=>{ sum+=m.k; const r=document.createElement('div'); r.className='item-row'; r.innerHTML=`<span>${m.n}</span><span>${m.k} kcal</span>`; r.onclick=()=>{ const idx=meals.indexOf(m); meals.splice(idx,1); saveMeals(); renderMeals(); drawChart(); }; wrap.appendChild(r); });
-  qs('#sumKcal').innerHTML='<b>'+sum+'</b>';
-}
-qs('#addMeal').onclick=()=>{ const n=qs('#mealName').value.trim(); const k=+qs('#mealKcal').value||0; if(!n||!k) return; meals.push({n,k,day:todayKey()}); saveMeals(); renderMeals(); drawChart(); qs('#mealName').value=''; qs('#mealKcal').value=''; };
-
-/* ============== STATISZTIKA LOG ============== */
-function logWorkout(){ // befejezett edzés napló
-  const arr=JSON.parse(localStorage.getItem('workoutsLog')||'[]'); arr.push({day:todayKey(), ts:Date.now()}); localStorage.setItem('workoutsLog',JSON.stringify(arr)); drawChart();
-}
-
-/* ============== GRAFIKON (canvas, lib nélkül) ============== */
-function drawChart(){
-  const cv=qs('#perfChart'); if(!cv) return; const g=cv.getContext('2d'); const W=cv.width, H=cv.height;
-  g.clearRect(0,0,W,H);
-  // utolsó 7 nap
-  const days=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); days.push(k); }
-  const wl=JSON.parse(localStorage.getItem('workoutsLog')||'[]');
-  const kcal=JSON.parse(localStorage.getItem('meals')||'[]');
-  const wcount=days.map(d=>wl.filter(x=>x.day===d).length);
-  const kcalSum=days.map(d=>kcal.filter(x=>x.day===d).reduce((a,b)=>a+b.k,0));
-  const maxK=Math.max(2000, ...kcalSum); const maxW=Math.max(1, ...wcount);
-  // rács
-  g.strokeStyle='#2a3446'; g.lineWidth=1;
-  for(let i=0;i<=4;i++){ const y=H-10 - i*(H-30)/4; g.beginPath(); g.moveTo(40,y); g.lineTo(W-10,y); g.stroke(); }
-  // tengely
-  g.fillStyle='#aeb6c4'; g.font='12px system-ui';
-  days.forEach((d,i)=>{ const x=40 + i*(W-60)/6; g.fillText(d.slice(5), x-14, H-6); });
-  // oszlopok: edzések
-  for(let i=0;i<7;i++){ const x=40 + i*(W-60)/6; const h=(H-30)*(wcount[i]/maxW); g.fillStyle='#7cd0ff'; g.fillRect(x-10, H-10-h, 10, h); }
-  // vonal: kcal
-  g.strokeStyle='#ff4fa0'; g.lineWidth=2; g.beginPath();
-  for(let i=0;i<7;i++){ const x=40 + i*(W-60)/6; const y=H-10 - (H-30)*(kcalSum[i]/maxK); if(i===0) g.moveTo(x,y); else g.lineTo(x,y); }
-  g.stroke();
-}
-
-/* ============== CHAT (köszöntő a cél alapján) ============== */
-function pushBubble(t,me=false){ const b=document.createElement('div'); b.className='bubble'+(me?' me':' bot'); b.textContent=t; qs('#chatBox').appendChild(b); qs('#chatBox').scrollTop=1e9; }
-function chatHello(){
-  const goal = localStorage.getItem('goal') || 'fogyas';
-  const map = {fogyas:'fogyásban', szalkasitas:'szálkásításban', hizas:'hízásban'};
-  pushBubble(`Szia! Miben segíthetek a ${map[goal]}? Írj: „étrend”, „edzés”, vagy „mindkettő”.`);
-}
-qs('#sendChat').onclick=async()=>{
-  const q=qs('#chatInput').value.trim(); if(!q) return; qs('#chatInput').value=''; pushBubble(q,true);
-  // ide jöhet a Netlify function hívás; addig placeholder:
-  let reply='';
-  try{
-    // const r=await fetch('/.netlify/functions/ai-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:q,goal:S.goal,gender:S.gender})});
-    // if(r.ok){ const j=await r.json(); reply=j.reply||''; }
-  }catch(e){}
-  if(!reply) reply='Megvagyok! Pontosíts: étrend, edzés, vagy mindkettő?';
-  pushBubble(reply,false);
-};
-
-/* ============== PROFIL (mentés) ============== */
-function loadProfile(){
-  const P=JSON.parse(localStorage.getItem('profile')||'{}');
-  qs('#pName').value=P.name||''; qs('#pAge').value=P.age||''; qs('#pHeight').value=P.h||''; qs('#pWeight').value=P.w||'';
-}
-qs('#saveProfile').onclick=()=>{ const P={name:qs('#pName').value.trim(), age:+qs('#pAge').value||'', h:+qs('#pHeight').value||'', w:+qs('#pWeight').value||''}; localStorage.setItem('profile',JSON.stringify(P)); pushBubble('Profil frissítve!', false); };
-
-/* ============== ÉRTESÍTÉSEK (helyi, napi 09:00) ============== */
-async function ensureSW(){ if('serviceWorker' in navigator){ try{ await navigator.serviceWorker.register('sw.js'); }catch(e){} } }
-function scheduleDailyNotif(){
-  if(!('Notification' in window)) return;
-  if(Notification.permission!=='granted') return;
-  navigator.serviceWorker.ready.then(reg=>{
-    const tag='daily-0900';
-    // egyszerű ütemezés: ha nyitva az app, lokális setTimeout – különben SW showNotification hívható más forrásból (pl. később webpush).
-    const now=new Date(); const next=new Date(); next.setHours(9,0,0,0); if(next<=now) next.setDate(next.getDate()+1);
-    const ms=next-now;
-    window._notifTimer && clearTimeout(window._notifTimer);
-    window._notifTimer=setTimeout(()=>{
-      reg.showNotification('Edzés idő!', {body:'Gyere, mozogjunk ma is 15 percet! 💪', icon:'icon.png', tag});
-      scheduleDailyNotif(); // újraütemez
-    }, ms);
-  });
-}
-const notifToggle=qs('#notifToggle'), notifStatus=qs('#notifStatus');
-notifToggle.onchange=async()=>{
-  if(notifToggle.checked){
-    await ensureSW();
-    const p=await Notification.requestPermission();
-    if(p==='granted'){ localStorage.setItem('notif','on'); notifStatus.textContent='Bekapcsolva'; scheduleDailyNotif(); }
-    else { notifToggle.checked=false; notifStatus.textContent='Letiltva (engedély hiányzik)'; }
-  }else{
-    localStorage.removeItem('notif'); notifStatus.textContent='Kikapcsolva'; window._notifTimer&&clearTimeout(window._notifTimer);
-  }
-};
-function loadNotif(){ const on=localStorage.getItem('notif')==='on'; notifToggle.checked=on; notifStatus.textContent=on?'Bekapcsolva':'Kikapcsolva'; if(on){ ensureSW(); scheduleDailyNotif(); } }
-
-/* ============== FELHŐ SZINKRON (opcionális Firebase) ============== */
-/* Ha szeretnéd, töltsd ki a configot és engedélyezd a Firestore-t.
-   Ha üresen hagyod, az app teljesen jól működik offline is. */
-let fb=null; // guard
-async function initFirebase(){
-  try{
-    // CDN modulok (ha nem elérhetők, csendben kihagyjuk)
-    const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
-    const { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
-    const { getFirestore, doc, setDoc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
-    const config = {/* <-- IDE JÖN A SAJÁT FIREBASE CONFIG */};
-    if(!Object.keys(config).length) throw new Error('NoConfig');
-    const app = initializeApp(config); const auth=getAuth(app); const db=getFirestore(app);
-    fb={auth,db,GoogleAuthProvider,signInWithPopup,signOut,setDoc,getDoc,doc,onAuthStateChanged};
-  }catch(e){ fb=null; }
-}
-async function cloudSave(uid){
-  if(!fb) return;
-  const payload={
-    profile: JSON.parse(localStorage.getItem('profile')||'{}'),
-    meals: JSON.parse(localStorage.getItem('meals')||'[]'),
-    workoutsLog: JSON.parse(localStorage.getItem('workoutsLog')||'[]'),
-    done: localStorage.getItem('done')||'0',
-    streak: localStorage.getItem('streak')||'0'
-  };
-  await fb.setDoc(fb.doc(fb.db,'users',uid), payload, {merge:true});
-}
-async function cloudLoad(uid){
-  if(!fb) return;
-  const snap=await fb.getDoc(fb.doc(fb.db,'users',uid));
-  if(snap.exists()){
-    const d=snap.data();
-    if(d.profile) localStorage.setItem('profile',JSON.stringify(d.profile));
-    if(d.meals) localStorage.setItem('meals',JSON.stringify(d.meals));
-    if(d.workoutsLog) localStorage.setItem('workoutsLog',JSON.stringify(d.workoutsLog));
-    if(d.done) localStorage.setItem('done',d.done);
-    if(d.streak) localStorage.setItem('streak',d.streak);
-  }
-}
-qs('#btnGoogle').onclick=async()=>{
-  await initFirebase(); if(!fb){ qs('#cloudStatus').textContent='Nincs beállítva (opcionális).'; return; }
-  const provider=new fb.GoogleAuthProvider();
-  const res=await fb.signInWithPopup(fb.auth, provider);
-  qs('#cloudStatus').textContent='Bejelentkezve: '+(res.user.displayName||res.user.email);
-  await cloudLoad(res.user.uid); // pull
-  loadProfile(); renderMeals(); drawChart();
-  fb.onAuthStateChanged(fb.auth, async(user)=>{ if(user) await cloudSave(user.uid); });
-};
-qs('#btnSignOut').onclick=async()=>{ if(!fb||!fb.auth.currentUser){ qs('#cloudStatus').textContent='Nem vagy bejelentkezve.'; return; } await fb.signOut(fb.auth); qs('#cloudStatus').textContent='Kijelentkezve.'; };
-
-/* ============== INDÍTÁS ============== */
-(function boot(){
-  S.goal = localStorage.getItem('goal') || null; if(S.goal){ qs('#goalLabel').textContent=`Cél: ${S.goal==='fogyas'?'Fogyás':S.goal==='szalkasitas'?'Szálkásítás':'Hízás'}`; }
-  qs('#done').textContent=S.done; qs('#streak').textContent=S.streak;
-  loadProfile(); loadNotif(); renderMeals(); chatHello();
-  show('splash'); // mindig splash -> goal
-})();
-</script>
+<script src="app.js"></script>
 </body>
 </html>

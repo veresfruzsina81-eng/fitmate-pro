@@ -30,7 +30,8 @@ function setBG(view){
     weightslist:(S.goal||'fogyas')+'.png',
     cal:pick(),
     perf:pick(),
-    chat:(S.goal||'fogyas')+'.png'
+    chat:(S.goal||'fogyas')+'.png',
+    special:(S.goal||'fogyas')+'.png' // ÚJ
   };
   qs('#bg').style.backgroundImage=
     `linear-gradient(0deg, rgba(11,15,20,.68), rgba(11,15,20,.68)), url('${m[view]||'kezdo.png'}')`;
@@ -68,6 +69,7 @@ qsa('#v-home [data-open]').forEach(t=>t.onclick=()=>{
   const to=t.dataset.open;
   if(to==='chat') ensureChatWelcome();
   if(to==='perf') drawPerfChart();
+  if(to==='special') openSpecialDefault(); // ÚJ: speciális nézet inicializálása
   show(to);
 });
 qs('#changeGoal').onclick=()=>show('goal');
@@ -360,6 +362,61 @@ function goalWelcome(goal){ if(goal==='szalkasitas') return 'Szia! Miben segíth
 let welcomedKey = localStorage.getItem('welcomedGoal') || '';
 function ensureChatWelcome(){ const key = S.goal || 'fogyas'; if (welcomedKey !== key) { chatBox.innerHTML = ''; pushBubble(goalWelcome(key)); welcomedKey = key; localStorage.setItem('welcomedGoal', key); } }
 const sendBtn=qs('#sendChat'); if(sendBtn){ sendBtn.onclick=async()=>{ const inp=qs('#chatInput'); const q=inp.value.trim(); if(!q) return; inp.value=''; pushBubble(q,true); let reply=''; try{ const r=await fetch('/.netlify/functions/ai-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:q,goal:S.goal,gender:S.gender})}); if(r.ok){ const j=await r.json(); reply=j.reply||''; } }catch(e){} if(!reply){ reply = 'Megvagyok! Írj, miben segítsek az edzés/étrend kapcsán. 😉'; } pushBubble(reply,false); }; }
+
+/* ======= SPECIÁLIS VIDEÓ TANANYAGOK (Has/Hát/Bicepsz/Tricepsz/Láb) ======= */
+(function(){
+  const BASE_PATH = "./"; // gyökér
+  const CATS = {
+    has:     { label:"Has",      folder:"has/",      pattern:i=>`has${i}.mp4` },
+    hat:     { label:"Hát",      folder:"hat/",      pattern:i=>`hat${i}.mp4` },
+    bicepsz: { label:"Bicepsz",  folder:"bicepsz/",  pattern:i=>`bicepsz${i}.mp4` },
+    tricepsz:{ label:"Tricepsz", folder:"tricepsz/", pattern:i=>`tricepsz${i}.mp4` },
+    lab:     { label:"Láb",      folder:"lab/",      pattern:i=>`lab${i}.mp4` },
+  };
+  const COUNT = 10;
+
+  const section = qs('#v-special');
+  const player  = qs('#sv-player');
+  const nowEl   = qs('#sv-now');
+  const grid    = qs('#sv-grid');
+  const tabs    = section ? [...section.querySelectorAll('.sv-tabs [role="tab"]')] : [];
+
+  function buildSrc(key, i){
+    const cfg=CATS[key]; const folder=(cfg.folder||'').replace(/\/?$/,'/'); return BASE_PATH+folder+cfg.pattern(i);
+  }
+  function setActiveTab(key){
+    tabs.forEach(b=>b.setAttribute('aria-selected', b.dataset.cat===key ? 'true':'false'));
+  }
+  function play(src, title){
+    try{ player.pause(); }catch(_){}
+    player.src=src;
+    nowEl.textContent=title;
+    const p=player.play();
+    if(p && typeof p.then==='function') p.catch(()=>{});
+  }
+  function renderGrid(key){
+    const cfg=CATS[key]; grid.innerHTML='';
+    for(let i=1;i<=COUNT;i++){
+      const src=buildSrc(key,i);
+      const item=document.createElement('button');
+      item.className='sv-item'; item.type='button';
+      item.innerHTML=`<div class="sv-thumb"><span>${cfg.label} ${i}</span></div><div class="muted">Lejátszás</div>`;
+      item.onclick=()=>{ play(src, `${cfg.label} ${i}`); section.scrollIntoView({behavior:'smooth', block:'start'}); };
+      grid.appendChild(item);
+    }
+  }
+  function initFor(key='has'){
+    if(!section) return;
+    setActiveTab(key);
+    renderGrid(key);
+    play(buildSrc(key,1), `${CATS[key].label} 1`);
+  }
+  // fül események
+  tabs.forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.cat; setActiveTab(k); renderGrid(k); play(buildSrc(k,1), `${CATS[k].label} 1`); }));
+
+  // nyilvánossá tesszük az indító függvényt
+  window.openSpecialDefault = ()=>initFor('has');
+})();
 
 /* ======= Indítás ======= */
 (function boot(){

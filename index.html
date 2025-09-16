@@ -5,86 +5,65 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>FitMate HU</title>
 <style>
-:root{
-  --bg:#f6f8fb; --text:#1b1b1b; --muted:#555;
-  --card:#ffffff; --glass:rgba(255,255,255,.85);
-  --pink:#ff4fa0; --accent:#007aff; --ring:rgba(255,79,160,.35);
-  --radius:20px; --shadow:0 4px 18px rgba(0,0,0,.08);
-}
-[data-theme="dark"]{
-  --bg:#0c1117; --text:#e9eef6; --muted:#aeb6c4;
-  --card:rgba(18,24,36,.94); --glass:rgba(18,24,36,.86);
-  --accent:#7cd0ff; --shadow:0 10px 30px rgba(0,0,0,.35);
-}
-*{box-sizing:border-box} html,body{height:100%}
+:root{--bg:#0c1117;--text:#e9eef6;--muted:#aeb6c4;--card:rgba(18,24,36,.94);--glass:rgba(18,24,36,.86);--pink:#ff4fa0;--accent:#7cd0ff;--ring:rgba(255,79,160,.35);--shadow:0 10px 30px rgba(0,0,0,.35)}
+*{box-sizing:border-box}html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Segoe UI,Roboto,Inter,Arial}
-#bg{position:fixed;inset:0;z-index:-2;background:center/cover no-repeat;filter:contrast(1) brightness(.95)}
-#shade{position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.7))}
-[data-theme="dark"] #shade{background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.65))}
+#bg{position:fixed;inset:0;z-index:-2;background:center/cover no-repeat;filter:contrast(1) brightness(.9) saturate(1)}
+#shade{position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.65))}
 .container{max-width:960px;margin:0 auto;padding:24px 16px 96px}
-h1,h2,h3{margin:.5rem 0 1rem} h1{font-size:38px} h2{font-size:28px}
-p{margin:.25rem 0 .75rem} .muted{color:var(--muted)}
-.view{display:none;min-height:100vh} .view.show{display:block}
+h1,h2,h3{margin:.5rem 0 1rem}h1{font-size:38px}h2{font-size:28px}
+p{margin:.25rem 0 .75rem}.muted{color:var(--muted)}
+.view{display:none;min-height:100vh}.view.show{display:block}
 .centerbox{max-width:560px;padding:26px;border-radius:28px;background:var(--card);box-shadow:var(--shadow);text-align:center}
 .accent{color:var(--accent)}
 .btn{border:0;border-radius:16px;padding:12px 18px;font-weight:800;cursor:pointer}
-.btn.primary{background:var(--pink);color:#fff;box-shadow:0 0 0 6px var(--ring) inset}
-.btn.ghost{background:transparent;color:var(--text);border:1px solid #0001}
+.btn.primary{background:var(--pink);color:#1b1020;box-shadow:0 0 0 6px var(--ring) inset}
+.btn.ghost{background:transparent;color:#fff;border:1px solid #ffffff22}
 .btn.dark{background:#1f2937;color:#e9eef6}
 .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .grid{display:grid;gap:14px}
-.menu{grid-template-columns:1fr} @media(min-width:720px){.menu{grid-template-columns:1fr 1fr}}
-.card{background:var(--card);backdrop-filter:blur(8px);border-radius:20px;border:1px solid #0001}
+.menu{grid-template-columns:1fr}@media(min-width:720px){.menu{grid-template-columns:1fr 1fr}}
+.card{background:var(--card);backdrop-filter:blur(8px);border-radius:20px;border:1px solid #ffffff14}
 .pad{padding:16px}
-.back{position:sticky;top:14px;background:var(--card);color:var(--text);border:1px solid #0002;border-radius:999px;padding:10px 16px;cursor:pointer;margin-bottom:12px}
-.select,.input{padding:12px 14px;border-radius:12px;border:1px solid #ccc;background:#fff;color:#1b1b1b}
-[data-theme="dark"] .select,[data-theme="dark"] .input{background:#101722;color:#e9eef6;border:1px solid #2a3446}
+.back{position:sticky;top:14px;background:#121a26;color:#fff;border:1px solid #ffffff22;border-radius:999px;padding:10px 16px;cursor:pointer;margin-bottom:12px}
+.select,.input{padding:12px 14px;border-radius:12px;border:1px solid #2a3446;background:#101722;color:#e9eef6}
 .goal-list .item{display:flex;gap:12px;align-items:center;padding:12px;border-radius:16px;background:var(--glass);border:2px solid transparent;cursor:pointer}
 .goal-list .item img{width:76px;height:56px;border-radius:12px;object-fit:cover}
 .goal-list .item.active{border-color:var(--pink);box-shadow:0 0 0 6px var(--ring) inset}
 .menu .tile{padding:18px;border-radius:18px}
 .menu .tile h3{margin:0 0 6px 0}
-.list-item{display:flex;gap:12px;align-items:center;padding:12px;border-radius:16px;background:var(--glass);border:1px solid #0001}
+.list-item{display:flex;gap:12px;align-items:center;padding:12px;border-radius:16px;background:var(--glass);border:1px solid #ffffff14}
 .thumb{width:70px;height:52px;border-radius:12px;object-fit:cover}
 .modal{position:fixed;inset:0;display:none;place-items:center;padding:20px;background:rgba(0,0,0,.55);z-index:50}
 .modal.show{display:grid}
-.sheet{width:min(920px,96vw);background:var(--card);border-radius:20px;padding:18px;border:1px solid #0001}
+.sheet{width:min(920px,96vw);background:var(--card);border-radius:20px;padding:18px;border:1px solid #ffffff14}
 .close{position:absolute;right:20px;top:16px;border:0;background:#121a26;color:#fff;border-radius:50%;width:36px;height:36px}
-.video-wrap{border-radius:16px;overflow:hidden;background:#000;margin:10px 0;border:1px solid #0002}
+.video-wrap{border-radius:16px;overflow:hidden;background:#000;margin:10px 0;border:1px solid #ffffff12}
 video{width:100%;display:block;object-fit:cover;max-height:58vh}
-.grid2{display:grid;grid-template-columns:1fr;gap:12px}
-@media(min-width:720px){.grid2{grid-template-columns:1fr 1fr}}
+.grid2{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:720px){.grid2{grid-template-columns:1fr 1fr}}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.counter{background:var(--glass);border:1px solid #0002;border-radius:16px;padding:12px;margin-top:10px}
+.counter{background:#0f1622;border:1px solid #2a3446;border-radius:16px;padding:12px;margin-top:10px}
 .kpi{font-size:48px;font-weight:900;letter-spacing:2px}
 .chat-box{background:var(--card);border-radius:16px;padding:12px;min-height:36vh;max-height:56vh;overflow:auto}
 .bubble{max-width:88%;padding:10px 14px;border-radius:14px;margin:6px 0}
-.bubble.me{background:var(--pink);color:#fff;margin-left:auto}
-.bubble.bot{background:#f1f3f6;color:#000}
-[data-theme="dark"] .bubble.bot{background:#1a2230;color:#fff}
-.item-row{display:flex;justify-content:space-between;align-items:center;background:var(--glass);border:1px solid #0002;padding:10px 12px;border-radius:12px}
-.total{margin-top:10px;font-weight:900}
-.hr{height:1px;background:#0002;margin:10px 0}
-@media (max-width:720px){.grid3{grid-template-columns:1fr}}
-/* Splash középre */
+.bubble.me{background:var(--pink);color:#1b1020;margin-left:auto}
+.bubble.bot{background:#1a2230}
+.item-row{display:flex;justify-content:space-between;align-items:center;background:#0f1622;border:1px solid #2a3446;padding:10px 12px;border-radius:12px}
+.hr{height:1px;background:#ffffff1a;margin:10px 0}
 #v-splash .container{min-height:100vh;display:flex;align-items:center;justify-content:center}
 #v-splash .centerbox{margin:0;width:min(560px,92vw)}
 canvas{width:100%;height:220px;display:block}
-/* Speciális videók */
+/* Speciális videók mini stílus */
 .sv-tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin:10px 0 12px}
-.sv-tabs [role="tab"]{padding:.5rem .75rem;border-radius:.5rem;border:1px solid #0002;background:transparent;color:var(--text);cursor:pointer}
-.sv-tabs [aria-selected="true"]{background:rgba(0,0,0,.06)}
-#sv-grid .sv-item{display:flex;gap:10px;align-items:center;padding:10px;border-radius:12px;background:var(--glass);border:1px solid #0002;cursor:pointer}
-#sv-grid .sv-thumb{width:72px;height:48px;border-radius:10px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-weight:700}
-[data-theme="dark"] #sv-grid .sv-thumb{background:#0b0f18;border:1px dashed #2a3446}
-/* --- Tabbar --- */
-#tabbar{position:fixed;bottom:0;left:0;right:0;height:64px;background:var(--card);border-top:1px solid #0002;display:flex;z-index:99}
-#tabbar button{flex:1;border:0;background:none;font-size:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);cursor:pointer}
-#tabbar button.active{color:var(--pink);font-weight:700}
+.sv-tabs [role="tab"]{padding:.5rem .75rem;border-radius:.5rem;border:1px solid #ffffff22;background:transparent;color:#e9eef6;cursor:pointer}
+.sv-tabs [aria-selected="true"]{background:rgba(255,255,255,.08)}
+#sv-grid .sv-item{display:flex;gap:10px;align-items:center;padding:10px;border-radius:12px;background:var(--glass);border:1px solid #ffffff14;cursor:pointer}
+#sv-grid .sv-thumb{width:72px;height:48px;border-radius:10px;background:#0b0f18;border:1px dashed #2a3446;display:flex;align-items:center;justify-content:center;font-weight:700}
 </style>
 </head>
 <body>
 <div id="bg"></div><div id="shade"></div>
+
 <!-- SPLASH -->
 <section id="v-splash" class="view show">
   <div class="container">
@@ -123,18 +102,8 @@ canvas{width:100%;height:220px;display:block}
     <button class="back" data-back>← Vissza</button>
     <div class="row" style="justify-content:space-between">
       <div class="card pad" style="border-radius:999px"><b id="goalLabel">Cél: –</b></div>
-      <div class="row">
-        <button class="btn ghost" id="changeGoal">Cél módosítása</button>
-        <!-- Téma kapcsoló -->
-        <button class="btn ghost" id="toggleTheme">Téma: Világos</button>
-      </div>
+      <div class="row"><button class="btn ghost" id="changeGoal">Cél módosítása</button></div>
     </div>
-
-    <!-- Gyors indítás -->
-    <div class="row" style="margin-top:8px">
-      <button id="quickStart" class="btn primary">Gyors edzés indítása</button>
-    </div>
-
     <div class="grid menu" style="margin-top:14px">
       <div id="tileBodyweight" class="tile card pad"><h3>Saját testsúly</h3><p class="muted">Válassz gyakorlatot, időzítővel.</p></div>
       <div id="tileWeights" class="tile card pad"><h3>Súlyzós edzés</h3><p class="muted">Otthon és terem – 4–4 gyak.</p></div>
@@ -146,7 +115,7 @@ canvas{width:100%;height:220px;display:block}
   </div>
 </section>
 
-<!-- SAJÁT TESTSÚLY EDZÉS LISTA -->
+<!-- SAJÁT TESTSÚLY -->
 <section id="v-workout" class="view">
   <div class="container">
     <button class="back" data-back>← Vissza</button>
@@ -155,7 +124,7 @@ canvas{width:100%;height:220px;display:block}
   </div>
 </section>
 
-<!-- SÚLYZÓS – VÁLASZTÓ (4 CSEMPE) -->
+<!-- SÚLYZÓS -->
 <section id="v-weights" class="view">
   <div class="container">
     <button class="back" data-back>← Vissza</button>
@@ -170,7 +139,6 @@ canvas{width:100%;height:220px;display:block}
   </div>
 </section>
 
-<!-- SÚLYZÓS – LISTA -->
 <section id="v-weightslist" class="view">
   <div class="container">
     <button class="back" data-back>← Vissza</button>
@@ -179,7 +147,7 @@ canvas{width:100%;height:220px;display:block}
   </div>
 </section>
 
-<!-- EDZÉS MODÁL -->
+<!-- MODÁL -->
 <div id="modal" class="modal">
   <div class="sheet">
     <button class="close" id="mClose">×</button>
@@ -223,11 +191,6 @@ canvas{width:100%;height:220px;display:block}
         <div class="card pad" style="flex:1">
           <div class="muted">Mai összes</div>
           <div><b id="sumKcal">0</b> kcal • P: <b id="sumP">0</b> g • CH: <b id="sumC">0</b> g • Zs: <b id="sumF">0</b> g</div>
-          <!-- PRO: napi cél progress -->
-          <div id="kcalProgress" style="height:10px;border-radius:6px;background:#00000022;overflow:hidden;margin-top:6px">
-            <div id="kcalBar" style="height:100%;width:0%"></div>
-          </div>
-          <small class="muted">Cél: <b id="kcalGoalLabel">2000</b> kcal</small>
         </div>
         <div class="card pad" style="flex:1">
           <div class="muted">Heti összes</div>
@@ -235,23 +198,7 @@ canvas{width:100%;height:220px;display:block}
         </div>
         <button id="clearDay" class="btn dark">Mai törlése</button>
       </div>
-
-      <!-- PRO: víz követés -->
-      <div class="card pad" style="margin-top:12px">
-        <div class="row">
-          <div style="flex:1">
-            <div class="muted">Napi vízcél</div>
-            <div><b id="waterGoalL">2.0</b> L</div>
-          </div>
-          <div>
-            <input id="waterGoalInput" class="input" style="width:120px" type="number" step="0.1" value="2.0">
-            <button id="waterGoalSave" class="btn dark">Cél mentése</button>
-          </div>
-        </div>
-        <div class="hr"></div>
-        <div class="row" id="waterCups"></div>
-        <div class="muted" style="margin-top:8px">Itt koppints a poharakra – 0.25 L/pohár</div>
-      </div>
+      <div id="mealList" class="grid" style="margin-top:10px"></div>
     </div>
   </div>
 </section>
@@ -299,24 +246,26 @@ canvas{width:100%;height:220px;display:block}
       <button role="tab" data-cat="lab">Láb</button>
     </nav>
 
-    <div class="video-wrap">
-      <video id="sv-player" controls playsinline preload="metadata"></video>
-    </div>
+    <div class="video-wrap"><video id="sv-player" controls playsinline preload="metadata"></video></div>
     <div class="muted">Jelenleg: <b id="sv-now">–</b></div>
-
     <div id="sv-grid" class="grid" style="margin-top:12px"></div>
   </div>
 </section>
 
-<!-- TABBAR -->
-<nav id="tabbar" aria-label="Fő navigáció">
-  <button data-tab="home" class="active">Kezdőlap</button>
-  <button data-tab="workout">Edzés</button>
-  <button data-tab="special">Tananyagok</button>
-  <button data-tab="perf">Statisztika</button>
-  <button data-tab="chat">Chat</button>
-</nav>
+<!-- Biztonsági öv: ha az app.js nem futna, a Kezdjük akkor is működik -->
+<script>
+  window.addEventListener('DOMContentLoaded', function(){
+    var btn = document.getElementById('start');
+    if (!btn) return;
+    btn.addEventListener('click', function(){
+      if (typeof show === 'function') { try { show('goal'); return; } catch(e){} }
+      document.querySelectorAll('.view').forEach(v=>v.classList.remove('show'));
+      var goal = document.getElementById('v-goal'); if (goal) goal.classList.add('show');
+    });
+  });
+</script>
 
-<script src="app.js"></script>
+<!-- A fő app JS – cache-t megkerüljük a ?v=fix parammal -->
+<script src="app.js?v=fix1" defer></script>
 </body>
 </html>

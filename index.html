@@ -81,8 +81,7 @@ canvas{width:100%;height:220px;display:block}
 <!-- CÉLVÁLASZTÓ -->
 <section id="v-goal" class="view">
   <div class="container">
-    <!-- FIX: vissza a splash-re -->
-    <button class="back" data-back="splash">← Vissza</button>
+    <button class="back" data-back>← Vissza</button>
     <h2>Válaszd ki a célod</h2>
     <p class="muted">Ezt később bármikor módosíthatod.</p>
     <div class="goal-list grid" style="margin-top:12px">
@@ -103,8 +102,7 @@ canvas{width:100%;height:220px;display:block}
 <!-- FŐMENÜ -->
 <section id="v-home" class="view">
   <div class="container">
-    <!-- FIX: vissza a goal-ra -->
-    <button class="back" data-back="goal">← Vissza</button>
+    <button class="back" data-back>← Vissza</button>
     <div class="row" style="justify-content:space-between">
       <div class="card pad" style="border-radius:999px"><b id="goalLabel">Cél: –</b></div>
       <div class="row">
@@ -112,9 +110,8 @@ canvas{width:100%;height:220px;display:block}
       </div>
     </div>
     <div class="grid menu" style="margin-top:14px">
-      <!-- FIX: data-open attribútumok -->
-      <div id="tileBodyweight" class="tile card pad" data-open="workout"><h3>Saját testsúly</h3><p class="muted">Válassz gyakorlatot, időzítővel.</p></div>
-      <div id="tileWeights" class="tile card pad" data-open="weights"><h3>Súlyzós edzés</h3><p class="muted">Otthon és terem – 4–4 gyak.</p></div>
+      <div id="tileBodyweight" class="tile card pad"><h3>Saját testsúly</h3><p class="muted">Válassz gyakorlatot, időzítővel.</p></div>
+      <div id="tileWeights" class="tile card pad"><h3>Súlyzós edzés</h3><p class="muted">Otthon és terem – 4–4 gyak.</p></div>
       <div class="tile card pad" data-open="cal"><h3>Kalóriaszámláló</h3><p class="muted">Napi & heti összesítés.</p></div>
       <div class="tile card pad" data-open="perf"><h3>Napi teljesítmény</h3><p class="muted">Streak + heti grafikon.</p></div>
       <div class="tile card pad" data-open="chat"><h3>AI chat</h3><p class="muted">Magyar tanácsok.</p></div>
@@ -125,8 +122,7 @@ canvas{width:100%;height:220px;display:block}
 <!-- SAJÁT TESTSÚLY EDZÉS LISTA -->
 <section id="v-workout" class="view">
   <div class="container">
-    <!-- FIX: vissza a home-ra -->
-    <button class="back" data-back="home">← Vissza</button>
+    <button class="back" data-back>← Vissza</button>
     <h2>Napi edzés</h2><p class="muted">Válassz gyakorlatot (5 db / kategória).</p>
     <div id="exList" class="grid" style="margin-top:12px"></div>
   </div>
@@ -135,8 +131,7 @@ canvas{width:100%;height:220px;display:block}
 <!-- SÚLYZÓS – VÁLASZTÓ (4 CSEMPE) -->
 <section id="v-weights" class="view">
   <div class="container">
-    <!-- FIX: vissza a home-ra -->
-    <button class="back" data-back="home">← Vissza</button>
+    <button class="back" data-back>← Vissza</button>
     <h2>Súlyzós edzés</h2>
     <p class="muted">Válassz típust:</p>
     <div class="grid2" style="margin-top:12px">
@@ -151,8 +146,7 @@ canvas{width:100%;height:220px;display:block}
 <!-- SÚLYZÓS – LISTA -->
 <section id="v-weightslist" class="view">
   <div class="container">
-    <!-- FIX: vissza a weights-re -->
-    <button class="back" data-back="weights">← Vissza</button>
+    <button class="back" data-back>← Vissza</button>
     <h2 id="wTitle">Súlyzós edzés – lista</h2>
     <div id="wList" class="grid" style="margin-top:12px"></div>
   </div>
@@ -186,8 +180,7 @@ canvas{width:100%;height:220px;display:block}
 <!-- KALÓRIA -->
 <section id="v-cal" class="view">
   <div class="container">
-    <!-- FIX: vissza a home-ra -->
-    <button class="back" data-back="home">← Vissza</button>
+    <button class="back" data-back>← Vissza</button>
     <h2>Kalóriaszámláló</h2>
     <div class="card pad">
       <div class="row">
@@ -218,8 +211,7 @@ canvas{width:100%;height:220px;display:block}
 <!-- TELJESÍTMÉNY -->
 <section id="v-perf" class="view">
   <div class="container">
-    <!-- FIX: vissza a home-ra -->
-    <button class="back" data-back="home">← Vissza</button>
+    <button class="back" data-back>← Vissza</button>
     <h2>Teljesítmény</h2>
     <div class="grid">
       <div class="card pad"><div class="muted">Folyamatos napok (streak)</div><h2 id="streak">0</h2></div>
@@ -235,8 +227,7 @@ canvas{width:100%;height:220px;display:block}
 <!-- CHAT -->
 <section id="v-chat" class="view">
   <div class="container">
-    <!-- FIX: vissza a home-ra -->
-    <button class="back" data-back="home">← Vissza</button>
+    <button class="back" data-back>← Vissza</button>
     <h2>AI chat (magyar)</h2>
     <div class="chat-box" id="chatBox"></div>
     <div class="row" style="margin-top:10px">

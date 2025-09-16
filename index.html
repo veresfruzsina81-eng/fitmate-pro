@@ -45,6 +45,8 @@ p{margin:.25rem 0 .75rem} .muted{color:var(--muted)}
 .close{position:absolute;right:20px;top:16px;border:0;background:#121a26;color:#fff;border-radius:50%;width:36px;height:36px}
 .video-wrap{border-radius:16px;overflow:hidden;background:#000;margin:10px 0;border:1px solid #ffffff12}
 video{width:100%;display:block;object-fit:cover;max-height:58vh}
+.grid2{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:720px){.grid2{grid-template-columns:1fr 1fr}}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .counter{background:#0f1622;border:1px solid #2a3446;border-radius:16px;padding:12px;margin-top:10px}
 .kpi{font-size:48px;font-weight:900;letter-spacing:2px}
@@ -109,7 +111,7 @@ canvas{width:100%;height:220px;display:block}
     </div>
     <div class="grid menu" style="margin-top:14px">
       <div id="tileBodyweight" class="tile card pad"><h3>Saját testsúly</h3><p class="muted">Válassz gyakorlatot, időzítővel.</p></div>
-      <div id="tileWeights" class="tile card pad"><h3>Súlyzós edzés</h3><p class="muted">Hamarosan…</p></div>
+      <div id="tileWeights" class="tile card pad"><h3>Súlyzós edzés</h3><p class="muted">Otthon és terem – 4–4 gyak.</p></div>
       <div class="tile card pad" data-open="cal"><h3>Kalóriaszámláló</h3><p class="muted">Napi & heti összesítés.</p></div>
       <div class="tile card pad" data-open="perf"><h3>Napi teljesítmény</h3><p class="muted">Streak + heti grafikon.</p></div>
       <div class="tile card pad" data-open="chat"><h3>AI chat</h3><p class="muted">Magyar tanácsok.</p></div>
@@ -126,12 +128,27 @@ canvas{width:100%;height:220px;display:block}
   </div>
 </section>
 
-<!-- SÚLYZÓS (placeholder) -->
+<!-- SÚLYZÓS – VÁLASZTÓ (4 CSEMPE) -->
 <section id="v-weights" class="view">
   <div class="container">
     <button class="back" data-back>← Vissza</button>
     <h2>Súlyzós edzés</h2>
-    <div class="card pad"><p>Hamarosan ide kerül 5-5 videó minden célhoz (fogyás / szálkásítás / hízás).</p></div>
+    <p class="muted">Válassz típust:</p>
+    <div class="grid2" style="margin-top:12px">
+      <div class="tile card pad" id="w_m_home"><h3>Férfi – otthoni kézisúlyzó</h3><p class="muted">4 gyakorlat</p></div>
+      <div class="tile card pad" id="w_w_home"><h3>Női – otthoni kézisúlyzó</h3><p class="muted">4 gyakorlat</p></div>
+      <div class="tile card pad" id="w_m_gym"><h3>Férfi – konditermi</h3><p class="muted">4 gyakorlat</p></div>
+      <div class="tile card pad" id="w_w_gym"><h3>Női – konditermi</h3><p class="muted">4 gyakorlat</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SÚLYZÓS – LISTA -->
+<section id="v-weightslist" class="view">
+  <div class="container">
+    <button class="back" data-back>← Vissza</button>
+    <h2 id="wTitle">Súlyzós edzés – lista</h2>
+    <div id="wList" class="grid" style="margin-top:12px"></div>
   </div>
 </section>
 

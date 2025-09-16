@@ -5,60 +5,78 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>FitMate HU</title>
 <style>
-:root{--bg:#0c1117;--text:#e9eef6;--muted:#aeb6c4;--card:rgba(18,24,36,.94);--glass:rgba(18,24,36,.86);--pink:#ff4fa0;--accent:#7cd0ff;--ring:rgba(255,79,160,.35);--shadow:0 10px 30px rgba(0,0,0,.35)}
-*{box-sizing:border-box}html,body{height:100%}
+/* ===== Light (fehér) téma ===== */
+:root{
+  --bg:#f7f8fb; --text:#0b1020; --muted:#586379;
+  --card:#ffffff; --glass:#fffffff2; --shadow:0 10px 30px rgba(14,22,40,.08);
+  --pink:#ff2f86; --accent:#246bff; --ring:rgba(255,47,134,.25);
+  --border:#e8ecf3;
+}
+*{box-sizing:border-box} html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Segoe UI,Roboto,Inter,Arial}
-#bg{position:fixed;inset:0;z-index:-2;background:center/cover no-repeat;filter:contrast(1) brightness(.9) saturate(1)}
-#shade{position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.65))}
-.container{max-width:960px;margin:0 auto;padding:24px 16px 96px}
-h1,h2,h3{margin:.5rem 0 1rem}h1{font-size:38px}h2{font-size:28px}
-p{margin:.25rem 0 .75rem}.muted{color:var(--muted)}
-.view{display:none;min-height:100vh}.view.show{display:block}
-.centerbox{max-width:560px;padding:26px;border-radius:28px;background:var(--card);box-shadow:var(--shadow);text-align:center}
+#bg{position:fixed;inset:0;z-index:-2;background:center/cover no-repeat;filter:contrast(1) brightness(.98) saturate(1.02)}
+#shade{position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(255,255,255,.35),rgba(255,255,255,.55))}
+
+.container{max-width:1000px;margin:0 auto;padding:24px 16px 120px}
+h1,h2,h3{margin:.5rem 0 1rem} h1{font-size:38px} h2{font-size:28px}
+p{margin:.25rem 0 .75rem} .muted{color:var(--muted)}
+.view{display:none;min-height:100vh} .view.show{display:block}
+.centerbox{max-width:580px;padding:28px;border-radius:24px;background:var(--card);box-shadow:var(--shadow);text-align:center;border:1px solid var(--border)}
 .accent{color:var(--accent)}
-.btn{border:0;border-radius:16px;padding:12px 18px;font-weight:800;cursor:pointer}
-.btn.primary{background:var(--pink);color:#1b1020;box-shadow:0 0 0 6px var(--ring) inset}
-.btn.ghost{background:transparent;color:#fff;border:1px solid #ffffff22}
-.btn.dark{background:#1f2937;color:#e9eef6}
+.btn{border:1px solid var(--border);border-radius:14px;padding:12px 18px;font-weight:800;cursor:pointer;background:#fff}
+.btn.primary{background:var(--pink);border-color:transparent;color:#fff;box-shadow:0 0 0 6px var(--ring) inset}
+.btn.ghost{background:#fff;color:var(--text)}
+.btn.dark{background:#0f172a;color:#e9eef6;border-color:#0f172a}
 .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .grid{display:grid;gap:14px}
-.menu{grid-template-columns:1fr}@media(min-width:720px){.menu{grid-template-columns:1fr 1fr}}
-.card{background:var(--card);backdrop-filter:blur(8px);border-radius:20px;border:1px solid #ffffff14}
+.menu{grid-template-columns:1fr} @media(min-width:760px){.menu{grid-template-columns:1fr 1fr}}
+.card{background:var(--card);backdrop-filter:saturate(1.1) blur(6px);border-radius:18px;border:1px solid var(--border);box-shadow:var(--shadow)}
 .pad{padding:16px}
-.back{position:sticky;top:14px;background:#121a26;color:#fff;border:1px solid #ffffff22;border-radius:999px;padding:10px 16px;cursor:pointer;margin-bottom:12px}
-.select,.input{padding:12px 14px;border-radius:12px;border:1px solid #2a3446;background:#101722;color:#e9eef6}
-.goal-list .item{display:flex;gap:12px;align-items:center;padding:12px;border-radius:16px;background:var(--glass);border:2px solid transparent;cursor:pointer}
-.goal-list .item img{width:76px;height:56px;border-radius:12px;object-fit:cover}
+.back{position:sticky;top:14px;background:#fff;color:var(--text);border:1px solid var(--border);border-radius:999px;padding:10px 16px;cursor:pointer;margin-bottom:12px;box-shadow:var(--shadow)}
+.select,.input{padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:#fff;color:var(--text)}
+.goal-list .item{display:flex;gap:12px;align-items:center;padding:12px;border-radius:14px;background:#fff;border:2px solid transparent;cursor:pointer;box-shadow:var(--shadow)}
+.goal-list .item img{width:76px;height:56px;border-radius:10px;object-fit:cover;border:1px solid var(--border)}
 .goal-list .item.active{border-color:var(--pink);box-shadow:0 0 0 6px var(--ring) inset}
-.menu .tile{padding:18px;border-radius:18px}
-.menu .tile h3{margin:0 0 6px 0}
-.list-item{display:flex;gap:12px;align-items:center;padding:12px;border-radius:16px;background:var(--glass);border:1px solid #ffffff14}
-.thumb{width:70px;height:52px;border-radius:12px;object-fit:cover}
-.modal{position:fixed;inset:0;display:none;place-items:center;padding:20px;background:rgba(0,0,0,.55);z-index:50}
+.menu .tile{padding:18px;border-radius:16px;display:flex;flex-direction:column;gap:6px}
+.menu .tile h3{margin:0 0 4px 0}
+.list-item{display:flex;gap:12px;align-items:center;padding:12px;border-radius:14px;background:#fff;border:1px solid var(--border)}
+.thumb{width:70px;height:52px;border-radius:10px;object-fit:cover;border:1px solid var(--border)}
+.modal{position:fixed;inset:0;display:none;place-items:center;padding:20px;background:rgba(0,0,0,.45);z-index:50}
 .modal.show{display:grid}
-.sheet{width:min(920px,96vw);background:var(--card);border-radius:20px;padding:18px;border:1px solid #ffffff14}
-.close{position:absolute;right:20px;top:16px;border:0;background:#121a26;color:#fff;border-radius:50%;width:36px;height:36px}
-.video-wrap{border-radius:16px;overflow:hidden;background:#000;margin:10px 0;border:1px solid #ffffff12}
+.sheet{width:min(920px,96vw);background:var(--card);border-radius:18px;padding:18px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.close{position:absolute;right:20px;top:16px;border:0;background:#0f172a;color:#fff;border-radius:50%;width:36px;height:36px}
+.video-wrap{border-radius:14px;overflow:hidden;background:#000;margin:10px 0;border:1px solid var(--border)}
 video{width:100%;display:block;object-fit:cover;max-height:58vh}
-.grid2{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:720px){.grid2{grid-template-columns:1fr 1fr}}
+.grid2{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:760px){.grid2{grid-template-columns:1fr 1fr}}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.counter{background:#0f1622;border:1px solid #2a3446;border-radius:16px;padding:12px;margin-top:10px}
-.kpi{font-size:48px;font-weight:900;letter-spacing:2px}
-.chat-box{background:var(--card);border-radius:16px;padding:12px;min-height:36vh;max-height:56vh;overflow:auto}
-.bubble{max-width:88%;padding:10px 14px;border-radius:14px;margin:6px 0}
-.bubble.me{background:var(--pink);color:#1b1020;margin-left:auto}
-.bubble.bot{background:#1a2230}
-.item-row{display:flex;justify-content:space-between;align-items:center;background:#0f1622;border:1px solid #2a3446;padding:10px 12px;border-radius:12px}
-.hr{height:1px;background:#ffffff1a;margin:10px 0}
+.counter{background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px;margin-top:10px;box-shadow:var(--shadow)}
+.kpi{font-size:42px;font-weight:900;letter-spacing:1px}
+.chat-box{background:#fff;border-radius:14px;padding:12px;min-height:36vh;max-height:56vh;overflow:auto;border:1px solid var(--border)}
+.bubble{max-width:88%;padding:10px 14px;border-radius:14px;margin:6px 0;border:1px solid var(--border);background:#fff}
+.bubble.me{background:#ffe3ef;border-color:#ffd1e4;margin-left:auto}
+.bubble.bot{background:#fff}
+.item-row{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--border);padding:10px 12px;border-radius:12px}
+.hr{height:1px;background:var(--border);margin:10px 0}
 #v-splash .container{min-height:100vh;display:flex;align-items:center;justify-content:center}
-#v-splash .centerbox{margin:0;width:min(560px,92vw)}
+#v-splash .centerbox{margin:0;width:min(580px,92vw)}
 canvas{width:100%;height:220px;display:block}
-/* Speciális videók mini stílus */
+
+/* — Speciális videók apró stílus — */
 .sv-tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin:10px 0 12px}
-.sv-tabs [role="tab"]{padding:.5rem .75rem;border-radius:.5rem;border:1px solid #ffffff22;background:transparent;color:#e9eef6;cursor:pointer}
-.sv-tabs [aria-selected="true"]{background:rgba(255,255,255,.08)}
-#sv-grid .sv-item{display:flex;gap:10px;align-items:center;padding:10px;border-radius:12px;background:var(--glass);border:1px solid #ffffff14;cursor:pointer}
-#sv-grid .sv-thumb{width:72px;height:48px;border-radius:10px;background:#0b0f18;border:1px dashed #2a3446;display:flex;align-items:center;justify-content:center;font-weight:700}
+.sv-tabs [role="tab"]{padding:.5rem .75rem;border-radius:.5rem;border:1px solid var(--border);background:#fff;color:var(--text);cursor:pointer}
+.sv-tabs [aria-selected="true"]{background:#f4f7ff;border-color:#cfe0ff}
+#sv-grid .sv-item{display:flex;gap:10px;align-items:center;padding:10px;border-radius:12px;background:#fff;border:1px solid var(--border);cursor:pointer}
+#sv-grid .sv-thumb{width:72px;height:48px;border-radius:10px;background:#f0f4ff;border:1px dashed #cfe0ff;display:flex;align-items:center;justify-content:center;font-weight:700;color:#234}
+
+/* — Alsó tabbar a rendezett navigációért — */
+.tabbar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--border);display:flex;justify-content:space-around;gap:4px;padding:10px 8px;z-index:60}
+.tabbar button{flex:1;background:transparent;border:0;padding:8px 6px;border-radius:10px;color:#111;font-weight:800}
+.tabbar button.active{color:#e91e63;background:#ffe8f2}
+
+/* — Víz kártya progress — */
+.water-bar{height:10px;background:#f2f6ff;border:1px solid #d9e6ff;border-radius:999px;overflow:hidden}
+.water-bar > span{display:block;height:100%;background:#4c8dff}
 </style>
 </head>
 <body>
@@ -99,18 +117,36 @@ canvas{width:100%;height:220px;display:block}
 <!-- FŐMENÜ -->
 <section id="v-home" class="view">
   <div class="container">
-    <button class="back" data-back>← Vissza</button>
     <div class="row" style="justify-content:space-between">
       <div class="card pad" style="border-radius:999px"><b id="goalLabel">Cél: –</b></div>
       <div class="row"><button class="btn ghost" id="changeGoal">Cél módosítása</button></div>
     </div>
+
+    <!-- Rendezett, kétsoros rács -->
     <div class="grid menu" style="margin-top:14px">
-      <div id="tileBodyweight" class="tile card pad"><h3>Saját testsúly</h3><p class="muted">Válassz gyakorlatot, időzítővel.</p></div>
-      <div id="tileWeights" class="tile card pad"><h3>Súlyzós edzés</h3><p class="muted">Otthon és terem – 4–4 gyak.</p></div>
-      <div class="tile card pad" data-open="cal"><h3>Kalóriaszámláló</h3><p class="muted">Napi & heti összesítés.</p></div>
-      <div class="tile card pad" data-open="perf"><h3>Napi teljesítmény</h3><p class="muted">Streak + heti grafikon.</p></div>
-      <div class="tile card pad" data-open="chat"><h3>AI chat</h3><p class="muted">Magyar tanácsok.</p></div>
-      <div class="tile card pad" data-open="special"><h3>Speciális tananyagok</h3><p class="muted">Has • Hát • Bicepsz • Tricepsz • Láb</p></div>
+      <div id="tileBodyweight" class="tile card pad">
+        <h3>Saját testsúly</h3><p class="muted">Válassz gyakorlatot, időzítővel.</p>
+      </div>
+
+      <div id="tileWeights" class="tile card pad">
+        <h3>Súlyzós edzés</h3><p class="muted">Otthon és terem – 4–4 gyak.</p>
+      </div>
+
+      <div class="tile card pad" data-open="cal">
+        <h3>Kalóriaszámláló</h3><p class="muted">Ételek + víz emlékeztető</p>
+      </div>
+
+      <div class="tile card pad" data-open="perf">
+        <h3>Napi teljesítmény</h3><p class="muted">Edzések • Kcal • Víz</p>
+      </div>
+
+      <div class="tile card pad" data-open="chat">
+        <h3>AI chat</h3><p class="muted">Magyar tanácsok</p>
+      </div>
+
+      <div class="tile card pad" data-open="special">
+        <h3>Speciális tananyagok</h3><p class="muted">Has • Hát • Bicepsz • Tricepsz • Láb</p>
+      </div>
     </div>
   </div>
 </section>
@@ -119,7 +155,8 @@ canvas{width:100%;height:220px;display:block}
 <section id="v-workout" class="view">
   <div class="container">
     <button class="back" data-back>← Vissza</button>
-    <h2>Napi edzés</h2><p class="muted">Válassz gyakorlatot (5 db / kategória).</p>
+    <h2>Napi edzés</h2>
+    <p class="muted">Válassz gyakorlatot (5 db / kategória).</p>
     <div id="exList" class="grid" style="margin-top:12px"></div>
   </div>
 </section>
@@ -147,7 +184,7 @@ canvas{width:100%;height:220px;display:block}
   </div>
 </section>
 
-<!-- MODÁL -->
+<!-- MODÁL (edzés lejátszó + időzítő) -->
 <div id="modal" class="modal">
   <div class="sheet">
     <button class="close" id="mClose">×</button>
@@ -164,57 +201,116 @@ canvas{width:100%;height:220px;display:block}
       <div id="clock" class="kpi">00:00</div>
       <div class="row">
         <button id="bStart" class="btn primary">Start</button>
-        <button id="bPause" class="btn dark">Szünet</button>
-        <button id="bNext" class="btn dark">Következő</button>
+        <button id="bPause" class="btn">Szünet</button>
+        <button id="bNext" class="btn">Következő</button>
       </div>
       <p id="status" class="muted" style="margin-top:6px"></p>
     </div>
   </div>
 </div>
-
-<!-- KALÓRIA -->
+<!-- KALÓRIA + VÍZ (felturbózva) -->
 <section id="v-cal" class="view">
   <div class="container">
     <button class="back" data-back>← Vissza</button>
     <h2>Kalóriaszámláló</h2>
-    <div class="card pad">
-      <div class="row">
-        <input id="mealName" class="input" style="flex:2" placeholder="Étkezés (pl. csirkemell, rizs)">
-        <input id="mealKcal" class="input" style="width:120px" type="number" placeholder="kcal">
-        <input id="mealP" class="input" style="width:90px" type="number" placeholder="P (g)">
-        <input id="mealC" class="input" style="width:90px" type="number" placeholder="CH (g)">
-        <input id="mealF" class="input" style="width:90px" type="number" placeholder="Zs (g)">
-        <button id="addMeal" class="btn primary">Hozzáad</button>
-      </div>
-      <div class="hr"></div>
-      <div class="row">
-        <div class="card pad" style="flex:1">
-          <div class="muted">Mai összes</div>
-          <div><b id="sumKcal">0</b> kcal • P: <b id="sumP">0</b> g • CH: <b id="sumC">0</b> g • Zs: <b id="sumF">0</b> g</div>
+
+    <div class="grid2">
+      <!-- Étkezések -->
+      <div class="card pad">
+        <div class="row">
+          <input id="mealName" class="input" style="flex:2" placeholder="Étkezés (pl. csirkemell, rizs)">
+          <input id="mealKcal" class="input" style="width:120px" type="number" placeholder="kcal">
+          <input id="mealP" class="input" style="width:90px" type="number" placeholder="P (g)">
+          <input id="mealC" class="input" style="width:90px" type="number" placeholder="CH (g)">
+          <input id="mealF" class="input" style="width:90px" type="number" placeholder="Zs (g)">
+          <button id="addMeal" class="btn primary">Hozzáad</button>
         </div>
-        <div class="card pad" style="flex:1">
-          <div class="muted">Heti összes</div>
-          <div><b id="weekKcal">0</b> kcal</div>
+
+        <div class="hr"></div>
+        <div class="row">
+          <div class="card pad" style="flex:1">
+            <div class="muted">Mai összes</div>
+            <div><b id="sumKcal">0</b> kcal • P: <b id="sumP">0</b> g • CH: <b id="sumC">0</b> g • Zs: <b id="sumF">0</b> g</div>
+          </div>
+          <div class="card pad" style="flex:1">
+            <div class="muted">Heti összes</div>
+            <div><b id="weekKcal">0</b> kcal</div>
+          </div>
         </div>
-        <button id="clearDay" class="btn dark">Mai törlése</button>
+
+        <div class="grid" id="mealList" style="margin-top:10px"></div>
       </div>
-      <div id="mealList" class="grid" style="margin-top:10px"></div>
+
+      <!-- Víz + makró cél + gyorsételek -->
+      <div class="card pad">
+        <h3>Víz emlékeztető</h3>
+        <div class="row">
+          <input id="waterTarget" class="input" type="number" style="width:120px" placeholder="Cél (ml)" value="2000">
+          <button id="waterSetTarget" class="btn">Cél beállít</button>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button id="waterAdd250" class="btn">+250 ml</button>
+          <button id="waterAdd500" class="btn">+500 ml</button>
+          <button id="waterReset" class="btn">Nulláz</button>
+        </div>
+        <p class="muted" style="margin:8px 0 4px">Mai víz: <b id="waterNow">0</b> / <b id="waterGoal">2000</b> ml</p>
+        <div class="water-bar"><span id="waterProg" style="width:0%"></span></div>
+
+        <div class="hr"></div>
+        <h3>Makró célok (vizuál)</h3>
+        <canvas id="macroChart" width="400" height="220"></canvas>
+
+        <div class="hr"></div>
+        <h3>Gyors étel hozzáadás</h3>
+        <div class="row" id="quickMeals">
+          <!-- gombok JS-ből -->
+        </div>
+      </div>
+    </div>
+
+    <div class="card pad" style="margin-top:14px">
+      <h3>Heti áttekintés</h3>
+      <div class="grid2">
+        <div>
+          <canvas id="weekKcalChart" width="480" height="220"></canvas>
+        </div>
+        <div>
+          <table id="weekTable" style="width:100%;border-collapse:collapse">
+            <thead><tr>
+              <th style="text-align:left;border-bottom:1px solid var(--border);padding:6px">Nap</th>
+              <th style="text-align:right;border-bottom:1px solid var(--border);padding:6px">Kcal</th>
+              <th style="text-align:right;border-bottom:1px solid var(--border);padding:6px">Víz (ml)</th>
+            </tr></thead>
+            <tbody><!-- JS tölti --></tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- TELJESÍTMÉNY -->
+<!-- TELJESÍTMÉNY (felturbózva) -->
 <section id="v-perf" class="view">
   <div class="container">
     <button class="back" data-back>← Vissza</button>
     <h2>Teljesítmény</h2>
-    <div class="grid">
-      <div class="card pad"><div class="muted">Folyamatos napok (streak)</div><h2 id="streak">0</h2></div>
-      <div class="card pad"><div class="muted">Összes befejezett edzés</div><h2 id="done">0</h2></div>
-    </div>
-    <div class="card pad" style="margin-top:12px">
-      <div class="muted">Utolsó 7 nap edzései</div>
-      <canvas id="perfChart" width="800" height="240"></canvas>
+    <div class="grid2">
+      <div class="card pad">
+        <div class="grid">
+          <div class="card pad"><div class="muted">Folyamatos napok (streak)</div><h2 id="streak">0</h2></div>
+          <div class="card pad"><div class="muted">Összes befejezett edzés</div><h2 id="done">0</h2></div>
+        </div>
+        <div class="card pad" style="margin-top:12px">
+          <div class="muted">Edzések az utolsó 7 napban</div>
+          <canvas id="perfChart" width="800" height="240"></canvas>
+        </div>
+      </div>
+
+      <div class="card pad">
+        <div class="muted">Kalória & Víz (7 nap)</div>
+        <canvas id="perfKcalWaterChart" width="800" height="240"></canvas>
+        <p id="perfNote" class="muted" style="margin-top:8px"></p>
+      </div>
     </div>
   </div>
 </section>
@@ -248,24 +344,32 @@ canvas{width:100%;height:220px;display:block}
 
     <div class="video-wrap"><video id="sv-player" controls playsinline preload="metadata"></video></div>
     <div class="muted">Jelenleg: <b id="sv-now">–</b></div>
-    <div id="sv-grid" class="grid" style="margin-top:12px"></div>
+    <div id="sv-grid" class="grid3" style="margin-top:12px"></div>
   </div>
 </section>
+
+<!-- Alsó tabbar – rendezett navigáció -->
+<nav class="tabbar" id="tabbar" aria-label="Fő navigáció">
+  <button data-tab="home" class="active">Kezdőlap</button>
+  <button data-tab="workout">Edzés</button>
+  <button data-tab="special">Tananyagok</button>
+  <button data-tab="perf">Statisztika</button>
+  <button data-tab="chat">Chat</button>
+</nav>
 
 <!-- Biztonsági öv: ha az app.js nem futna, a Kezdjük akkor is működik -->
 <script>
   window.addEventListener('DOMContentLoaded', function(){
-    var btn = document.getElementById('start');
-    if (!btn) return;
+    var btn=document.getElementById('start'); if(!btn) return;
     btn.addEventListener('click', function(){
       if (typeof show === 'function') { try { show('goal'); return; } catch(e){} }
       document.querySelectorAll('.view').forEach(v=>v.classList.remove('show'));
-      var goal = document.getElementById('v-goal'); if (goal) goal.classList.add('show');
+      var goal=document.getElementById('v-goal'); if (goal) goal.classList.add('show');
     });
   });
 </script>
 
-<!-- A fő app JS – cache-t megkerüljük a ?v=fix parammal -->
-<script src="app.js?v=fix1" defer></script>
+<!-- Fő app JS – cache-busterrel -->
+<script src="app.js?v=fitplus1" defer></script>
 </body>
 </html>

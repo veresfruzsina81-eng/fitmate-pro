@@ -172,7 +172,7 @@ let tmpGender=S.gender;
 qsa('.goal-list .item').forEach(it=>{
   if(it.dataset.goal===tmpGoal) it.classList.add('active');
   it.onclick=()=>{
-    qsa('.goal-list .item').forEach(x=>x.classList.remove('active'));
+    qsa('.goal-list . item').forEach(x=>x.classList.remove('active'));
     it.classList.add('active'); tmpGoal=it.dataset.goal;
     qs('#bg').style.backgroundImage=`url('${tmpGoal}.png')`;
   };
@@ -461,7 +461,39 @@ function pushBubble(t,me=false){ if(!chatBox) return; const b=document.createEle
 function goalWelcome(goal){ if(goal==='szalkasitas') return 'Szia! Miben segíthetek a szálkásításban? Írj: „étrend”, „edzés”, vagy „mindkettő”.'; if(goal==='hizas') return 'Szia! Miben segíthetek a hízásban? Írj: „étrend”, „edzés”, vagy „mindkettő”.'; return 'Szia! Miben segíthetek a fogyásban? Írj: „étrend”, „edzés”, vagy „mindkettő”.'; }
 let welcomedKey=localStorage.getItem('welcomedGoal')||'';
 function ensureChatWelcome(){ const key=S.goal||'fogyas'; if(welcomedKey!==key){ chatBox&&(chatBox.innerHTML=''); pushBubble(goalWelcome(key)); welcomedKey=key; localStorage.setItem('welcomedGoal',key); } }
-qs('#sendChat') && (qs('#sendChat').onclick=async()=>{ const inp=qs('#chatInput'); const q=(inp&&inp.value||'').trim(); if(!q) return; inp.value=''; pushBubble(q,true); let reply=''; try{ const r=await fetch('/.netlify/functions/ai-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:q,goal:S.goal,gender:S.gender})}); if(r.ok){ const j=await r.json(); reply=j.reply||''; } }catch(e){} if(!reply){ reply='Megvagyok! Írj, miben segítsek az edzés/étrend kapcsán. 😉'; } pushBubble(reply,false); });
+
+qs('#sendChat') && (qs('#sendChat').onclick=async()=>{
+  const inp=qs('#chatInput'); const q=(inp&&inp.value||'').trim(); if(!q) return;
+  inp.value=''; pushBubble(q,true);
+
+  let reply='';
+  try{
+    const r=await fetch('/.netlify/functions/ai-chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        prompt:q,
+        goal:S.goal,
+        gender:S.gender,
+        lang: (window.getUserLang ? window.getUserLang() : 'hu') // ⬅️ NYELV ÁTADÁSA
+      })
+    });
+    if(r.ok){
+      const j=await r.json();
+      reply=j.reply||'';
+    } else {
+      const err=await r.text();
+      console.warn('AI hívás hiba:', err);
+    }
+  }catch(e){
+    console.warn('Chat hiba:', e);
+  }
+
+  if(!reply){
+    reply='Megvagyok! Írj, miben segítsek az edzés/étrend kapcsán. 😉';
+  }
+  pushBubble(reply,false);
+});
 
 /* ===== Speciális videók (10-10; stop váltáskor) ===== */
 (function(){

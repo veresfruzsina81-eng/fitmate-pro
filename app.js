@@ -1,3 +1,99 @@
+// === i18n AUTO-INSTALL (drop-in) ============================================
+window.__LANG = (localStorage.getItem('lang') || (navigator.language||'hu').slice(0,2)).toLowerCase();
+window.__T = {};
+(async function initI18n(){
+  try {
+    const res = await fetch('lang.json', { cache:'no-cache' });
+    window.__T = await res.json();
+  } catch(e) { console.warn('lang.json betöltés hiba:', e); }
+  installLanguagePicker();
+  applyLang();
+})();
+
+function t(key){
+  const L = window.__LANG.startsWith('hu')?'hu':
+            window.__LANG.startsWith('en')?'en':
+            window.__LANG.startsWith('de')?'de':
+            window.__LANG.startsWith('fr')?'fr':
+            window.__LANG.startsWith('es')?'es':'hu';
+  return (window.__T[key] && (window.__T[key][L] || window.__T[key].hu)) || key;
+}
+
+// Elemazonosítók/keresők – ha van saját ID-d, írd be ide (nem kötelező)
+const I18N_TARGETS = [
+  ['#appName','appName'],
+  ['#startBtn','start'],
+  ['#tabHome','home'],
+  ['#tabTraining','training'],
+  ['#tabMaterials','materials'],
+  ['#tabStats','stats'],
+  ['#tabChat','chat'],
+  ['#goalTitle','goal'],
+];
+// Ha nincs ID, megpróbáljuk tipikus szöveg alapján megtalálni
+const FALLBACK_TEXT_MAP = [
+  ['Kezdés','start'],
+  ['Kezdőlap','home'],
+  ['Edzés','training'],
+  ['Tananyagok','materials'],
+  ['Statisztika','stats'],
+  ['Chat','chat'],
+];
+
+function applyLang(){
+  // 1) Célzott elemek ID alapján
+  I18N_TARGETS.forEach(([sel,key])=>{
+    const el = document.querySelector(sel);
+    if (el) el.textContent = t(key);
+  });
+  // 2) Szöveg-alapú csere (óvatosan)
+  document.querySelectorAll('button, a, span, h1, h2, h3').forEach(el=>{
+    FALLBACK_TEXT_MAP.forEach(([orig,key])=>{
+      if (el.childNodes.length===1 && typeof el.textContent==='string' && el.textContent.trim()===orig){
+        el.textContent = t(key);
+      }
+    });
+  });
+  // 3) Tegyük el a kiválasztott nyelvet
+  localStorage.setItem('lang', window.__LANG);
+}
+
+function installLanguagePicker(){
+  // kis lebegő 🌍 gomb + menü (HTML szerkesztés nélkül)
+  const wrap = document.createElement('div');
+  wrap.style.position='fixed';
+  wrap.style.top='12px';
+  wrap.style.right='12px';
+  wrap.style.zIndex='99999';
+  wrap.innerHTML = `
+    <button id="__langBtn" style="font-size:18px; padding:6px 10px; border-radius:10px">🌍</button>
+    <div id="__langMenu" hidden
+      style="position:absolute; right:0; margin-top:8px; background:#fff; border:1px solid #ddd; border-radius:10px; padding:6px 8px; box-shadow:0 8px 24px rgba(0,0,0,.18)">
+      <button class="__langOpt" data-lang="hu">🇭🇺 Magyar</button><br/>
+      <button class="__langOpt" data-lang="en">🇬🇧 English</button><br/>
+      <button class="__langOpt" data-lang="de">🇩🇪 Deutsch</button><br/>
+      <button class="__langOpt" data-lang="fr">🇫🇷 Français</button><br/>
+      <button class="__langOpt" data-lang="es">🇪🇸 Español</button>
+    </div>`;
+  document.body.appendChild(wrap);
+
+  const btn = wrap.querySelector('#__langBtn');
+  const menu = wrap.querySelector('#__langMenu');
+  btn.addEventListener('click', ()=> menu.hidden = !menu.hidden);
+  wrap.addEventListener('click', (e)=>{
+    if (e.target.classList?.contains('__langOpt')){
+      window.__LANG = e.target.dataset.lang;
+      applyLang();
+      menu.hidden = true;
+    }
+  });
+}
+
+// --- helper a chat híváshoz: mindig legyen kéznél a nyelv
+window.getUserLang = () => window.__LANG;
+// ===========================================================================
+// (a TE eredeti app.js kódod mehet ez alatt változtatás nélkül)
+
 /* ===== FitMate – JAVÍTOTT (1/3) =====
    - Segédek, router, háttér
    - Tabbar + Train Hub nézet

@@ -1,0 +1,10 @@
+{
+  "appName": { "hu": "FitMate HU", "en": "FitMate", "de": "FitMate", "fr": "FitMate", "es": "FitMate" },
+  "start":   { "hu": "Kezdés", "en": "Start", "de": "Starten", "fr": "Démarrer", "es": "Comenzar" },
+  "home":    { "hu": "Kezdőlap", "en": "Home", "de": "Startseite", "fr": "Accueil", "es": "Inicio" },
+  "training":{ "hu": "Edzés", "en": "Training", "de": "Training", "fr": "Entraînement", "es": "Entrenamiento" },
+  "materials":{ "hu":"Tananyagok","en":"Lessons","de":"Lektionen","fr":"Leçons","es":"Lecciones"},
+  "stats":   { "hu": "Statisztika", "en": "Stats", "de": "Statistik", "fr": "Statistiques", "es": "Estadísticas" },
+  "chat":    { "hu": "Chat", "en": "Chat", "de": "Chat", "fr": "Chat", "es": "Chat" },
+  "goal":    { "hu":"Válaszd ki a célt","en":"Choose your goal","de":"Ziel wählen","fr":"Choisis ton objectif","es":"Elige tu objetivo" }
+}

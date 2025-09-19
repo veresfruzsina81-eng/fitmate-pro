@@ -23,7 +23,7 @@ exports.handler = async (event) => {
       };
     }
 
-    const { prompt, goal } = JSON.parse(event.body || "{}");
+    const { prompt, goal, lang } = JSON.parse(event.body || "{}");
     if (!prompt) {
       return {
         statusCode: 400,
@@ -32,9 +32,13 @@ exports.handler = async (event) => {
       };
     }
 
-    const system = `Te egy magyar fitnesz és étrend asszisztens vagy. 
-Válaszolj röviden, konkrétan, barátságosan. Cél: ${goal || "nincs megadva"}. 
-Ha kockázat/egészségügyi kérdés merül fel, javasolj szakembert.`;
+    // nyelv normalizálása (pl. en-US -> en)
+    const userLang = (lang || "hu").slice(0,2);
+
+    const system = `You are a fitness and nutrition assistant. 
+Always answer in ${userLang}.
+Be rövid, konkrét és barátságos. User goal: ${goal || "not specified"}.
+If health risk comes up, advise to consult a professional.`;
 
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
